@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery Manager (Private)</title>
+  <style>
+    :root { --primary:#8D555F; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; margin:0; background:#fafafa; color:#222; }
+    header { background: var(--primary); color:#fff; padding:16px 20px; }
+    h1 { margin:0; font-size:20px; }
+    main { padding:20px; max-width:1100px; margin:0 auto; }
+    .bar { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin: 14px 0 20px; }
+    button, input, select { padding:10px 12px; border-radius:8px; border:1px solid #ddd; background:#fff; }
+    button.primary { background: var(--primary); color:#fff; border-color:transparent; cursor:pointer; }
+    button.danger { background:#d9534f; color:#fff; border-color:transparent; cursor:pointer; }
+    button.tab { background:#fff; cursor:pointer; }
+    button.tab.active { background: var(--primary); color:#fff; border-color: transparent; }
+    table { width:100%; border-collapse: collapse; background:#fff; border:1px solid #e5e5e5; }
+    th, td { padding:10px; border-bottom:1px solid #eee; vertical-align: top; }
+    th { background:#f7f7f7; text-align:left; }
+    tbody tr:hover { background:#fff7f8; }
+    .muted { color:#666; font-size:12px; }
+    .row-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .hidden { display:none; }
+    .note { background: #fffbea; border:1px solid #ffe58f; padding:12px; border-radius:8px; margin:14px 0; }
+    footer { margin:24px 0; color:#666; font-size:12px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="t_title">Gallery Manager (Private)</h1>
+    <div class="muted" id="t_sub">Manage images by category and key site images.</div>
+  </header>
+  <main>
+    <section id="gate">
+      <div class="note" id="t_gate">Enter passphrase to continue. You can change it inside this file.</div>
+      <div class="bar">
+        <input id="pass" type="password" placeholder="Passphrase" />
+        <button class="primary" id="enter">Enter</button>
+        <select id="lang">
+          <option value="en">EN</option>
+          <option value="fr">FR</option>
+          <option value="ar">AR</option>
+        </select>
+      </div>
+    </section>
+
+    <section id="app" class="hidden">
+      <div class="bar">
+        <button class="tab" data-tab="Weddings" id="tab_w">Weddings</button>
+        <button class="tab" data-tab="Private Events" id="tab_p">Private Events</button>
+        <button class="tab" data-tab="Corporate Events" id="tab_c">Corporate Events</button>
+        <button class="tab" data-tab="Site Images" id="tab_s">Site Images</button>
+      </div>
+
+      <div class="bar" id="listBar">
+        <button class="primary" id="add">+ Add</button>
+        <button id="reload">Reload</button>
+        <button id="saveGallery" class="primary">Save (server)</button>
+        <button id="download">Download gallery.json</button>
+        <span class="muted" id="status"></span>
+      </div>
+
+      <div class="bar hidden" id="siteBar">
+        <button id="reloadSite">Reload</button>
+        <button id="saveSite" class="primary">Save (needs server)</button>
+        <button id="downloadSite">Download site-images.json</button>
+      </div>
+
+      <div class="note" id="noteList">Paste a path (e.g. /assets/images/file.jpeg) or use Upload. Upload stores a data URL (works on any static host).</div>
+      <div class="note hidden" id="noteSite">Edit key images. Paste paths or Upload (data URL).</div>
+
+      <table id="table">
+        <thead>
+          <tr>
+            <th style="width:60px;">ID</th>
+            <th>Image src</th>
+            <th style="width:220px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+
+      <div id="siteForm" class="hidden">
+        <div class="grid">
+          <label>Hero <input id="f_heroBg" type="text" /> <input type="file" data-up="heroBg" /></label>
+          <label>About <input id="f_aboutUs" type="text" /> <input type="file" data-up="aboutUs" /></label>
+          <label>Service Wedding <input id="f_serviceWedding" type="text" /> <input type="file" data-up="serviceWedding" /></label>
+          <label>Service Private <input id="f_servicePrivate" type="text" /> <input type="file" data-up="servicePrivate" /></label>
+          <label>Service Corporate <input id="f_serviceCorporate" type="text" /> <input type="file" data-up="serviceCorporate" /></label>
+          <label>Blog Palette <input id="f_blogPalette" type="text" /> <input type="file" data-up="blogPalette" /></label>
+          <label>Blog Negafa <input id="f_blogNegafa" type="text" /> <input type="file" data-up="blogNegafa" /></label>
+          <label>Blog Venues <input id="f_blogVenues" type="text" /> <input type="file" data-up="blogVenues" /></label>
+          <label>Blog Lanterns <input id="f_blogLanterns" type="text" /> <input type="file" data-up="blogLanterns" /></label>
+          <label>Logo Color <input id="f_logoColor" type="text" /> <input type="file" data-up="logoColor" /></label>
+          <label>Logo White <input id="f_logoWhite" type="text" /> <input type="file" data-up="logoWhite" /></label>
+        </div>
+      </div>
+
+      <footer id="t_footer">After editing, click Download and replace files in public/assets/, then refresh the website.</footer>
+    </section>
+  </main>
+
+  <script>
+    const PASSPHRASE = 'soniceevent-admin';
+
+    // i18n text
+    const T = {
+      en: { title:'Gallery Manager (Private)', sub:'Manage images by category and key site images.', gate:'Enter passphrase to continue.', enter:'Enter', add:'+ Add', reload:'Reload', download:'Download', footer:'After editing, click Download and replace files in public/assets/, then refresh.' },
+      fr: { title:'Gestionnaire de Galerie (Privé)', sub:'Gérez les images par catégorie et les images du site.', gate:'Entrez la phrase secrète pour continuer.', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Après modification, cliquez sur Télécharger puis remplacez les fichiers dans public/assets/, puis rafraîchissez.' },
+      ar: { title:'مدير المعرض (خاص)', sub:'إدارة الصور حسب التصنيف وصور الموقع.', gate:'أدخل عبارة المرور للمتابعة.', enter:'دخول', add:'+ إضافة', reload:'إعادة تحميل', download:'تنزيل', footer:'بعد التعديل، اضغط تنزيل واستبدل الملفات داخل public/assets/ ثم حدّث الموقع.' }
+    };
+    function txt(id, s){ const el=document.getElementById(id); if(el) el.textContent=s; }
+    function applyLang(l){ const d=T[l]||T.en; txt('t_title',d.title); txt('t_sub',d.sub); txt('t_gate',d.gate); txt('enter',d.enter); txt('add',d.add); txt('reload',d.reload); txt('reloadSite',d.reload); txt('download',d.download+' gallery.json'); txt('downloadSite',d.download+' site-images.json'); txt('t_footer',d.footer); document.documentElement.dir=(l==='ar')?'rtl':'ltr'; }
+
+    // State
+    const data = { 'Weddings': [], 'Private Events': [], 'Corporate Events': [] };
+    let site = {};
+    let active = 'Weddings';
+
+    // Elements
+    const gate = document.getElementById('gate');
+    const app = document.getElementById('app');
+    const lang = document.getElementById('lang');
+    const tbody = document.getElementById('tbody');
+    const listBar = document.getElementById('listBar');
+    const siteBar = document.getElementById('siteBar');
+    const noteList = document.getElementById('noteList');
+    const noteSite = document.getElementById('noteSite');
+    const siteForm = document.getElementById('siteForm');
+    const statusEl = document.getElementById('status');
+
+    // Init language
+    applyLang('en');
+    lang.onchange = () => applyLang(lang.value);
+
+    // Gate enter
+    document.getElementById('enter').onclick = () => {
+      if ((document.getElementById('pass').value||'').trim() !== PASSPHRASE) { alert('Wrong passphrase'); return; }
+      gate.classList.add('hidden');
+      app.classList.remove('hidden');
+      bindTabs();
+      reloadAll();
+      bindUploads();
+    };
+
+    function bindTabs(){
+      document.querySelectorAll('button.tab').forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll('button.tab').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          active = btn.getAttribute('data-tab');
+          const isSite = active === 'Site Images';
+          listBar.classList.toggle('hidden', isSite);
+          noteList.classList.toggle('hidden', isSite);
+          document.getElementById('table').classList.toggle('hidden', isSite);
+          siteBar.classList.toggle('hidden', !isSite);
+          noteSite.classList.toggle('hidden', !isSite);
+          siteForm.classList.toggle('hidden', !isSite);
+          if (!isSite) renderTable(); else renderSite();
+        };
+      });
+      document.getElementById('tab_w').click();
+    }
+
+    async function reloadAll(){ await loadGallery(); await loadSite(); }
+
+    function serverBase(){ return (localStorage.getItem('cms_local_server') || 'http://localhost:4000'); }
+
+    async function loadGallery(){
+      setStatus('Loading gallery...');
+      try {
+        const r = await fetch('/assets/gallery.json', { cache:'no-cache' });
+        if (r.ok) {
+          const arr = await r.json();
+          ['Weddings','Private Events','Corporate Events'].forEach(c => data[c] = arr.filter(i=>i.category===c));
+        }
+        renderTable(); setStatus('');
+      } catch(e){ setStatus('Failed to load gallery.json'); }
+    }
+
+    async function loadSite(){
+      try {
+        const r = await fetch('/assets/site-images.json', { cache:'no-cache' });
+        site = r.ok ? await r.json() : {};
+        renderSite();
+      } catch(e){ site = {}; renderSite(); }
+    }
+
+    function renderTable(){
+      tbody.innerHTML = '';
+      const arr = data[active] || [];
+      arr.forEach((it, idx) => tbody.appendChild(row(it, idx, arr)));
+    }
+
+    function row(it, idx, arr){
+      const tr = document.createElement('tr');
+      const fileId = `u_${active.replace(/\s/g,'_')}_${idx}`;
+      tr.innerHTML = `
+        <td><input type="number" value="${it.id||idx+1}" data-k="id" style="width:70px"/></td>
+        <td><input type="text" value="${it.src||''}" data-k="src" style="width:100%" placeholder="/assets/images/file.jpeg"/></td>
+        <td class="row-actions">
+          <input type="file" id="${fileId}" class="hidden" />
+          <button data-act="upload" data-file="${fileId}">Upload</button>
+          <button data-act="up">↑</button>
+          <button data-act="down">↓</button>
+          <button class="danger" data-act="del">Delete</button>
+        </td>`;
+      tr.querySelectorAll('input[type="number"],input[type="text"]').forEach(inp=>{
+        inp.onchange = () => { const k=inp.getAttribute('data-k'); let v=inp.value; if(k==='id') v=Number(v); arr[idx][k]=v; };
+      });
+      tr.querySelector('[data-act="up"]').onclick = () => move(arr, idx, -1);
+      tr.querySelector('[data-act="down"]').onclick = () => move(arr, idx, +1);
+      tr.querySelector('[data-act="del"]').onclick = () => { if(confirm('Delete?')){ arr.splice(idx,1); renderTable(); } };
+      tr.querySelector('[data-act="upload"]').onclick = (e) => {
+        const input = document.getElementById(fileId);
+        input.onchange = async ev => {
+          const file = ev.target.files && ev.target.files[0]; if(!file) return;
+          // Try local server upload first
+          try {
+            const fd = new FormData(); fd.append('file', file);
+            const r = await fetch(serverBase() + '/upload-image', { method:'POST', body: fd });
+            if (r.ok) {
+              const j = await r.json();
+              if (j && j.ok && j.path) { arr[idx].src = j.path; renderTable(); return; }
+            }
+          } catch(_) {}
+          // Fallback to data URL inline
+          readAsDataURL(file).then(url => { arr[idx].src = url; renderTable(); });
+        };
+        input.click();
+      };
+      // Add Import URL button next to Upload
+      const actionsCell = tr.querySelector('.row-actions');
+      const importBtn = document.createElement('button');
+      importBtn.textContent = 'Import URL';
+      importBtn.onclick = async () => {
+        const srcInput = tr.querySelector('input[data-k="src"]');
+        const cur = (srcInput && srcInput.value || '').trim();
+        if (!cur || !/^https?:\/\//i.test(cur)) { alert('Enter a valid http(s) URL in src first.'); return; }
+        try {
+          const r = await fetch(serverBase() + '/import-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url: cur }) });
+          if (r.ok) { const j = await r.json(); if (j && j.ok && j.path) { arr[idx].src = j.path; renderTable(); return; } }
+          alert('Import failed');
+        } catch(_) { alert('Import failed'); }
+      };
+      actionsCell.insertBefore(importBtn, actionsCell.querySelector('[data-act="up"]'));
+      return tr;
+    }
+
+    function renderSite(){
+      ['heroBg','aboutUs','serviceWedding','servicePrivate','serviceCorporate','blogPalette','blogNegafa','blogVenues','blogLanterns','logoColor','logoWhite'].forEach(id=>{
+        const el = document.getElementById('f_'+id); if(!el) return; el.value = site[id] || ''; el.onchange = ()=>{ site[id]=el.value; try{ localStorage.setItem('site_images_override', JSON.stringify(site)); }catch(_){} };
+      });
+    }
+
+    function move(arr,i,d){ const j=i+d; if(j<0||j>=arr.length) return; const t=arr[i]; arr[i]=arr[j]; arr[j]=t; renderTable(); }
+    function setStatus(s){ statusEl.textContent = s; }
+    function readAsDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
+
+    // Top buttons
+    document.getElementById('add').onclick = () => { const arr=data[active]; const next=arr.length?Math.max(...arr.map(x=>Number(x.id)||0))+1:1; arr.push({ id:next, src:'/assets/images/your-file.jpeg', category: active }); renderTable(); };
+    document.getElementById('reload').onclick = reloadAll;
+    document.getElementById('reloadSite').onclick = loadSite;
+    document.getElementById('saveGallery').onclick = async () => {
+      const merged=['Weddings','Private Events','Corporate Events'].flatMap(c => (data[c]||[]).map(it=>({ id:Number(it.id), src:String(it.src||'').trim(), category:c })));
+      // Try saving via local server first
+      try {
+        const r = await fetch(serverBase() + '/save-gallery', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(merged) });
+        if (r.ok) { alert('Saved to server. Refresh the site.'); return; }
+      } catch(_) {}
+      // Fallback to download
+      downloadGallery();
+    };
+    function downloadGallery(){
+      const merged=['Weddings','Private Events','Corporate Events'].flatMap(c => (data[c]||[]).map(it=>({ id:Number(it.id), src:String(it.src||'').trim(), category:c })));
+      const blob = new Blob([JSON.stringify(merged,null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='gallery.json'; a.click(); URL.revokeObjectURL(a.href);
+    }
+    document.getElementById('download').onclick = downloadGallery;
+    document.getElementById('downloadSite').onclick = async () => {
+      const blob = new Blob([JSON.stringify(site,null,2)],{type:'application/json'});
+      // Try save to local server
+      try { const r = await fetch(serverBase() + '/save-site', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(site) }); if (r.ok) { alert('Saved to server. Refresh the site.'); return; } } catch(_) {}
+      // Fallback
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='site-images.json'; a.click(); URL.revokeObjectURL(a.href);
+    };
+  </script>
+</body>
+</html>

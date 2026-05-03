@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>So Nice Event - Wedding & Event Planner</title>
+    <link rel="icon" type="image/png" href="/assets/logos/main-logo.png" />
+    <link rel="apple-touch-icon" href="/assets/logos/main-logo.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --color-primary: #8D555F; /* Darker shade for better WCAG contrast */
+        --color-primary-hover: #7b4a53;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: 'Montserrat', sans-serif;
+        background-color: #FDFBF8;
+        color: #4A4A4A;
+      }
+      h1, h2, h3, h4, h5, h6, .font-serif {
+        font-family: 'Playfair Display', serif;
+      }
+      .custom-bg {
+        background-color: var(--color-primary);
+        transition: background-color 0.3s ease;
+      }
+      .custom-bg:hover {
+        background-color: var(--color-primary-hover);
+      }
+      .custom-text,
+      .hover\:custom-text:hover {
+        color: var(--color-primary);
+      }
+
+      /* Accessibility: Add a clear focus indicator for keyboard users */
+      :focus-visible {
+        outline: 3px solid var(--color-primary-hover);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+
+      /* Accessibility: Respect user preference for reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+
+      /* Add Tajawal font for Arabic */
+      [lang="ar"] body, [lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3, [lang="ar"] button, [lang="ar"] a, [lang="ar"] input, [lang="ar"] textarea, [lang="ar"] p, [lang="ar"] span, [lang="ar"] div {
+        font-family: 'Tajawal', sans-serif;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      async function boot() {
+        try {
+          // 1) Apply local overrides immediately for instant preview after admin uploads
+          const ls = localStorage.getItem('site_images_override');
+          if (ls) {
+            try { window.__SITE_IMAGES = JSON.parse(ls); } catch(_) {}
+          }
+          // 2) Load file-based defaults and keep any existing overrides
+          const res = await fetch('/assets/site-images.json', { cache: 'no-cache' });
+          if (res.ok) {
+            const fileData = await res.json();
+            window.__SITE_IMAGES = Object.assign({}, fileData, window.__SITE_IMAGES || {});
+            if (fileData && fileData.cmsGalleryUrl) {
+              window.__CMS = Object.assign({}, window.__CMS || {}, { galleryUrl: fileData.cmsGalleryUrl });
+            }
+          }
+        } catch (e) {}
+        await import('/index.tsx');
+      }
+      boot();
+    </script>
+    <style>
+      /* Simple, reusable marquee styles */
+      .marquee {
+        position: relative;
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+      }
+      .marquee__track {
+        display: flex;
+        width: max-content;
+        animation: marquee-scroll 28s linear infinite;
+      }
+      .marquee:hover .marquee__track { animation-play-state: paused; }
+      @keyframes marquee-scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+    </style>
+    <script>
+      // This script helps manage the text direction for RTL languages like Arabic.
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
+            const newLang = document.documentElement.lang;
+            if (newLang === 'ar') {
+              document.documentElement.dir = 'rtl';
+            } else {
+              document.documentElement.dir = 'ltr';
+            }
+          }
+        });
+      });
+      observer.observe(document.documentElement, {
+        attributes: true
+      });
+    </script>
+  </body>
+</html>

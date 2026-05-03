@@ -1,0 +1,9 @@
+[
+  { "id": 1, "src": "/assets/images/gallery-1.jpeg", "category": "Weddings" },
+  { "id": 2, "src": "/assets/images/gallery-2.jpeg", "category": "Weddings" },
+  { "id": 3, "src": "/assets/images/gallery-3.jpeg", "category": "Weddings" },
+  { "id": 4, "src": "/assets/images/gallery-4.jpeg", "category": "Private Events" },
+  { "id": 5, "src": "/assets/images/gallery-5.jpeg", "category": "Private Events" },
+  { "id": 6, "src": "/assets/images/gallery-6.jpeg", "category": "Private Events" },
+  { "id": 7, "src": "/assets/images/gallery-7.jpeg", "category": "Corporate Events" }
+]
