@@ -2,5 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm ci --prefix so-nice-event",
   "buildCommand": "npm run build --prefix so-nice-event",
-  "outputDirectory": "so-nice-event/dist"
+  "outputDirectory": "so-nice-event/dist",
+  "rewrites": [
+    { "source": "/manage", "destination": "/admin/gallery-manager.html" },
+    { "source": "/staff", "destination": "/admin/gallery-manager.html" },
+    { "source": "/admin", "destination": "/admin/gallery-manager.html" },
+    { "source": "/admin/", "destination": "/admin/gallery-manager.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

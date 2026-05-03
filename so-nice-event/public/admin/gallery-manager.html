@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Gallery Manager (Private)</title>
   <style>
     :root { --primary:#8D555F; }
@@ -27,6 +28,8 @@
     footer { margin:24px 0; color:#666; font-size:12px; }
     .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
     @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    .share-url { flex:1; padding:10px 12px; background:#fff; border:1px solid #ddd; border-radius:8px; font-size:13px; word-break:break-all; font-family: ui-monospace, monospace; }
+    .share-card { background:#e8f4fc !important; border-color:#91d5ff !important; }
   </style>
 </head>
 <body>
@@ -36,6 +39,15 @@
   </header>
   <main>
     <section id="gate">
+      <div class="note share-card">
+        <strong id="shareTitle">Share link for your team</strong>
+        <p class="muted" id="shareHint" style="margin:8px 0;"></p>
+        <div class="bar" style="margin:0;">
+          <div id="shareUrlManage" class="share-url"></div>
+          <button type="button" class="primary" id="copyShareManage">Copy</button>
+        </div>
+        <p class="muted" id="shareAltLine" style="margin:10px 0 0;font-size:12px;"></p>
+      </div>
       <div class="note" id="t_gate">Enter passphrase to continue. You can change it inside this file.</div>
       <div class="bar">
         <input id="pass" type="password" placeholder="Passphrase" />
@@ -131,12 +143,26 @@
 
     // i18n text
     const T = {
-      en: { title:'Gallery Manager (Private)', sub:'Manage images by category and key site images.', gate:'Enter passphrase (super admin or staff).', enter:'Enter', add:'+ Add', reload:'Reload', download:'Download', footer:'After editing, click Download and replace files in public/assets/, then refresh.', serverHint:'Used for file uploads and “Save (server)”. On static hosting, use Download and commit files, or run upload-server with this URL.', badgeSuper:'Signed in · Super admin (full access)', badgeWorker:'Signed in · Staff (gallery only)', superTitle:'Super admin — staff access', superBody:'Workers use PASSPHRASE_WORKER in this file (search in script). Change it to revoke access. Staff cannot edit hero, logos, or site-wide images.', adminLinkLbl:'Bookmark this admin URL:', wrong:'Wrong passphrase', lbl_server:'Upload / save API URL', saveUrl:'Save URL' },
-      fr: { title:'Gestionnaire de Galerie (Privé)', sub:'Gérez les images par catégorie et les images du site.', gate:'Phrase secrète (admin ou équipe).', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Après modification, cliquez sur Télécharger puis remplacez les fichiers dans public/assets/, puis rafraîchissez.', serverHint:'Pour les fichiers et « Enregistrer (serveur) ». Hébergement statique : Télécharger puis commit, ou upload-server.', badgeSuper:'Connecté · Super admin', badgeWorker:'Connecté · Équipe (galerie)', superTitle:'Super admin — équipe', superBody:'L’équipe utilise PASSPHRASE_WORKER dans ce fichier.', adminLinkLbl:'URL à enregistrer :', wrong:'Phrase incorrecte', lbl_server:'URL API envoi / enregistrement', saveUrl:'Enregistrer URL' },
-      ar: { title:'مدير المعرض (خاص)', sub:'إدارة الصور حسب التصنيف وصور الموقع.', gate:'عبارة المرور (مدير أو فريق).', enter:'دخول', add:'+ إضافة', reload:'إعادة تحميل', download:'تنزيل', footer:'بعد التعديل، اضغط تنزيل واستبدل الملفات داخل public/assets/ ثم حدّث الموقع.', serverHint:'للرفع و« حفظ (خادم) ».', badgeSuper:'مسجّل · مدير عام', badgeWorker:'مسجّل · فريق (معرض فقط)', superTitle:'مدير عام — الفريق', superBody:'يستخدم الفريق PASSPHRASE_WORKER في هذا الملف.', adminLinkLbl:'رابط الإدارة:', wrong:'عبارة خاطئة', lbl_server:'رابط رفع الحفظ', saveUrl:'حفظ الرابط' }
+      en: { title:'Gallery Manager (Private)', sub:'Manage images by category and key site images.', gate:'Enter passphrase (super admin or staff).', enter:'Enter', add:'+ Add', reload:'Reload', download:'Download', footer:'After editing, click Download and replace files in public/assets/, then refresh.', serverHint:'Used for file uploads and “Save (server)”. On static hosting, use Download and commit files, or run upload-server with this URL.', badgeSuper:'Signed in · Super admin (full access)', badgeWorker:'Signed in · Staff (gallery only)', superTitle:'Super admin — staff access', superBody:'Workers use PASSPHRASE_WORKER in this file (search in script). Change it to revoke access. Staff cannot edit hero, logos, or site-wide images.', adminLinkLbl:'Share / bookmark this URL:', wrong:'Wrong passphrase', lbl_server:'Upload / save API URL', saveUrl:'Save URL', shareTitle:'Share link for your team', shareHint:'Send this short URL after deploy (e.g. Vercel). Staff still need the worker passphrase.', shareAlt:'Full path (always works):', copyShare:'Copy link', copiedMsg:'Link copied.' },
+      fr: { title:'Gestionnaire de Galerie (Privé)', sub:'Gérez les images par catégorie et les images du site.', gate:'Phrase secrète (admin ou équipe).', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Après modification, cliquez sur Télécharger puis remplacez les fichiers dans public/assets/, puis rafraîchissez.', serverHint:'Pour les fichiers et « Enregistrer (serveur) ». Hébergement statique : Télécharger puis commit, ou upload-server.', badgeSuper:'Connecté · Super admin', badgeWorker:'Connecté · Équipe (galerie)', superTitle:'Super admin — équipe', superBody:'L’équipe utilise PASSPHRASE_WORKER dans ce fichier.', adminLinkLbl:'Partager / favori :', wrong:'Phrase incorrecte', lbl_server:'URL API envoi / enregistrement', saveUrl:'Enregistrer URL', shareTitle:'Lien pour votre équipe', shareHint:'Envoyez cette URL après déploiement. La phrase secrète équipe reste obligatoire.', shareAlt:'Chemin complet :', copyShare:'Copier le lien', copiedMsg:'Lien copié.' },
+      ar: { title:'مدير المعرض (خاص)', sub:'إدارة الصور حسب التصنيف وصور الموقع.', gate:'عبارة المرور (مدير أو فريق).', enter:'دخول', add:'+ إضافة', reload:'إعادة تحميل', download:'تنزيل', footer:'بعد التعديل، اضغط تنزيل واستبدل الملفات داخل public/assets/ ثم حدّث الموقع.', serverHint:'للرفع و« حفظ (خادم) ».', badgeSuper:'مسجّل · مدير عام', badgeWorker:'مسجّل · فريق (معرض فقط)', superTitle:'مدير عام — الفريق', superBody:'يستخدم الفريق PASSPHRASE_WORKER في هذا الملف.', adminLinkLbl:'المشاركة / الحفظ:', wrong:'عبارة خاطئة', lbl_server:'رابط رفع الحفظ', saveUrl:'حفظ الرابط', shareTitle:'رابط للفريق', shareHint:'أرسل هذا الرابط بعد النشر. لا يزالون يحتاجون عبارة مرور الفريق.', shareAlt:'المسار الكامل:', copyShare:'نسخ الرابط', copiedMsg:'تم النسخ.' }
     };
     function txt(id, s){ const el=document.getElementById(id); if(el) el.textContent=s; }
-    function applyLang(l){ const d=T[l]||T.en; txt('t_title',d.title); txt('t_sub',d.sub); txt('t_gate',d.gate); txt('enter',d.enter); txt('add',d.add); txt('reload',d.reload); txt('reloadSite',d.reload); txt('download',d.download+' gallery.json'); txt('downloadSite',d.download+' site-images.json'); txt('t_footer',d.footer); txt('lbl_server', d.lbl_server); txt('cms_server_save', d.saveUrl); txt('serverHint', d.serverHint); txt('superPanelTitle', d.superTitle); txt('superPanelBody', d.superBody); txt('adminLinkLabel', d.adminLinkLbl); document.documentElement.dir=(l==='ar')?'rtl':'ltr'; applyRoleTexts(); }
+    function refreshShareLinks(){
+      const d = T[lang.value] || T.en;
+      const o = window.location.origin;
+      const box = document.getElementById('shareUrlManage');
+      if (box) box.textContent = o + '/manage';
+      const alt = document.getElementById('shareAltLine');
+      if (alt) alt.textContent = (d.shareAlt || '') + ' ' + o + '/admin/gallery-manager.html';
+    }
+    function applyLang(l){ const d=T[l]||T.en; txt('t_title',d.title); txt('t_sub',d.sub); txt('t_gate',d.gate); txt('enter',d.enter); txt('add',d.add); txt('reload',d.reload); txt('reloadSite',d.reload); txt('download',d.download+' gallery.json'); txt('downloadSite',d.download+' site-images.json'); txt('t_footer',d.footer); txt('lbl_server', d.lbl_server); txt('cms_server_save', d.saveUrl); txt('serverHint', d.serverHint); txt('superPanelTitle', d.superTitle); txt('superPanelBody', d.superBody); txt('adminLinkLabel', d.adminLinkLbl); txt('shareTitle', d.shareTitle); txt('shareHint', d.shareHint); txt('copyShareManage', d.copyShare); document.documentElement.dir=(l==='ar')?'rtl':'ltr'; applyRoleTexts(); refreshShareLinks(); }
+
+    document.getElementById('copyShareManage').onclick = async () => {
+      const url = window.location.origin + '/manage';
+      const msg = (T[lang.value]||T.en).copiedMsg || 'Copied.';
+      try { await navigator.clipboard.writeText(url); alert(msg); } catch (_) { prompt((T[lang.value]||T.en).copyShare + ':', url); }
+    };
 
     function applyRoleTexts(){
       if (!role) return;
@@ -175,8 +201,9 @@
       } else {
         tabSite.classList.remove('hidden');
         superPanel.classList.remove('hidden');
-        link.href = window.location.href.split('#')[0];
-        link.textContent = link.href;
+        const manage = window.location.origin + '/manage';
+        link.href = manage;
+        link.textContent = manage;
       }
       applyRoleTexts();
     }
