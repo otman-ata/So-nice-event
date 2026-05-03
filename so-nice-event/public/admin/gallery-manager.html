@@ -49,6 +49,23 @@
     </section>
 
     <section id="app" class="hidden">
+      <p id="roleBadge" class="muted" style="margin:0 0 10px;font-weight:600;"></p>
+
+      <div class="bar" style="background:#eef2f6;padding:12px;border-radius:8px;align-items:flex-start;">
+        <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1;min-width:200px;">
+          <span id="lbl_server">Upload / save API URL</span>
+          <input id="cms_server_input" type="url" placeholder="http://localhost:4000" style="min-width:220px;flex:1;" />
+        </label>
+        <button type="button" class="primary" id="cms_server_save">Save URL</button>
+      </div>
+      <p class="muted" id="serverHint" style="margin:8px 0 14px;"></p>
+
+      <section id="superPanel" class="note hidden">
+        <strong id="superPanelTitle">Super admin</strong>
+        <p class="muted" id="superPanelBody"></p>
+        <p class="muted" id="superPanelLinkRow"><span id="adminLinkLabel"></span> <a href="#" id="adminLink"></a></p>
+      </section>
+
       <div class="bar">
         <button class="tab" data-tab="Weddings" id="tab_w">Weddings</button>
         <button class="tab" data-tab="Private Events" id="tab_p">Private Events</button>
@@ -105,16 +122,27 @@
   </main>
 
   <script>
-    const PASSPHRASE = 'soniceevent-admin';
+    /** Super admin: gallery + site-wide images. */
+    const PASSPHRASE_SUPER = 'soniceevent-admin';
+    /** Workers: gallery categories only (add / delete / reorder / upload). */
+    const PASSPHRASE_WORKER = 'soniceevent-staff';
+
+    let role = null; // 'super' | 'worker'
 
     // i18n text
     const T = {
-      en: { title:'Gallery Manager (Private)', sub:'Manage images by category and key site images.', gate:'Enter passphrase to continue.', enter:'Enter', add:'+ Add', reload:'Reload', download:'Download', footer:'After editing, click Download and replace files in public/assets/, then refresh.' },
-      fr: { title:'Gestionnaire de Galerie (Privé)', sub:'Gérez les images par catégorie et les images du site.', gate:'Entrez la phrase secrète pour continuer.', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Après modification, cliquez sur Télécharger puis remplacez les fichiers dans public/assets/, puis rafraîchissez.' },
-      ar: { title:'مدير المعرض (خاص)', sub:'إدارة الصور حسب التصنيف وصور الموقع.', gate:'أدخل عبارة المرور للمتابعة.', enter:'دخول', add:'+ إضافة', reload:'إعادة تحميل', download:'تنزيل', footer:'بعد التعديل، اضغط تنزيل واستبدل الملفات داخل public/assets/ ثم حدّث الموقع.' }
+      en: { title:'Gallery Manager (Private)', sub:'Manage images by category and key site images.', gate:'Enter passphrase (super admin or staff).', enter:'Enter', add:'+ Add', reload:'Reload', download:'Download', footer:'After editing, click Download and replace files in public/assets/, then refresh.', serverHint:'Used for file uploads and “Save (server)”. On static hosting, use Download and commit files, or run upload-server with this URL.', badgeSuper:'Signed in · Super admin (full access)', badgeWorker:'Signed in · Staff (gallery only)', superTitle:'Super admin — staff access', superBody:'Workers use PASSPHRASE_WORKER in this file (search in script). Change it to revoke access. Staff cannot edit hero, logos, or site-wide images.', adminLinkLbl:'Bookmark this admin URL:', wrong:'Wrong passphrase', lbl_server:'Upload / save API URL', saveUrl:'Save URL' },
+      fr: { title:'Gestionnaire de Galerie (Privé)', sub:'Gérez les images par catégorie et les images du site.', gate:'Phrase secrète (admin ou équipe).', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Après modification, cliquez sur Télécharger puis remplacez les fichiers dans public/assets/, puis rafraîchissez.', serverHint:'Pour les fichiers et « Enregistrer (serveur) ». Hébergement statique : Télécharger puis commit, ou upload-server.', badgeSuper:'Connecté · Super admin', badgeWorker:'Connecté · Équipe (galerie)', superTitle:'Super admin — équipe', superBody:'L’équipe utilise PASSPHRASE_WORKER dans ce fichier.', adminLinkLbl:'URL à enregistrer :', wrong:'Phrase incorrecte', lbl_server:'URL API envoi / enregistrement', saveUrl:'Enregistrer URL' },
+      ar: { title:'مدير المعرض (خاص)', sub:'إدارة الصور حسب التصنيف وصور الموقع.', gate:'عبارة المرور (مدير أو فريق).', enter:'دخول', add:'+ إضافة', reload:'إعادة تحميل', download:'تنزيل', footer:'بعد التعديل، اضغط تنزيل واستبدل الملفات داخل public/assets/ ثم حدّث الموقع.', serverHint:'للرفع و« حفظ (خادم) ».', badgeSuper:'مسجّل · مدير عام', badgeWorker:'مسجّل · فريق (معرض فقط)', superTitle:'مدير عام — الفريق', superBody:'يستخدم الفريق PASSPHRASE_WORKER في هذا الملف.', adminLinkLbl:'رابط الإدارة:', wrong:'عبارة خاطئة', lbl_server:'رابط رفع الحفظ', saveUrl:'حفظ الرابط' }
     };
     function txt(id, s){ const el=document.getElementById(id); if(el) el.textContent=s; }
-    function applyLang(l){ const d=T[l]||T.en; txt('t_title',d.title); txt('t_sub',d.sub); txt('t_gate',d.gate); txt('enter',d.enter); txt('add',d.add); txt('reload',d.reload); txt('reloadSite',d.reload); txt('download',d.download+' gallery.json'); txt('downloadSite',d.download+' site-images.json'); txt('t_footer',d.footer); document.documentElement.dir=(l==='ar')?'rtl':'ltr'; }
+    function applyLang(l){ const d=T[l]||T.en; txt('t_title',d.title); txt('t_sub',d.sub); txt('t_gate',d.gate); txt('enter',d.enter); txt('add',d.add); txt('reload',d.reload); txt('reloadSite',d.reload); txt('download',d.download+' gallery.json'); txt('downloadSite',d.download+' site-images.json'); txt('t_footer',d.footer); txt('lbl_server', d.lbl_server); txt('cms_server_save', d.saveUrl); txt('serverHint', d.serverHint); txt('superPanelTitle', d.superTitle); txt('superPanelBody', d.superBody); txt('adminLinkLabel', d.adminLinkLbl); document.documentElement.dir=(l==='ar')?'rtl':'ltr'; applyRoleTexts(); }
+
+    function applyRoleTexts(){
+      if (!role) return;
+      const d = T[lang.value] || T.en;
+      txt('roleBadge', role === 'super' ? d.badgeSuper : d.badgeWorker);
+    }
 
     // State
     const data = { 'Weddings': [], 'Private Events': [], 'Corporate Events': [] };
@@ -137,11 +165,44 @@
     applyLang('en');
     lang.onchange = () => applyLang(lang.value);
 
+    function applyRoleUI(){
+      const tabSite = document.getElementById('tab_s');
+      const superPanel = document.getElementById('superPanel');
+      const link = document.getElementById('adminLink');
+      if (role === 'worker') {
+        tabSite.classList.add('hidden');
+        superPanel.classList.add('hidden');
+      } else {
+        tabSite.classList.remove('hidden');
+        superPanel.classList.remove('hidden');
+        link.href = window.location.href.split('#')[0];
+        link.textContent = link.href;
+      }
+      applyRoleTexts();
+    }
+
+    function syncServerInput(){
+      const inp = document.getElementById('cms_server_input');
+      inp.value = localStorage.getItem('cms_local_server') || 'http://localhost:4000';
+    }
+
+    document.getElementById('cms_server_save').onclick = () => {
+      let v = (document.getElementById('cms_server_input').value || '').trim().replace(/\/$/, '');
+      if (!v) v = 'http://localhost:4000';
+      localStorage.setItem('cms_local_server', v);
+      alert('Saved for this browser.');
+    };
+
     // Gate enter
     document.getElementById('enter').onclick = () => {
-      if ((document.getElementById('pass').value||'').trim() !== PASSPHRASE) { alert('Wrong passphrase'); return; }
+      const v = (document.getElementById('pass').value||'').trim();
+      if (v === PASSPHRASE_SUPER) role = 'super';
+      else if (v === PASSPHRASE_WORKER) role = 'worker';
+      else { alert((T[lang.value]||T.en).wrong); return; }
       gate.classList.add('hidden');
       app.classList.remove('hidden');
+      syncServerInput();
+      applyRoleUI();
       bindTabs();
       reloadAll();
       bindUploads();
@@ -265,6 +326,37 @@
     document.getElementById('add').onclick = () => { const arr=data[active]; const next=arr.length?Math.max(...arr.map(x=>Number(x.id)||0))+1:1; arr.push({ id:next, src:'/assets/images/your-file.jpeg', category: active }); renderTable(); };
     document.getElementById('reload').onclick = reloadAll;
     document.getElementById('reloadSite').onclick = loadSite;
+
+    document.getElementById('saveSite').onclick = async () => {
+      try {
+        const r = await fetch(serverBase() + '/save-site', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(site) });
+        if (r.ok) { alert('Saved to server. Refresh the site.'); return; }
+      } catch(_) {}
+      const blob = new Blob([JSON.stringify(site,null,2)],{type:'application/json'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='site-images.json'; a.click(); URL.revokeObjectURL(a.href);
+    };
+
+    /** Wire Site Images file inputs (data-up → f_<key>). */
+    function bindUploads(){
+      document.querySelectorAll('#siteForm input[type="file"][data-up]').forEach(inp => {
+        inp.onchange = async (ev) => {
+          const key = inp.getAttribute('data-up');
+          const textEl = document.getElementById('f_' + key);
+          const file = ev.target.files && ev.target.files[0];
+          if (!file || !textEl) return;
+          try {
+            const fd = new FormData(); fd.append('file', file);
+            const r = await fetch(serverBase() + '/upload-image', { method:'POST', body: fd });
+            if (r.ok) {
+              const j = await r.json();
+              if (j && j.ok && j.path) { textEl.value = j.path; site[key] = j.path; textEl.dispatchEvent(new Event('change')); renderSite(); return; }
+            }
+          } catch(_) {}
+          readAsDataURL(file).then(url => { textEl.value = url; site[key] = url; try{ localStorage.setItem('site_images_override', JSON.stringify(site)); }catch(_){}; renderSite(); });
+        };
+      });
+    }
+
     document.getElementById('saveGallery').onclick = async () => {
       const merged=['Weddings','Private Events','Corporate Events'].flatMap(c => (data[c]||[]).map(it=>({ id:Number(it.id), src:String(it.src||'').trim(), category:c })));
       // Try saving via local server first
