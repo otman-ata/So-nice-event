@@ -1,8 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/manage", "destination": "/admin/gallery-manager.html" },
-    { "source": "/staff", "destination": "/admin/gallery-manager.html" },
     { "source": "/admin", "destination": "/admin/gallery-manager.html" },
     { "source": "/admin/", "destination": "/admin/gallery-manager.html" },
     { "source": "/(.*)", "destination": "/index.html" }

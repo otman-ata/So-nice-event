@@ -11,6 +11,7 @@ export const translations = {
         { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'À Propos' },
         { href: '#contact', text: 'Contact' },
+        { href: '/admin', text: 'Gestion' },
       ],
     },
     hero: {
@@ -180,6 +181,7 @@ export const translations = {
         { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'À Propos' },
         { href: '#contact', text: 'Contact' },
+        { href: '/admin', text: 'Gestion' },
       ],
     },
   },
@@ -191,6 +193,7 @@ export const translations = {
         { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'About Us' },
         { href: '#contact', text: 'Contact' },
+        { href: '/admin', text: 'Manage' },
       ],
     },
     hero: {
@@ -360,6 +363,7 @@ export const translations = {
         { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'About Us' },
         { href: '#contact', text: 'Contact' },
+        { href: '/admin', text: 'Manage' },
       ],
     },
   },
@@ -371,6 +375,7 @@ export const translations = {
         { href: '#blog', text: 'المدونة' },
         { href: '#about', text: 'من نحن' },
         { href: '#contact', text: 'اتصل بنا' },
+        { href: '/admin', text: 'إدارة' },
       ],
     },
     hero: {
@@ -540,6 +545,7 @@ export const translations = {
         { href: '#blog', text: 'المدونة' },
         { href: '#about', text: 'من نحن' },
         { href: '#contact', text: 'اتصل بنا' },
+        { href: '/admin', text: 'إدارة' },
       ],
     },
   },

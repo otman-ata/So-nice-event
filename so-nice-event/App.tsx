@@ -10,6 +10,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 import BlogPost from './components/BlogPost';
 import { translations, Language } from './lib/translations';
+import { CmsEditProvider } from './context/CmsEditContext';
 
 const HEADER_OFFSET = 80;
 
@@ -18,6 +19,25 @@ function App() {
   const [content, setContent] = useState(translations[language]);
   const [route, setRoute] = useState(window.location.hash);
   const [scrollToTarget, setScrollToTarget] = useState<string | null>(null);
+  const [cmsEditMode, setCmsEditMode] = useState(
+    () => typeof window !== 'undefined' && sessionStorage.getItem('so_nice_cms_edit') === '1'
+  );
+
+  useEffect(() => {
+    try {
+      const qs = new URLSearchParams(window.location.search);
+      if (qs.get('edit') === '1') {
+        sessionStorage.setItem('so_nice_cms_edit', '1');
+        setCmsEditMode(true);
+        qs.delete('edit');
+        const next =
+          window.location.pathname + (qs.toString() ? `?${qs.toString()}` : '') + window.location.hash;
+        window.history.replaceState({}, document.title, next);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -57,6 +77,7 @@ function App() {
   }, [route, scrollToTarget]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href === '/admin') return;
     e.preventDefault();
     const targetId = href.substring(1);
     
@@ -95,18 +116,18 @@ function App() {
   };
 
   return (
-    <div>
-      <Header 
-        language={language} 
-        setLanguage={setLanguage} 
-        content={content.header}
-        onNavClick={handleNavClick}
-      />
-      <main>
-        {renderPage()}
-      </main>
-      <Footer content={content.footer} onNavClick={handleNavClick} />
-    </div>
+    <CmsEditProvider value={cmsEditMode}>
+      <div>
+        <Header
+          language={language}
+          setLanguage={setLanguage}
+          content={content.header}
+          onNavClick={handleNavClick}
+        />
+        <main>{renderPage()}</main>
+        <Footer content={content.footer} onNavClick={handleNavClick} />
+      </div>
+    </CmsEditProvider>
   );
 }
 

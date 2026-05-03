@@ -3,14 +3,14 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-/** Same short URLs as Vercel rewrites — handy for local dev (`npm run dev`). */
+/** Matches production: `/admin` → gallery manager (local dev). */
 function adminShortUrls(): Plugin {
   return {
     name: 'admin-short-urls',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const u = req.url?.split('?')[0] ?? '';
-        if (u === '/manage' || u === '/staff' || u === '/admin' || u === '/admin/') {
+        if (u === '/admin' || u === '/admin/') {
           res.statusCode = 302;
           res.setHeader('Location', '/admin/gallery-manager.html');
           res.end();

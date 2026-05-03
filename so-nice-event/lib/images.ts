@@ -4,13 +4,11 @@ export interface GalleryImage {
   category: 'Weddings' | 'Private Events' | 'Corporate Events';
 }
 
-declare global {
-  interface Window { __SITE_IMAGES?: Partial<typeof defaultSiteImages>; }
-}
-
-const defaultSiteImages = {
+export const defaultSiteImages = {
   logoColor: '/assets/logos/main-logo.png',
   logoWhite: '/assets/logos/logo-white.png',
+  /** Optional separate asset for scrolled header; if unset, a gold CSS filter is applied to the white logo. */
+  logoYellow: '',
   heroBg: '/assets/images/hero-bg.jpeg',
   aboutUs: '/assets/images/about-us.jpeg',
   serviceWedding: '/assets/images/service-wedding.jpeg',
@@ -22,11 +20,22 @@ const defaultSiteImages = {
   blogLanterns: '/assets/images/blog-lanterns.jpeg',
 } as const;
 
+export type SiteImageKey = keyof typeof defaultSiteImages;
+
+declare global {
+  interface Window { __SITE_IMAGES?: Partial<Record<SiteImageKey, string>>; }
+}
+
 export const siteImages = new Proxy(defaultSiteImages, {
   get(target, prop) {
     const key = prop as keyof typeof defaultSiteImages;
     const override = (typeof window !== 'undefined' && window.__SITE_IMAGES)?.[key];
-    return override || target[key];
+    if (override) return override;
+    const base = target[key];
+    if (key === 'logoYellow' && (!base || base === '')) {
+      return target.logoWhite;
+    }
+    return base;
   }
 });
 
