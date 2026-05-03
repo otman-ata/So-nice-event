@@ -28,26 +28,46 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
 
   useEffect(() => {
     let isMounted = true;
+    const DRAFT_KEY = 'so_nice_gallery_draft';
+    function readDraft(): GalleryImageProps[] | null {
+      try {
+        const raw = typeof window !== 'undefined' ? localStorage.getItem(DRAFT_KEY) : null;
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as unknown;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed as GalleryImageProps[];
+      } catch {
+        /* ignore */
+      }
+      return null;
+    }
     async function loadFromJson() {
       try {
         setLoading(true);
-        // Prefer remote CMS URL if provided, else local assets file
+        const draft = readDraft();
         const cmsUrl = (typeof window !== 'undefined' && (window as any).__CMS?.galleryUrl) || '';
         const url = cmsUrl && typeof cmsUrl === 'string' ? cmsUrl : '/assets/gallery.json';
-        const res = await fetch(url, { cache: 'no-cache' });
-        if (!res.ok) return; // fall back silently
-        const data: GalleryImageProps[] = await res.json();
-        if (isMounted && Array.isArray(data) && data.length > 0) {
-          setImages(data);
+        let remote: GalleryImageProps[] | null = null;
+        try {
+          const res = await fetch(url, { cache: 'no-cache' });
+          if (res.ok) remote = (await res.json()) as GalleryImageProps[];
+        } catch {
+          /* keep remote null */
+        }
+        const merged =
+          draft && draft.length > 0 ? draft : remote && remote.length > 0 ? remote : null;
+        if (isMounted && merged && merged.length > 0) {
+          setImages(merged);
         }
       } catch (_) {
-        // ignore and use defaults
+        /* keep defaults */
       } finally {
         setLoading(false);
       }
     }
     loadFromJson();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const loadMore = () => {

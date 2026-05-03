@@ -6,30 +6,38 @@
   <meta name="robots" content="noindex, nofollow" />
   <title>Gallery Manager (Private)</title>
   <style>
-    :root { --primary:#8D555F; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; margin:0; background:#fafafa; color:#222; }
+    :root { --primary:#8D555F; --border:#e5e5e5; --panel-bg:#fff; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; margin:0; background:#f3f4f6; color:#222; }
     header { background: var(--primary); color:#fff; padding:16px 20px; }
     h1 { margin:0; font-size:20px; }
-    main { padding:20px; max-width:1100px; margin:0 auto; }
-    .bar { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin: 14px 0 20px; }
-    button, input, select { padding:10px 12px; border-radius:8px; border:1px solid #ddd; background:#fff; }
-    button.primary { background: var(--primary); color:#fff; border-color:transparent; cursor:pointer; }
-    button.danger { background:#d9534f; color:#fff; border-color:transparent; cursor:pointer; }
-    button.tab { background:#fff; cursor:pointer; }
-    button.tab.active { background: var(--primary); color:#fff; border-color: transparent; }
-    table { width:100%; border-collapse: collapse; background:#fff; border:1px solid #e5e5e5; }
-    th, td { padding:10px; border-bottom:1px solid #eee; vertical-align: top; }
-    th { background:#f7f7f7; text-align:left; }
-    tbody tr:hover { background:#fff7f8; }
-    .muted { color:#666; font-size:12px; }
-    .row-actions { display:flex; gap:6px; flex-wrap:wrap; }
-    .hidden { display:none; }
-    .note { background: #fffbea; border:1px solid #ffe58f; padding:12px; border-radius:8px; margin:14px 0; }
-    footer { margin:24px 0; color:#666; font-size:12px; }
-    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-    .share-url { flex:1; padding:10px 12px; background:#fff; border:1px solid #ddd; border-radius:8px; font-size:13px; word-break:break-all; font-family: ui-monospace, monospace; }
+    main { padding:20px; max-width:960px; margin:0 auto; }
+    .panel { background:var(--panel-bg); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:18px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+    .panel h2 { margin:0 0 12px; font-size:15px; letter-spacing:.02em; color:#374151; text-transform:uppercase; }
+    .bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0; }
+    button, input, select { padding:10px 14px; border-radius:8px; border:1px solid #d1d5db; background:#fff; font-size:14px; }
+    button { cursor:pointer; }
+    button.primary { background:var(--primary); color:#fff; border-color:transparent; }
+    button.secondary { background:#f9fafb; }
+    button.danger { background:#dc2626; color:#fff; border-color:transparent; }
+    button.tab { background:#fff; }
+    button.tab.active { background:var(--primary); color:#fff; border-color:transparent; }
+    .muted { color:#6b7280; font-size:13px; line-height:1.45; }
+    .hidden { display:none !important; }
+    .note { background:#fffbeb; border:1px solid #fcd34d; padding:12px; border-radius:8px; margin:12px 0; font-size:13px; }
     .share-card { background:#e8f4fc !important; border-color:#91d5ff !important; }
+    .share-url { flex:1; padding:10px 12px; background:#fff; border:1px solid var(--border); border-radius:8px; font-size:13px; word-break:break-all; font-family: ui-monospace, monospace; }
+    .gallery-grid { display:flex; flex-direction:column; gap:14px; }
+    .media-card { display:flex; gap:16px; flex-wrap:wrap; padding:14px; border:1px solid var(--border); border-radius:10px; background:#fafafa; align-items:flex-start; }
+    .media-thumb { flex-shrink:0; width:120px; height:90px; border-radius:8px; overflow:hidden; background:#e5e7eb; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; }
+    .media-thumb img { width:100%; height:100%; object-fit:cover; }
+    .media-thumb .ph { font-size:11px; color:#9ca3af; padding:8px; text-align:center; }
+    .media-main { flex:1; min-width:200px; }
+    .field { margin-bottom:10px; }
+    .field label { display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:.04em; }
+    .field input[type="text"], .field input[type="number"] { width:100%; box-sizing:border-box; }
+    .crud-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .crud-actions button { font-size:13px; padding:8px 12px; }
+    footer.page-ft { margin-top:24px; color:#6b7280; font-size:12px; }
   </style>
 </head>
 <body>
@@ -48,7 +56,7 @@
         </div>
         <p class="muted" id="shareAltLine" style="margin:10px 0 0;font-size:12px;"></p>
       </div>
-      <div class="note" id="t_gate">Enter passphrase to continue. You can change it inside this file.</div>
+      <div class="note" id="t_gate">Enter passphrase to continue.</div>
       <div class="bar">
         <input id="pass" type="password" placeholder="Passphrase" />
         <button class="primary" id="enter">Enter</button>
@@ -61,137 +69,188 @@
     </section>
 
     <section id="app" class="hidden">
-      <p id="roleBadge" class="muted" style="margin:0 0 10px;font-weight:600;"></p>
+      <p id="roleBadge" class="muted" style="margin:0 0 14px;font-weight:600;"></p>
 
-      <div class="bar" style="background:#eef2f6;padding:12px;border-radius:8px;align-items:flex-start;">
-        <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1;min-width:200px;">
-          <span id="lbl_server">Upload / save API URL</span>
-          <input id="cms_server_input" type="url" placeholder="http://localhost:4000" style="min-width:220px;flex:1;" />
-        </label>
-        <button type="button" class="primary" id="cms_server_save">Save URL</button>
+      <div class="panel" id="panelConn">
+        <h2 id="sec_conn">Connection</h2>
+        <p class="muted" id="serverHint"></p>
+        <div class="bar" style="margin-top:0;">
+          <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1;">
+            <span id="lbl_server">Upload / save API URL</span>
+            <input id="cms_server_input" type="url" placeholder="http://localhost:4000" style="min-width:200px;flex:1;" />
+          </label>
+          <button type="button" class="primary" id="cms_server_save">Save URL</button>
+        </div>
       </div>
-      <p class="muted" id="serverHint" style="margin:8px 0 14px;"></p>
 
-      <section id="superPanel" class="note hidden">
+      <section id="superPanel" class="panel note hidden">
         <strong id="superPanelTitle">Super admin</strong>
         <p class="muted" id="superPanelBody"></p>
         <p class="muted" id="superPanelLinkRow"><span id="adminLinkLabel"></span> <a href="#" id="adminLink"></a></p>
       </section>
 
-      <div class="bar">
-        <button class="tab" data-tab="Weddings" id="tab_w">Weddings</button>
-        <button class="tab" data-tab="Private Events" id="tab_p">Private Events</button>
-        <button class="tab" data-tab="Corporate Events" id="tab_c">Corporate Events</button>
-        <button class="tab" data-tab="Site Images" id="tab_s">Site Images</button>
-      </div>
+      <div class="panel" id="panelGallery">
+        <h2 id="sec_gallery">Gallery — pictures</h2>
+        <p class="muted" id="hintGallery"></p>
 
-      <div class="bar" id="listBar">
-        <button class="primary" id="add">+ Add</button>
-        <button id="reload">Reload</button>
-        <button id="saveGallery" class="primary">Save (server)</button>
-        <button id="download">Download gallery.json</button>
-        <span class="muted" id="status"></span>
-      </div>
+        <div class="bar" style="margin-bottom:6px;">
+          <button type="button" class="tab" data-tab="Weddings" id="tab_w">Weddings</button>
+          <button type="button" class="tab" data-tab="Private Events" id="tab_p">Private Events</button>
+          <button type="button" class="tab" data-tab="Corporate Events" id="tab_c">Corporate Events</button>
+          <button type="button" class="tab" data-tab="Site Images" id="tab_s">Site Images</button>
+        </div>
 
-      <div class="bar hidden" id="siteBar">
-        <button id="reloadSite">Reload</button>
-        <button id="saveSite" class="primary">Save (needs server)</button>
-        <button id="downloadSite">Download site-images.json</button>
-      </div>
+        <div id="galleryControls">
+          <div class="bar">
+            <button type="button" class="primary" id="add">+ Add picture</button>
+            <button type="button" class="secondary" id="reload">Reload from site</button>
+            <button type="button" class="primary" id="saveGallery">Save</button>
+            <button type="button" class="secondary" id="download">Download JSON</button>
+            <button type="button" class="secondary" id="clearDraft">Clear preview</button>
+          </div>
+          <p class="muted" id="status"></p>
+        </div>
 
-      <div class="note" id="noteList">Paste a path (e.g. /assets/images/file.jpeg) or use Upload. Upload stores a data URL (works on any static host).</div>
-      <div class="note hidden" id="noteSite">Edit key images. Paste paths or Upload (data URL).</div>
+        <div id="siteControls" class="hidden">
+          <div class="bar">
+            <button type="button" class="secondary" id="reloadSite">Reload</button>
+            <button type="button" class="primary" id="saveSite">Save</button>
+            <button type="button" class="secondary" id="downloadSite">Download JSON</button>
+          </div>
+        </div>
 
-      <table id="table">
-        <thead>
-          <tr>
-            <th style="width:60px;">ID</th>
-            <th>Image src</th>
-            <th style="width:220px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+        <div class="note hidden" id="noteSite">Site-wide images (hero, services, logos).</div>
 
-      <div id="siteForm" class="hidden">
-        <div class="grid">
-          <label>Hero <input id="f_heroBg" type="text" /> <input type="file" data-up="heroBg" /></label>
-          <label>About <input id="f_aboutUs" type="text" /> <input type="file" data-up="aboutUs" /></label>
-          <label>Service Wedding <input id="f_serviceWedding" type="text" /> <input type="file" data-up="serviceWedding" /></label>
-          <label>Service Private <input id="f_servicePrivate" type="text" /> <input type="file" data-up="servicePrivate" /></label>
-          <label>Service Corporate <input id="f_serviceCorporate" type="text" /> <input type="file" data-up="serviceCorporate" /></label>
-          <label>Blog Palette <input id="f_blogPalette" type="text" /> <input type="file" data-up="blogPalette" /></label>
-          <label>Blog Negafa <input id="f_blogNegafa" type="text" /> <input type="file" data-up="blogNegafa" /></label>
-          <label>Blog Venues <input id="f_blogVenues" type="text" /> <input type="file" data-up="blogVenues" /></label>
-          <label>Blog Lanterns <input id="f_blogLanterns" type="text" /> <input type="file" data-up="blogLanterns" /></label>
-          <label>Logo Color <input id="f_logoColor" type="text" /> <input type="file" data-up="logoColor" /></label>
-          <label>Logo White <input id="f_logoWhite" type="text" /> <input type="file" data-up="logoWhite" /></label>
+        <div id="galleryCards" class="gallery-grid"></div>
+
+        <div id="siteForm" class="hidden">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" class="site-grid">
+            <label>Hero <input id="f_heroBg" type="text" /> <input type="file" data-up="heroBg" accept="image/*" /></label>
+            <label>About <input id="f_aboutUs" type="text" /> <input type="file" data-up="aboutUs" accept="image/*" /></label>
+            <label>Service Wedding <input id="f_serviceWedding" type="text" /> <input type="file" data-up="serviceWedding" accept="image/*" /></label>
+            <label>Service Private <input id="f_servicePrivate" type="text" /> <input type="file" data-up="servicePrivate" accept="image/*" /></label>
+            <label>Service Corporate <input id="f_serviceCorporate" type="text" /> <input type="file" data-up="serviceCorporate" accept="image/*" /></label>
+            <label>Blog Palette <input id="f_blogPalette" type="text" /> <input type="file" data-up="blogPalette" accept="image/*" /></label>
+            <label>Blog Negafa <input id="f_blogNegafa" type="text" /> <input type="file" data-up="blogNegafa" accept="image/*" /></label>
+            <label>Blog Venues <input id="f_blogVenues" type="text" /> <input type="file" data-up="blogVenues" accept="image/*" /></label>
+            <label>Blog Lanterns <input id="f_blogLanterns" type="text" /> <input type="file" data-up="blogLanterns" accept="image/*" /></label>
+            <label>Logo Color <input id="f_logoColor" type="text" /> <input type="file" data-up="logoColor" accept="image/*" /></label>
+            <label>Logo White <input id="f_logoWhite" type="text" /> <input type="file" data-up="logoWhite" accept="image/*" /></label>
+          </div>
         </div>
       </div>
 
-      <footer id="t_footer">After editing, click Download and replace files in public/assets/, then refresh the website.</footer>
+      <footer class="page-ft" id="t_footer"></footer>
     </section>
   </main>
 
+  <style>@media(max-width:640px){ .site-grid { grid-template-columns:1fr !important; } }</style>
+
   <script>
-    /** Super admin: gallery + site-wide images. */
     const PASSPHRASE_SUPER = 'soniceevent-admin';
-    /** Workers: gallery categories only (add / delete / reorder / upload). */
     const PASSPHRASE_WORKER = 'soniceevent-staff';
+    const DRAFT_KEY = 'so_nice_gallery_draft';
 
-    let role = null; // 'super' | 'worker'
+    let role = null;
 
-    // i18n text
     const T = {
-      en: { title:'Gallery Manager (Private)', sub:'Manage images by category and key site images.', gate:'Enter passphrase (super admin or staff).', enter:'Enter', add:'+ Add', reload:'Reload', download:'Download', footer:'After editing, click Download and replace files in public/assets/, then refresh.', serverHint:'Used for file uploads and “Save (server)”. On static hosting, use Download and commit files, or run upload-server with this URL.', badgeSuper:'Signed in · Super admin (full access)', badgeWorker:'Signed in · Staff (gallery only)', superTitle:'Super admin — staff access', superBody:'Workers use PASSPHRASE_WORKER in this file (search in script). Change it to revoke access. Staff cannot edit hero, logos, or site-wide images.', adminLinkLbl:'Share / bookmark this URL:', wrong:'Wrong passphrase', lbl_server:'Upload / save API URL', saveUrl:'Save URL', shareTitle:'Share link for your team', shareHint:'Send this short URL after deploy (e.g. Vercel). Staff still need the worker passphrase.', shareAlt:'Full path (always works):', copyShare:'Copy link', copiedMsg:'Link copied.' },
-      fr: { title:'Gestionnaire de Galerie (Privé)', sub:'Gérez les images par catégorie et les images du site.', gate:'Phrase secrète (admin ou équipe).', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Après modification, cliquez sur Télécharger puis remplacez les fichiers dans public/assets/, puis rafraîchissez.', serverHint:'Pour les fichiers et « Enregistrer (serveur) ». Hébergement statique : Télécharger puis commit, ou upload-server.', badgeSuper:'Connecté · Super admin', badgeWorker:'Connecté · Équipe (galerie)', superTitle:'Super admin — équipe', superBody:'L’équipe utilise PASSPHRASE_WORKER dans ce fichier.', adminLinkLbl:'Partager / favori :', wrong:'Phrase incorrecte', lbl_server:'URL API envoi / enregistrement', saveUrl:'Enregistrer URL', shareTitle:'Lien pour votre équipe', shareHint:'Envoyez cette URL après déploiement. La phrase secrète équipe reste obligatoire.', shareAlt:'Chemin complet :', copyShare:'Copier le lien', copiedMsg:'Lien copié.' },
-      ar: { title:'مدير المعرض (خاص)', sub:'إدارة الصور حسب التصنيف وصور الموقع.', gate:'عبارة المرور (مدير أو فريق).', enter:'دخول', add:'+ إضافة', reload:'إعادة تحميل', download:'تنزيل', footer:'بعد التعديل، اضغط تنزيل واستبدل الملفات داخل public/assets/ ثم حدّث الموقع.', serverHint:'للرفع و« حفظ (خادم) ».', badgeSuper:'مسجّل · مدير عام', badgeWorker:'مسجّل · فريق (معرض فقط)', superTitle:'مدير عام — الفريق', superBody:'يستخدم الفريق PASSPHRASE_WORKER في هذا الملف.', adminLinkLbl:'المشاركة / الحفظ:', wrong:'عبارة خاطئة', lbl_server:'رابط رفع الحفظ', saveUrl:'حفظ الرابط', shareTitle:'رابط للفريق', shareHint:'أرسل هذا الرابط بعد النشر. لا يزالون يحتاجون عبارة مرور الفريق.', shareAlt:'المسار الكامل:', copyShare:'نسخ الرابط', copiedMsg:'تم النسخ.' }
+      en: {
+        title:'Gallery Manager (Private)', sub:'Simple CRUD for gallery and site images.', gate:'Enter passphrase (super admin or staff).', enter:'Enter', add:'+ Add picture', reload:'Reload from site', download:'Download', footer:'Production visitors see gallery.json until you deploy. This browser can preview drafts.', serverHint:'Local: run npm run cms and keep this URL. Vercel: use Save → download gallery.json → commit to repo.', badgeSuper:'Super admin — full access', badgeWorker:'Staff — gallery only', superTitle:'Super admin', superBody:'Staff passphrase: PASSPHRASE_WORKER in this file.', adminLinkLbl:'Admin URL:', wrong:'Wrong passphrase', lbl_server:'API URL', saveUrl:'Save URL', shareTitle:'Team link', shareHint:'Share after deploy. Staff still need their passphrase.', shareAlt:'Direct:', copyShare:'Copy', copiedMsg:'Copied.', sec_conn:'1 · Connection', sec_gallery:'2 · Gallery CRUD', hintGallery:'Replace = upload a file. Preview updates here and on the main site in this browser. Save = server or download JSON.', reloadConfirm:'Reload from server? This removes the unpublished draft in this browser.', clearDraftConfirm:'Clear preview draft?', draftSaved:'Draft saved. Refresh the homepage (same browser) to see changes.', saveDoneServer:'Saved on server.', saveDownload:'JSON downloaded. Put it in public/assets/gallery.json and deploy.', delConfirm:'Delete this picture?', btnReplace:'Replace', btnImport:'Import URL', btnUp:'↑ Up', btnDown:'↓ Down', btnDel:'Delete', clearDraft:'Clear preview', saveGallery:'Save',
+      },
+      fr: {
+        title:'Gestionnaire de galerie', sub:'CRUD simple.', gate:'Phrase secrète.', enter:'Entrer', add:'+ Ajouter', reload:'Recharger', download:'Télécharger', footer:'Déployez gallery.json pour le public.', serverHint:'Local : npm run cms.', badgeSuper:'Super admin', badgeWorker:'Équipe', superTitle:'Super admin', superBody:'Mot de passe équipe dans ce fichier.', adminLinkLbl:'URL :', wrong:'Incorrect', lbl_server:'URL API', saveUrl:'OK', shareTitle:'Lien équipe', shareHint:'', shareAlt:'', copyShare:'Copier', copiedMsg:'Copié.', sec_conn:'1 · Connexion', sec_gallery:'2 · Galerie', hintGallery:'Remplacer = envoyer une image.', reloadConfirm:'Recharger depuis le serveur ?', clearDraftConfirm:'Effacer le brouillon ?', draftSaved:'Brouillon enregistré. Rafraîchir l’accueil.', saveDoneServer:'Enregistré sur le serveur.', saveDownload:'Fichier téléchargé → public/assets/gallery.json', delConfirm:'Supprimer ?', btnReplace:'Remplacer', btnImport:'Importer URL', btnUp:'↑', btnDown:'↓', btnDel:'Supprimer', clearDraft:'Effacer aperçu', saveGallery:'Enregistrer',
+      },
+      ar: {
+        title:'مدير المعرض', sub:'', gate:'عبارة المرور.', enter:'دخول', add:'+ إضافة', reload:'تحديث', download:'تنزيل', footer:'', serverHint:'', badgeSuper:'مدير', badgeWorker:'فريق', superTitle:'', superBody:'', adminLinkLbl:'', wrong:'خطأ', lbl_server:'رابط API', saveUrl:'حفظ', shareTitle:'', shareHint:'', shareAlt:'', copyShare:'نسخ', copiedMsg:'تم.', sec_conn:'1 · الاتصال', sec_gallery:'2 · المعرض', hintGallery:'', reloadConfirm:'إعادة التحميل من الموقع؟', clearDraftConfirm:'مسح المسودة؟', draftSaved:'تم الحفظ. حدّث الصفحة الرئيسية.', saveDoneServer:'حُفظ على الخادم.', saveDownload:'تم التنزيل → gallery.json', delConfirm:'حذف؟', btnReplace:'استبدال', btnImport:'استيراد رابط', btnUp:'↑', btnDown:'↓', btnDel:'حذف', clearDraft:'مسح المعاينة', saveGallery:'حفظ',
+      },
     };
-    function txt(id, s){ const el=document.getElementById(id); if(el) el.textContent=s; }
+
+    function txt(id, s){ const el=document.getElementById(id); if(el && s!=null) el.textContent=s; }
+    function langDict(){ return T[lang.value] || T.en; }
+
     function refreshShareLinks(){
-      const d = T[lang.value] || T.en;
+      const d = langDict();
       const o = window.location.origin;
       const box = document.getElementById('shareUrlManage');
       if (box) box.textContent = o + '/manage';
       const alt = document.getElementById('shareAltLine');
       if (alt) alt.textContent = (d.shareAlt || '') + ' ' + o + '/admin/gallery-manager.html';
     }
-    function applyLang(l){ const d=T[l]||T.en; txt('t_title',d.title); txt('t_sub',d.sub); txt('t_gate',d.gate); txt('enter',d.enter); txt('add',d.add); txt('reload',d.reload); txt('reloadSite',d.reload); txt('download',d.download+' gallery.json'); txt('downloadSite',d.download+' site-images.json'); txt('t_footer',d.footer); txt('lbl_server', d.lbl_server); txt('cms_server_save', d.saveUrl); txt('serverHint', d.serverHint); txt('superPanelTitle', d.superTitle); txt('superPanelBody', d.superBody); txt('adminLinkLabel', d.adminLinkLbl); txt('shareTitle', d.shareTitle); txt('shareHint', d.shareHint); txt('copyShareManage', d.copyShare); document.documentElement.dir=(l==='ar')?'rtl':'ltr'; applyRoleTexts(); refreshShareLinks(); }
 
-    document.getElementById('copyShareManage').onclick = async () => {
-      const url = window.location.origin + '/manage';
-      const msg = (T[lang.value]||T.en).copiedMsg || 'Copied.';
-      try { await navigator.clipboard.writeText(url); alert(msg); } catch (_) { prompt((T[lang.value]||T.en).copyShare + ':', url); }
-    };
+    function applyLang(){
+      const d = langDict();
+      txt('t_title', d.title); txt('t_sub', d.sub); txt('t_gate', d.gate); txt('enter', d.enter);
+      txt('add', d.add); txt('reload', d.reload); txt('reloadSite', d.reload);
+      txt('download', d.download + ' gallery.json'); txt('downloadSite', d.download + ' site-images.json');
+      txt('t_footer', d.footer); txt('lbl_server', d.lbl_server); txt('cms_server_save', d.saveUrl);
+      txt('serverHint', d.serverHint); txt('superPanelTitle', d.superTitle); txt('superPanelBody', d.superBody);
+      txt('adminLinkLabel', d.adminLinkLabel); txt('shareTitle', d.shareTitle); txt('shareHint', d.shareHint);
+      txt('copyShareManage', d.copyShare); txt('sec_conn', d.sec_conn); txt('sec_gallery', d.sec_gallery);
+      txt('hintGallery', d.hintGallery); txt('saveGallery', d.saveGallery); txt('clearDraft', d.clearDraft);
+      document.documentElement.dir = lang.value === 'ar' ? 'rtl' : 'ltr';
+      applyRoleTexts(); refreshShareLinks();
+    }
 
     function applyRoleTexts(){
       if (!role) return;
-      const d = T[lang.value] || T.en;
+      const d = langDict();
       txt('roleBadge', role === 'super' ? d.badgeSuper : d.badgeWorker);
     }
 
-    // State
     const data = { 'Weddings': [], 'Private Events': [], 'Corporate Events': [] };
     let site = {};
     let active = 'Weddings';
 
-    // Elements
     const gate = document.getElementById('gate');
-    const app = document.getElementById('app');
     const lang = document.getElementById('lang');
-    const tbody = document.getElementById('tbody');
-    const listBar = document.getElementById('listBar');
-    const siteBar = document.getElementById('siteBar');
-    const noteList = document.getElementById('noteList');
-    const noteSite = document.getElementById('noteSite');
-    const siteForm = document.getElementById('siteForm');
-    const statusEl = document.getElementById('status');
 
-    // Init language
-    applyLang('en');
-    lang.onchange = () => applyLang(lang.value);
+    applyLang();
+    lang.onchange = () => applyLang();
 
-    function applyRoleUI(){
+    document.getElementById('copyShareManage').onclick = async () => {
+      const url = window.location.origin + '/manage';
+      try { await navigator.clipboard.writeText(url); alert(langDict().copiedMsg); }
+      catch (_) { prompt(langDict().copyShare + ':', url); }
+    };
+
+    function mergeGalleryData() {
+      return ['Weddings','Private Events','Corporate Events'].flatMap(c =>
+        (data[c] || []).map(it => ({
+          id: Number(it.id),
+          src: String(it.src || '').trim(),
+          category: c,
+        }))
+      );
+    }
+
+    function persistDraft() {
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(mergeGalleryData())); } catch (_) {}
+      setStatus(langDict().draftSaved);
+    }
+
+    function clearDraftStore() {
+      try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+    }
+
+    function setStatus(s) {
+      const el = document.getElementById('status');
+      if (el) el.textContent = s || '';
+    }
+
+    function serverBase() {
+      return (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
+    }
+
+    function readAsDataURL(file) {
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+    }
+
+    function applyRoleUI() {
       const tabSite = document.getElementById('tab_s');
       const superPanel = document.getElementById('superPanel');
       const link = document.getElementById('adminLink');
@@ -208,205 +267,420 @@
       applyRoleTexts();
     }
 
-    function syncServerInput(){
-      const inp = document.getElementById('cms_server_input');
-      inp.value = localStorage.getItem('cms_local_server') || 'http://localhost:4000';
+    function syncServerInput() {
+      document.getElementById('cms_server_input').value =
+        localStorage.getItem('cms_local_server') || 'http://localhost:4000';
     }
 
     document.getElementById('cms_server_save').onclick = () => {
-      let v = (document.getElementById('cms_server_input').value || '').trim().replace(/\/$/, '');
+      let v = document.getElementById('cms_server_input').value.trim().replace(/\/$/, '');
       if (!v) v = 'http://localhost:4000';
       localStorage.setItem('cms_local_server', v);
-      alert('Saved for this browser.');
+      alert('OK');
     };
 
-    // Gate enter
     document.getElementById('enter').onclick = () => {
-      const v = (document.getElementById('pass').value||'').trim();
+      const v = document.getElementById('pass').value.trim();
       if (v === PASSPHRASE_SUPER) role = 'super';
       else if (v === PASSPHRASE_WORKER) role = 'worker';
-      else { alert((T[lang.value]||T.en).wrong); return; }
+      else { alert(langDict().wrong); return; }
       gate.classList.add('hidden');
-      app.classList.remove('hidden');
+      document.getElementById('app').classList.remove('hidden');
       syncServerInput();
       applyRoleUI();
       bindTabs();
-      reloadAll();
+      reloadAllInitial();
       bindUploads();
     };
 
-    function bindTabs(){
+    function bindTabs() {
       document.querySelectorAll('button.tab').forEach(btn => {
         btn.onclick = () => {
-          document.querySelectorAll('button.tab').forEach(b=>b.classList.remove('active'));
+          document.querySelectorAll('button.tab').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           active = btn.getAttribute('data-tab');
           const isSite = active === 'Site Images';
-          listBar.classList.toggle('hidden', isSite);
-          noteList.classList.toggle('hidden', isSite);
-          document.getElementById('table').classList.toggle('hidden', isSite);
-          siteBar.classList.toggle('hidden', !isSite);
-          noteSite.classList.toggle('hidden', !isSite);
-          siteForm.classList.toggle('hidden', !isSite);
-          if (!isSite) renderTable(); else renderSite();
+          document.getElementById('galleryControls').classList.toggle('hidden', isSite);
+          document.getElementById('galleryCards').classList.toggle('hidden', isSite);
+          document.getElementById('siteControls').classList.toggle('hidden', !isSite);
+          document.getElementById('noteSite').classList.toggle('hidden', !isSite);
+          document.getElementById('siteForm').classList.toggle('hidden', !isSite);
+          if (!isSite) renderGalleryCards();
+          else renderSite();
         };
       });
       document.getElementById('tab_w').click();
     }
 
-    async function reloadAll(){ await loadGallery(); await loadSite(); }
+    async function reloadAllInitial() {
+      await loadGallery({ preferDraft: true });
+      await loadSite();
+    }
 
-    function serverBase(){ return (localStorage.getItem('cms_local_server') || 'http://localhost:4000'); }
-
-    async function loadGallery(){
-      setStatus('Loading gallery...');
+    async function loadGallery(opts = {}) {
+      const preferDraft = opts.preferDraft !== false;
+      setStatus('Loading…');
       try {
-        const r = await fetch('/assets/gallery.json', { cache:'no-cache' });
+        if (preferDraft) {
+          let draft = null;
+          try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || ''); } catch (_) {}
+          if (Array.isArray(draft) && draft.length) {
+            ['Weddings','Private Events','Corporate Events'].forEach(c => {
+              data[c] = draft.filter(i => i.category === c);
+            });
+            renderGalleryCards();
+            setStatus('Draft loaded (this browser)');
+            return;
+          }
+        }
+        const r = await fetch('/assets/gallery.json', { cache: 'no-cache' });
         if (r.ok) {
           const arr = await r.json();
-          ['Weddings','Private Events','Corporate Events'].forEach(c => data[c] = arr.filter(i=>i.category===c));
+          ['Weddings','Private Events','Corporate Events'].forEach(c => {
+            data[c] = arr.filter(i => i.category === c);
+          });
         }
-        renderTable(); setStatus('');
-      } catch(e){ setStatus('Failed to load gallery.json'); }
+        renderGalleryCards();
+        setStatus('');
+      } catch (e) {
+        setStatus('Could not load gallery.json');
+      }
     }
 
-    async function loadSite(){
+    async function loadSite() {
       try {
-        const r = await fetch('/assets/site-images.json', { cache:'no-cache' });
+        const r = await fetch('/assets/site-images.json', { cache: 'no-cache' });
         site = r.ok ? await r.json() : {};
         renderSite();
-      } catch(e){ site = {}; renderSite(); }
+      } catch (_) { site = {}; renderSite(); }
     }
 
-    function renderTable(){
-      tbody.innerHTML = '';
+    function move(arr, i, d) {
+      const j = i + d;
+      if (j < 0 || j >= arr.length) return;
+      const t = arr[i];
+      arr[i] = arr[j];
+      arr[j] = t;
+      renderGalleryCards();
+      persistDraft();
+    }
+
+    function renderGalleryCards() {
+      const root = document.getElementById('galleryCards');
+      root.innerHTML = '';
       const arr = data[active] || [];
-      arr.forEach((it, idx) => tbody.appendChild(row(it, idx, arr)));
+      arr.forEach((it, idx) => root.appendChild(galleryCard(it, idx, arr)));
     }
 
-    function row(it, idx, arr){
-      const tr = document.createElement('tr');
-      const fileId = `u_${active.replace(/\s/g,'_')}_${idx}`;
-      tr.innerHTML = `
-        <td><input type="number" value="${it.id||idx+1}" data-k="id" style="width:70px"/></td>
-        <td><input type="text" value="${it.src||''}" data-k="src" style="width:100%" placeholder="/assets/images/file.jpeg"/></td>
-        <td class="row-actions">
-          <input type="file" id="${fileId}" class="hidden" />
-          <button data-act="upload" data-file="${fileId}">Upload</button>
-          <button data-act="up">↑</button>
-          <button data-act="down">↓</button>
-          <button class="danger" data-act="del">Delete</button>
-        </td>`;
-      tr.querySelectorAll('input[type="number"],input[type="text"]').forEach(inp=>{
-        inp.onchange = () => { const k=inp.getAttribute('data-k'); let v=inp.value; if(k==='id') v=Number(v); arr[idx][k]=v; };
-      });
-      tr.querySelector('[data-act="up"]').onclick = () => move(arr, idx, -1);
-      tr.querySelector('[data-act="down"]').onclick = () => move(arr, idx, +1);
-      tr.querySelector('[data-act="del"]').onclick = () => { if(confirm('Delete?')){ arr.splice(idx,1); renderTable(); } };
-      tr.querySelector('[data-act="upload"]').onclick = (e) => {
-        const input = document.getElementById(fileId);
-        input.onchange = async ev => {
-          const file = ev.target.files && ev.target.files[0]; if(!file) return;
-          // Try local server upload first
+    function galleryCard(it, idx, arr) {
+      const d = langDict();
+      const card = document.createElement('div');
+      card.className = 'media-card';
+
+      const thumb = document.createElement('div');
+      thumb.className = 'media-thumb';
+      const img = document.createElement('img');
+      img.alt = '';
+      const ph = document.createElement('div');
+      ph.className = 'ph';
+      ph.textContent = 'No image';
+      thumb.appendChild(ph);
+      thumb.appendChild(img);
+
+      function syncThumb() {
+        const s = String(arr[idx].src || '').trim();
+        if (!s) {
+          img.removeAttribute('src');
+          img.style.display = 'none';
+          ph.style.display = '';
+          ph.textContent = 'No image';
+          return;
+        }
+        ph.style.display = 'none';
+        img.style.display = '';
+        img.style.opacity = '1';
+        img.onerror = () => {
+          img.style.opacity = '0.35';
+          ph.style.display = '';
+          ph.textContent = 'Broken URL';
+        };
+        img.onload = () => { img.style.opacity = '1'; };
+        img.src = s;
+      }
+
+      const main = document.createElement('div');
+      main.className = 'media-main';
+
+      const fieldId = document.createElement('div');
+      fieldId.className = 'field';
+      const lblId = document.createElement('label');
+      lblId.textContent = 'ID';
+      const inpId = document.createElement('input');
+      inpId.type = 'number';
+      inpId.value = String(it.id ?? idx + 1);
+      fieldId.appendChild(lblId);
+      fieldId.appendChild(inpId);
+
+      const fieldSrc = document.createElement('div');
+      fieldSrc.className = 'field';
+      const lblSrc = document.createElement('label');
+      lblSrc.textContent = 'Image URL';
+      const inpSrc = document.createElement('input');
+      inpSrc.type = 'text';
+      inpSrc.placeholder = '/assets/images/photo.jpg';
+      inpSrc.value = it.src || '';
+      fieldSrc.appendChild(lblSrc);
+      fieldSrc.appendChild(inpSrc);
+
+      const actions = document.createElement('div');
+      actions.className = 'crud-actions';
+
+      const fileInp = document.createElement('input');
+      fileInp.type = 'file';
+      fileInp.accept = 'image/*';
+      fileInp.className = 'hidden';
+
+      const btnReplace = document.createElement('button');
+      btnReplace.type = 'button';
+      btnReplace.className = 'primary';
+      btnReplace.textContent = d.btnReplace;
+      btnReplace.onclick = () => {
+        fileInp.value = '';
+        fileInp.onchange = async (ev) => {
+          const file = ev.target.files?.[0];
+          if (!file) return;
           try {
-            const fd = new FormData(); fd.append('file', file);
-            const r = await fetch(serverBase() + '/upload-image', { method:'POST', body: fd });
+            const fd = new FormData();
+            fd.append('file', file);
+            const r = await fetch(serverBase() + '/upload-image', { method: 'POST', body: fd });
             if (r.ok) {
               const j = await r.json();
-              if (j && j.ok && j.path) { arr[idx].src = j.path; renderTable(); return; }
+              if (j && j.ok && j.path) {
+                arr[idx].src = j.path;
+                inpSrc.value = j.path;
+                syncThumb();
+                persistDraft();
+                return;
+              }
             }
-          } catch(_) {}
-          // Fallback to data URL inline
-          readAsDataURL(file).then(url => { arr[idx].src = url; renderTable(); });
+          } catch (_) {}
+          const url = await readAsDataURL(file);
+          arr[idx].src = url;
+          inpSrc.value = url;
+          syncThumb();
+          persistDraft();
         };
-        input.click();
+        fileInp.click();
       };
-      // Add Import URL button next to Upload
-      const actionsCell = tr.querySelector('.row-actions');
-      const importBtn = document.createElement('button');
-      importBtn.textContent = 'Import URL';
-      importBtn.onclick = async () => {
-        const srcInput = tr.querySelector('input[data-k="src"]');
-        const cur = (srcInput && srcInput.value || '').trim();
-        if (!cur || !/^https?:\/\//i.test(cur)) { alert('Enter a valid http(s) URL in src first.'); return; }
+
+      const btnImport = document.createElement('button');
+      btnImport.type = 'button';
+      btnImport.className = 'secondary';
+      btnImport.textContent = d.btnImport;
+      btnImport.onclick = async () => {
+        const cur = inpSrc.value.trim();
+        if (!cur || !/^https?:\/\//i.test(cur)) {
+          alert('Paste an http(s) image URL in the field first.');
+          return;
+        }
         try {
-          const r = await fetch(serverBase() + '/import-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url: cur }) });
-          if (r.ok) { const j = await r.json(); if (j && j.ok && j.path) { arr[idx].src = j.path; renderTable(); return; } }
-          alert('Import failed');
-        } catch(_) { alert('Import failed'); }
+          const r = await fetch(serverBase() + '/import-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: cur }),
+          });
+          if (r.ok) {
+            const j = await r.json();
+            if (j && j.ok && j.path) {
+              arr[idx].src = j.path;
+              inpSrc.value = j.path;
+              syncThumb();
+              persistDraft();
+              return;
+            }
+          }
+          alert('Import failed (needs upload server).');
+        } catch (_) {
+          alert('Import failed.');
+        }
       };
-      actionsCell.insertBefore(importBtn, actionsCell.querySelector('[data-act="up"]'));
-      return tr;
+
+      const btnUp = document.createElement('button');
+      btnUp.type = 'button';
+      btnUp.className = 'secondary';
+      btnUp.textContent = d.btnUp;
+      btnUp.onclick = () => move(arr, idx, -1);
+
+      const btnDown = document.createElement('button');
+      btnDown.type = 'button';
+      btnDown.className = 'secondary';
+      btnDown.textContent = d.btnDown;
+      btnDown.onclick = () => move(arr, idx, 1);
+
+      const btnDel = document.createElement('button');
+      btnDel.type = 'button';
+      btnDel.className = 'danger';
+      btnDel.textContent = d.btnDel;
+      btnDel.onclick = () => {
+        if (!confirm(d.delConfirm)) return;
+        arr.splice(idx, 1);
+        renderGalleryCards();
+        persistDraft();
+      };
+
+      inpId.onchange = () => {
+        arr[idx].id = Number(inpId.value) || idx + 1;
+        persistDraft();
+      };
+      inpSrc.onchange = () => {
+        arr[idx].src = inpSrc.value.trim();
+        syncThumb();
+        persistDraft();
+      };
+
+      actions.append(btnReplace, btnImport, btnUp, btnDown, btnDel);
+      main.append(fieldId, fieldSrc, actions);
+      card.append(thumb, main, fileInp);
+      syncThumb();
+      return card;
     }
 
-    function renderSite(){
-      ['heroBg','aboutUs','serviceWedding','servicePrivate','serviceCorporate','blogPalette','blogNegafa','blogVenues','blogLanterns','logoColor','logoWhite'].forEach(id=>{
-        const el = document.getElementById('f_'+id); if(!el) return; el.value = site[id] || ''; el.onchange = ()=>{ site[id]=el.value; try{ localStorage.setItem('site_images_override', JSON.stringify(site)); }catch(_){} };
+    function renderSite() {
+      ['heroBg','aboutUs','serviceWedding','servicePrivate','serviceCorporate','blogPalette','blogNegafa','blogVenues','blogLanterns','logoColor','logoWhite'].forEach(id => {
+        const el = document.getElementById('f_' + id);
+        if (!el) return;
+        el.value = site[id] || '';
+        el.onchange = () => {
+          site[id] = el.value;
+          try { localStorage.setItem('site_images_override', JSON.stringify(site)); } catch (_) {}
+        };
       });
     }
 
-    function move(arr,i,d){ const j=i+d; if(j<0||j>=arr.length) return; const t=arr[i]; arr[i]=arr[j]; arr[j]=t; renderTable(); }
-    function setStatus(s){ statusEl.textContent = s; }
-    function readAsDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
+    document.getElementById('add').onclick = () => {
+      const arr = data[active];
+      const next = arr.length ? Math.max(...arr.map(x => Number(x.id) || 0)) + 1 : 1;
+      arr.push({ id: next, src: '', category: active });
+      renderGalleryCards();
+      persistDraft();
+    };
 
-    // Top buttons
-    document.getElementById('add').onclick = () => { const arr=data[active]; const next=arr.length?Math.max(...arr.map(x=>Number(x.id)||0))+1:1; arr.push({ id:next, src:'/assets/images/your-file.jpeg', category: active }); renderTable(); };
-    document.getElementById('reload').onclick = reloadAll;
+    document.getElementById('reload').onclick = async () => {
+      if (!confirm(langDict().reloadConfirm)) return;
+      clearDraftStore();
+      await loadGallery({ preferDraft: false });
+      setStatus('Reloaded from site');
+    };
+
+    document.getElementById('clearDraft').onclick = () => {
+      if (!confirm(langDict().clearDraftConfirm)) return;
+      clearDraftStore();
+      loadGallery({ preferDraft: false });
+    };
+
+    document.getElementById('saveGallery').onclick = async () => {
+      persistDraft();
+      const merged = mergeGalleryData();
+      try {
+        const r = await fetch(serverBase() + '/save-gallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(merged),
+        });
+        if (r.ok) {
+          alert(langDict().saveDoneServer);
+          return;
+        }
+      } catch (_) {}
+      downloadGalleryBlob();
+      alert(langDict().saveDownload);
+    };
+
+    function downloadGalleryBlob() {
+      const merged = mergeGalleryData();
+      const blob = new Blob([JSON.stringify(merged, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'gallery.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    document.getElementById('download').onclick = () => downloadGalleryBlob();
+
     document.getElementById('reloadSite').onclick = loadSite;
 
     document.getElementById('saveSite').onclick = async () => {
       try {
-        const r = await fetch(serverBase() + '/save-site', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(site) });
-        if (r.ok) { alert('Saved to server. Refresh the site.'); return; }
-      } catch(_) {}
-      const blob = new Blob([JSON.stringify(site,null,2)],{type:'application/json'});
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='site-images.json'; a.click(); URL.revokeObjectURL(a.href);
+        const r = await fetch(serverBase() + '/save-site', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(site),
+        });
+        if (r.ok) {
+          alert(langDict().saveDoneServer);
+          return;
+        }
+      } catch (_) {}
+      const blob = new Blob([JSON.stringify(site, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'site-images.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
     };
 
-    /** Wire Site Images file inputs (data-up → f_<key>). */
-    function bindUploads(){
+    document.getElementById('downloadSite').onclick = async () => {
+      try {
+        const r = await fetch(serverBase() + '/save-site', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(site),
+        });
+        if (r.ok) {
+          alert(langDict().saveDoneServer);
+          return;
+        }
+      } catch (_) {}
+      const blob = new Blob([JSON.stringify(site, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'site-images.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
+    function bindUploads() {
       document.querySelectorAll('#siteForm input[type="file"][data-up]').forEach(inp => {
         inp.onchange = async (ev) => {
           const key = inp.getAttribute('data-up');
           const textEl = document.getElementById('f_' + key);
-          const file = ev.target.files && ev.target.files[0];
+          const file = ev.target.files?.[0];
+          inp.value = '';
           if (!file || !textEl) return;
           try {
-            const fd = new FormData(); fd.append('file', file);
-            const r = await fetch(serverBase() + '/upload-image', { method:'POST', body: fd });
+            const fd = new FormData();
+            fd.append('file', file);
+            const r = await fetch(serverBase() + '/upload-image', { method: 'POST', body: fd });
             if (r.ok) {
               const j = await r.json();
-              if (j && j.ok && j.path) { textEl.value = j.path; site[key] = j.path; textEl.dispatchEvent(new Event('change')); renderSite(); return; }
+              if (j && j.ok && j.path) {
+                textEl.value = j.path;
+                site[key] = j.path;
+                textEl.dispatchEvent(new Event('change'));
+                renderSite();
+                return;
+              }
             }
-          } catch(_) {}
-          readAsDataURL(file).then(url => { textEl.value = url; site[key] = url; try{ localStorage.setItem('site_images_override', JSON.stringify(site)); }catch(_){}; renderSite(); });
+          } catch (_) {}
+          const url = await readAsDataURL(file);
+          textEl.value = url;
+          site[key] = url;
+          try { localStorage.setItem('site_images_override', JSON.stringify(site)); } catch (_) {}
+          renderSite();
         };
       });
     }
-
-    document.getElementById('saveGallery').onclick = async () => {
-      const merged=['Weddings','Private Events','Corporate Events'].flatMap(c => (data[c]||[]).map(it=>({ id:Number(it.id), src:String(it.src||'').trim(), category:c })));
-      // Try saving via local server first
-      try {
-        const r = await fetch(serverBase() + '/save-gallery', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(merged) });
-        if (r.ok) { alert('Saved to server. Refresh the site.'); return; }
-      } catch(_) {}
-      // Fallback to download
-      downloadGallery();
-    };
-    function downloadGallery(){
-      const merged=['Weddings','Private Events','Corporate Events'].flatMap(c => (data[c]||[]).map(it=>({ id:Number(it.id), src:String(it.src||'').trim(), category:c })));
-      const blob = new Blob([JSON.stringify(merged,null,2)],{type:'application/json'});
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='gallery.json'; a.click(); URL.revokeObjectURL(a.href);
-    }
-    document.getElementById('download').onclick = downloadGallery;
-    document.getElementById('downloadSite').onclick = async () => {
-      const blob = new Blob([JSON.stringify(site,null,2)],{type:'application/json'});
-      // Try save to local server
-      try { const r = await fetch(serverBase() + '/save-site', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(site) }); if (r.ok) { alert('Saved to server. Refresh the site.'); return; } } catch(_) {}
-      // Fallback
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='site-images.json'; a.click(); URL.revokeObjectURL(a.href);
-    };
   </script>
 </body>
 </html>
