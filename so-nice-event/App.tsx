@@ -13,7 +13,7 @@ import { CmsEditProvider } from './context/CmsEditContext';
 const HEADER_OFFSET = 80;
 
 function App() {
-  const [language, setLanguage] = useState<Language>('fr');
+  const [language, setLanguage] = useState<Language>('ar');
   const [content, setContent] = useState(translations[language]);
   const [cmsTextOverrides, setCmsTextOverrides] = useState<any>({});
   const [cmsEditMode, setCmsEditMode] = useState(

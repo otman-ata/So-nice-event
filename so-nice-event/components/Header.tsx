@@ -23,9 +23,9 @@ const LanguageSwitcher: React.FC<{
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const languages: { key: Language; label: string }[] = [
+    { key: 'ar', label: 'AR' },
     { key: 'fr', label: 'FR' },
     { key: 'en', label: 'EN' },
-    { key: 'ar', label: 'AR' },
   ];
 
   useEffect(() => {
