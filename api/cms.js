@@ -1,18 +1,28 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { list, put } from '@vercel/blob';
 
 const CMS_SITE_PATH = 'cms/site-images.json';
 const CMS_GALLERY_PATH = 'cms/gallery.json';
 const blobToken = () => process.env.BLOB1_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
 
-async function readFallbackJson(relativePath, fallbackValue) {
-  try {
-    const file = path.join(process.cwd(), 'so-nice-event', 'public', 'assets', relativePath);
-    return JSON.parse(await fs.readFile(file, 'utf8'));
-  } catch {
-    return fallbackValue;
+function isStaticContentImage(value) {
+  return typeof value === 'string' && value.startsWith('/assets/images/');
+}
+
+function sanitizeSiteImages(siteImages = {}) {
+  const next = { ...siteImages };
+  for (const [key, value] of Object.entries(next)) {
+    if (Array.isArray(value)) {
+      next[key] = value.filter((item) => typeof item === 'string' && item && !isStaticContentImage(item));
+    } else if (isStaticContentImage(value)) {
+      next[key] = '';
+    }
   }
+  return next;
+}
+
+function sanitizeGallery(gallery = []) {
+  if (!Array.isArray(gallery)) return [];
+  return gallery.filter((item) => item && typeof item.src === 'string' && item.src && !isStaticContentImage(item.src));
 }
 
 async function readBlobJson(pathname, fallbackValue) {
@@ -48,10 +58,8 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   if (req.method === 'GET') {
-    const fallbackSiteImages = await readFallbackJson('site-images.json', {});
-    const fallbackGallery = await readFallbackJson('gallery.json', []);
-    const siteImages = await readBlobJson(CMS_SITE_PATH, fallbackSiteImages);
-    const gallery = await readBlobJson(CMS_GALLERY_PATH, fallbackGallery);
+    const siteImages = sanitizeSiteImages(await readBlobJson(CMS_SITE_PATH, {}));
+    const gallery = sanitizeGallery(await readBlobJson(CMS_GALLERY_PATH, []));
     return res.status(200).json({ ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery });
   }
 

@@ -204,16 +204,7 @@
           if (ls) {
             try { window.__SITE_IMAGES = JSON.parse(ls); } catch(_) {}
           }
-          // 2) Load file-based defaults and keep any existing overrides
-          const res = await fetch('/assets/site-images.json', { cache: 'no-cache' });
-          if (res.ok) {
-            const fileData = await res.json();
-            window.__SITE_IMAGES = Object.assign({}, fileData, window.__SITE_IMAGES || {});
-            if (fileData && fileData.cmsGalleryUrl) {
-              window.__CMS = Object.assign({}, window.__CMS || {}, { galleryUrl: fileData.cmsGalleryUrl });
-            }
-          }
-          // 3) Load cloud CMS data when available; static files remain fallbacks.
+          // 2) Load cloud CMS data when available. Public content images are admin-managed only.
           const cmsRes = await fetch('/api/cms', { cache: 'no-cache' });
           if (cmsRes.ok) {
             const cmsData = await cmsRes.json();

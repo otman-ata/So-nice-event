@@ -73,33 +73,33 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
 
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 tile-border lantern-glow bg-white p-8 md:p-12 rounded-lg">
-          <div className="moroccan-arch rounded-lg custom-bg p-8 text-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 rounded-lg border border-[#d9a629]/35 bg-white/95 p-5 shadow-2xl shadow-[#450a0a]/10 md:grid-cols-[0.9fr_1.1fr] md:p-8">
+          <div className="custom-bg rounded-lg p-7 text-white md:p-8">
             <h3 className="text-2xl font-semibold mb-6 text-[#f7d979]">{content.details.title}</h3>
-            <div className="space-y-4 text-white/82">
-               <p><strong>{content.details.emailLabel}</strong> <a href="mailto:Soniceevent04@gmail.com" className="hover:underline text-[#f7d979]">Soniceevent04@gmail.com</a></p>
-               <p><strong>{content.details.phoneLabel}</strong> <a href="tel:+212666757403" className="hover:underline text-[#f7d979]" dir="ltr">+212 666-757403</a></p>
-               <p><strong>{content.details.addressLabel}</strong> Avenue Arreda 13, 80650 Agadir, Maroc</p>
+            <div className="space-y-5 text-white/85">
+               <p className="break-words"><strong className="block text-white">{content.details.emailLabel}</strong> <a href="mailto:Soniceevent04@gmail.com" className="hover:underline text-[#f7d979]">Soniceevent04@gmail.com</a></p>
+               <p><strong className="block text-white">{content.details.phoneLabel}</strong> <a href="tel:+212666757403" className="hover:underline text-[#f7d979]" dir="ltr">+212 666-757403</a></p>
+               <p><strong className="block text-white">{content.details.addressLabel}</strong> Avenue Arreda 13, 80650 Agadir, Maroc</p>
             </div>
             <div className="ornament-rule mt-8 opacity-80" />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
+          <form onSubmit={handleSubmit} className="grid gap-5 rounded-lg bg-[#fffaf0] p-5 md:p-7">
+            <div className="grid gap-1.5">
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{content.form.name}</label>
-              <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
+              <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40" />
             </div>
-            <div>
+            <div className="grid gap-1.5">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{content.form.email}</label>
-              <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
+              <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40" />
             </div>
-            <div>
+            <div className="grid gap-1.5">
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{content.form.phone || 'Phone Number'}</label>
-              <input type="tel" name="phone" id="phone" dir="ltr" placeholder="+212 666-757403" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
+              <input type="tel" name="phone" id="phone" dir="ltr" placeholder="+212 666-757403" value={formData.phone} onChange={handleChange} className="w-full rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40" />
             </div>
-            <div>
+            <div className="grid gap-1.5">
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">{content.form.message}</label>
-              <textarea name="message" id="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]"></textarea>
+              <textarea name="message" id="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full resize-y rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40"></textarea>
             </div>
             <div>
               <button

@@ -27,10 +27,8 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
   const configuredSlides = siteImages.heroSlides;
   const slideImages: string[] =
     Array.isArray(configuredSlides) && configuredSlides.length > 0
-      ? configuredSlides.filter((s: unknown): s is string => typeof s === 'string' && s.trim().length > 0)
-      : [siteImages.heroBg, siteImages.serviceWedding, siteImages.servicePrivate].filter(
-          (s): s is string => typeof s === 'string' && Boolean(s)
-        );
+      ? configuredSlides.filter((s: unknown): s is string => typeof s === 'string' && s.trim().length > 0 && !s.startsWith('/assets/images/'))
+      : [];
   const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'fr';
   const eyebrow = lang === 'ar' ? 'منظم مناسبات في أكادير' : lang === 'fr' ? 'Organisateur d\'evenements a Agadir' : 'Agadir Event Organizer';
 
@@ -52,6 +50,9 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
           style={{ backgroundImage: `url('${bg}')` }}
         />
       ))}
+      {slideImages.length === 0 && (
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(217,166,41,.18),transparent_28%),linear-gradient(135deg,#3b070c_0%,#76121d_48%,#1f0b08_100%)]" />
+      )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/68 via-[#3b070c]/50 to-[#76121d]/86" />
       <div className="absolute inset-x-0 bottom-0 h-48 opacity-35 bg-[radial-gradient(circle_at_50%_50%,rgba(247,217,121,.85)_0_2px,transparent_2.5px),linear-gradient(45deg,transparent_46%,rgba(217,166,41,.75)_47%,rgba(217,166,41,.75)_53%,transparent_54%)] bg-[length:38px_38px]" />
       <div className="absolute left-0 right-0 top-28 mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-[#f7d979]/80 to-transparent" />

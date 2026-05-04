@@ -26,7 +26,13 @@ export function CmsImageSlot({ siteKey, alt, className, wrapperClassName }: Prop
 
   return (
     <div className={wrapCls || 'relative'}>
-      <img src={src} alt={alt} className={className} />
+      {src ? (
+        <img src={src} alt={alt} className={className} />
+      ) : (
+        <div className={`${className || ''} flex min-h-48 items-center justify-center bg-[#76121d]/10 text-center text-sm font-semibold text-[#76121d]`}>
+          Upload image from admin
+        </div>
+      )}
       {edit && (
         <label className="absolute bottom-2 right-2 z-20 cursor-pointer rounded-md bg-black/70 px-2 py-1 text-xs font-semibold text-white hover:bg-black/85">
           Replace

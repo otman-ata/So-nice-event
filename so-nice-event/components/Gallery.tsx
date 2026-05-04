@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { galleryImages as defaultGalleryImages, GalleryImage as GalleryImageProps } from '../lib/images';
+import { GalleryImage as GalleryImageProps } from '../lib/images';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 import FadeInOnScroll from './common/FadeInOnScroll';
 
@@ -25,14 +25,12 @@ const GalleryImageCard: React.FC<{ image: GalleryImageProps }> = ({ image }) => 
 }
 
 function withRequiredGallerySections(items: GalleryImageProps[]) {
-  if (items.some((item) => item.category === 'About Us')) return items;
-  const nextId = items.length ? Math.max(...items.map((item) => Number(item.id) || 0)) + 1 : 1;
-  return [...items, { id: nextId, src: '/assets/images/about-us.jpeg', category: 'About Us' as const }];
+  return items.filter((item) => item.src && !item.src.startsWith('/assets/images/'));
 }
 
 const Gallery: React.FC<GalleryProps> = ({ content }) => {
   const [visibleCount, setVisibleCount] = useState(9);
-  const [images, setImages] = useState<GalleryImageProps[]>(defaultGalleryImages);
+  const [images, setImages] = useState<GalleryImageProps[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays' | 'About Us'>('All');
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -64,13 +62,12 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
         const draft = readDraft();
         const cmsData = typeof window !== 'undefined' ? (window as any).__CMS?.galleryData : null;
         const cmsUrl = (typeof window !== 'undefined' && (window as any).__CMS?.galleryUrl) || '';
-        const url = cmsUrl && typeof cmsUrl === 'string' ? cmsUrl : '/assets/gallery.json';
         let remote: GalleryImageProps[] | null = null;
         try {
           if (Array.isArray(cmsData) && cmsData.length > 0) {
             remote = cmsData as GalleryImageProps[];
-          } else {
-            const res = await fetch(url, { cache: 'no-cache' });
+          } else if (cmsUrl && typeof cmsUrl === 'string') {
+            const res = await fetch(cmsUrl, { cache: 'no-cache' });
             if (res.ok) remote = (await res.json()) as GalleryImageProps[];
           }
         } catch {
@@ -133,6 +130,10 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
 
         {loading ? (
           <p className="text-center text-gray-500">{copy.loading}</p>
+        ) : filtered.length === 0 ? (
+          <div className="tile-border lantern-glow mx-auto max-w-2xl rounded-lg bg-white/90 p-8 text-center text-stone-600">
+            {lang === 'ar' ? 'ستظهر الصور هنا بعد رفعها من لوحة الإدارة.' : lang === 'fr' ? 'Les images apparaîtront ici après leur ajout depuis le panneau admin.' : 'Images will appear here after they are uploaded from the admin panel.'}
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.slice(0, visibleCount).map((image) => (

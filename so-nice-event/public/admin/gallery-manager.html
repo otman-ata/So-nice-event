@@ -351,7 +351,7 @@
     function ensureAboutGalleryItem() {
       if (galleryData.some((item) => item.category === 'About Us')) return;
       const nextId = galleryData.length ? Math.max(...galleryData.map((item) => Number(item.id) || 0)) + 1 : 1;
-      galleryData.push({ id: nextId, src: '/assets/images/about-us.jpeg', category: 'About Us' });
+      galleryData.push({ id: nextId, src: '', category: 'About Us' });
     }
 
     async function loadSiteImages() {
@@ -360,8 +360,7 @@
         const cms = await cmsResponse.json();
         siteImages = cms.siteImages || {};
       } else {
-        const response = await fetch('/assets/site-images.json', { cache: 'no-cache' });
-        siteImages = response.ok ? await response.json() : {};
+        siteImages = {};
       }
       try {
         const draft = JSON.parse(localStorage.getItem(SITE_DRAFT) || '{}');
@@ -389,8 +388,7 @@
         const cms = await cmsResponse.json();
         galleryData = Array.isArray(cms.gallery) ? cms.gallery : [];
       } else {
-        const response = await fetch('/assets/gallery.json', { cache: 'no-cache' });
-        galleryData = response.ok ? await response.json() : [];
+        galleryData = [];
       }
       ensureAboutGalleryItem();
       renderGallery();
