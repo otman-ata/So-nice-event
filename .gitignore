@@ -1,0 +1,5 @@
+node_modules/
+so-nice-event/public/assets/images/[0-9]*.jpg
+so-nice-event/public/assets/images/[0-9]*.jpeg
+so-nice-event/public/assets/images/[0-9]*.png
+so-nice-event/public/assets/images/[0-9]*.webp

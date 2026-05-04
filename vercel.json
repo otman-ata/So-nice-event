@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm ci --prefix so-nice-event",
+  "installCommand": "npm ci && npm ci --prefix so-nice-event",
   "buildCommand": "npm run build --prefix so-nice-event",
   "outputDirectory": "so-nice-event/dist",
   "rewrites": [

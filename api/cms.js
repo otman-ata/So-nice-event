@@ -8,7 +8,7 @@ const blobToken = () => process.env.BLOB1_READ_WRITE_TOKEN || process.env.BLOB_R
 
 async function readFallbackJson(relativePath, fallbackValue) {
   try {
-    const file = path.join(process.cwd(), 'public', 'assets', relativePath);
+    const file = path.join(process.cwd(), 'so-nice-event', 'public', 'assets', relativePath);
     return JSON.parse(await fs.readFile(file, 'utf8'));
   } catch {
     return fallbackValue;
@@ -32,9 +32,7 @@ async function readBlobJson(pathname, fallbackValue) {
 
 async function writeBlobJson(pathname, data) {
   const token = blobToken();
-  if (!token) {
-    throw new Error('Missing BLOB1_READ_WRITE_TOKEN');
-  }
+  if (!token) throw new Error('Missing BLOB1_READ_WRITE_TOKEN');
   await put(pathname, JSON.stringify(data, null, 2), {
     access: 'public',
     contentType: 'application/json',
@@ -54,7 +52,7 @@ export default async function handler(req, res) {
     const fallbackGallery = await readFallbackJson('gallery.json', []);
     const siteImages = await readBlobJson(CMS_SITE_PATH, fallbackSiteImages);
     const gallery = await readBlobJson(CMS_GALLERY_PATH, fallbackGallery);
-    return res.status(200).json({ ok: true, siteImages, gallery });
+    return res.status(200).json({ ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery });
   }
 
   if (req.method === 'POST') {
