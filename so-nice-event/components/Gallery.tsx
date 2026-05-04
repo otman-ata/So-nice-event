@@ -55,12 +55,17 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
       try {
         setLoading(true);
         const draft = readDraft();
+        const cmsData = typeof window !== 'undefined' ? (window as any).__CMS?.galleryData : null;
         const cmsUrl = (typeof window !== 'undefined' && (window as any).__CMS?.galleryUrl) || '';
         const url = cmsUrl && typeof cmsUrl === 'string' ? cmsUrl : '/assets/gallery.json';
         let remote: GalleryImageProps[] | null = null;
         try {
-          const res = await fetch(url, { cache: 'no-cache' });
-          if (res.ok) remote = (await res.json()) as GalleryImageProps[];
+          if (Array.isArray(cmsData) && cmsData.length > 0) {
+            remote = cmsData as GalleryImageProps[];
+          } else {
+            const res = await fetch(url, { cache: 'no-cache' });
+            if (res.ok) remote = (await res.json()) as GalleryImageProps[];
+          }
         } catch {
           /* keep remote null */
         }

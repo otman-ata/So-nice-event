@@ -122,7 +122,7 @@
     <header class="brand">
       <div>
         <h1>So Nice Event Admin</h1>
-        <p>Manage the hero slideshow, uploaded images, gallery, and editable text.</p>
+        <p>Manage hero, site, and gallery images from one cloud-backed dashboard.</p>
       </div>
       <span class="pill">Staff only</span>
     </header>
@@ -156,7 +156,7 @@
 
       <section id="panel-site" class="panel card">
         <h2 class="section-title">Site Images</h2>
-        <p class="hint">Replace logos, service images, and About image. These uploads are saved into the project assets folder.</p>
+        <p class="hint">Replace logos, service images, and About image. Uploaded images are saved to cloud storage after deployment.</p>
         <div class="grid">
           <div>
             <label for="siteImageKey">Image slot</label>
@@ -213,27 +213,59 @@
     let activeCategory = 'Weddings';
 
     const $ = (id) => document.getElementById(id);
-    const serverBase = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
+    const apiBase = () => '';
+    const localServerBase = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
     const status = (msg) => { $('status').textContent = msg; };
 
+    function readAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
     async function uploadFile(file) {
+      const body = {
+        filename: file.name,
+        contentType: file.type || 'application/octet-stream',
+        data: await readAsBase64(file),
+      };
+      const cloudResponse = await fetch(apiBase() + '/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (cloudResponse.ok) {
+        const data = await cloudResponse.json();
+        if (data.ok && data.path) return data.path;
+      }
+
       const fd = new FormData();
       fd.append('file', file);
-      const response = await fetch(serverBase() + '/upload-image', { method: 'POST', body: fd });
-      if (!response.ok) throw new Error('Upload failed');
-      const data = await response.json();
-      if (!data.ok || !data.path) throw new Error(data.error || 'Upload failed');
-      return data.path;
+      const localResponse = await fetch(localServerBase() + '/upload-image', { method: 'POST', body: fd });
+      if (!localResponse.ok) throw new Error('Upload failed. Check cloud storage token or local CMS server.');
+      const localData = await localResponse.json();
+      if (!localData.ok || !localData.path) throw new Error(localData.error || 'Upload failed');
+      return localData.path;
     }
 
     async function persistSiteImages() {
       localStorage.setItem(SITE_DRAFT, JSON.stringify(siteImages));
-      const response = await fetch(serverBase() + '/save-site', {
+      const response = await fetch(apiBase() + '/api/cms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteImages }),
+      });
+      if (response.ok) return;
+
+      const localResponse = await fetch(localServerBase() + '/save-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(siteImages),
       });
-      if (!response.ok) throw new Error('Could not save site-images.json');
+      if (!localResponse.ok) throw new Error('Could not save image settings. Check cloud storage token or local CMS server.');
     }
 
     function imageThumb(src, label) {
@@ -292,8 +324,14 @@
     }
 
     async function loadSiteImages() {
-      const response = await fetch('/assets/site-images.json', { cache: 'no-cache' });
-      siteImages = response.ok ? await response.json() : {};
+      const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
+      if (cmsResponse.ok) {
+        const cms = await cmsResponse.json();
+        siteImages = cms.siteImages || {};
+      } else {
+        const response = await fetch('/assets/site-images.json', { cache: 'no-cache' });
+        siteImages = response.ok ? await response.json() : {};
+      }
       try {
         const draft = JSON.parse(localStorage.getItem(SITE_DRAFT) || '{}');
         siteImages = Object.assign({}, siteImages, draft);
@@ -314,8 +352,14 @@
           }
         } catch {}
       }
-      const response = await fetch('/assets/gallery.json', { cache: 'no-cache' });
-      galleryData = response.ok ? await response.json() : [];
+      const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
+      if (cmsResponse.ok) {
+        const cms = await cmsResponse.json();
+        galleryData = Array.isArray(cms.gallery) ? cms.gallery : [];
+      } else {
+        const response = await fetch('/assets/gallery.json', { cache: 'no-cache' });
+        galleryData = response.ok ? await response.json() : [];
+      }
       renderGallery();
     }
 
@@ -464,12 +508,19 @@
     $('saveGallery').onclick = async () => {
       try {
         localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
-        const response = await fetch(serverBase() + '/save-gallery', {
+        const response = await fetch(apiBase() + '/api/cms', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(galleryData),
+          body: JSON.stringify({ gallery: galleryData }),
         });
-        if (!response.ok) throw new Error('Could not save gallery.json');
+        if (!response.ok) {
+          const localResponse = await fetch(localServerBase() + '/save-gallery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(galleryData),
+          });
+          if (!localResponse.ok) throw new Error('Could not save gallery. Check cloud storage token or local CMS server.');
+        }
         status('Gallery saved.');
       } catch (error) {
         status(error.message || 'Could not save gallery.');

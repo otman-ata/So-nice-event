@@ -10,6 +10,7 @@
     "cms": "node server/upload-server.cjs"
   },
   "dependencies": {
+    "@vercel/blob": "^0.27.3",
     "express": "^5.1.0",
     "multer": "^2.0.2",
     "react": "^19.2.0",

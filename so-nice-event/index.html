@@ -134,6 +134,17 @@
               window.__CMS = Object.assign({}, window.__CMS || {}, { galleryUrl: fileData.cmsGalleryUrl });
             }
           }
+          // 3) Load cloud CMS data when available; static files remain fallbacks.
+          const cmsRes = await fetch('/api/cms', { cache: 'no-cache' });
+          if (cmsRes.ok) {
+            const cmsData = await cmsRes.json();
+            if (cmsData && cmsData.siteImages) {
+              window.__SITE_IMAGES = Object.assign({}, window.__SITE_IMAGES || {}, cmsData.siteImages);
+            }
+            if (cmsData && Array.isArray(cmsData.gallery)) {
+              window.__CMS = Object.assign({}, window.__CMS || {}, { galleryData: cmsData.gallery });
+            }
+          }
         } catch (e) {}
         await import('/index.tsx');
       }
