@@ -4,6 +4,7 @@ import { list, put } from '@vercel/blob';
 
 const CMS_SITE_PATH = 'cms/site-images.json';
 const CMS_GALLERY_PATH = 'cms/gallery.json';
+const blobToken = () => process.env.BLOB1_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
 
 async function readFallbackJson(relativePath, fallbackValue) {
   try {
@@ -15,9 +16,10 @@ async function readFallbackJson(relativePath, fallbackValue) {
 }
 
 async function readBlobJson(pathname, fallbackValue) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return fallbackValue;
+  const token = blobToken();
+  if (!token) return fallbackValue;
   try {
-    const result = await list({ prefix: pathname, limit: 1 });
+    const result = await list({ prefix: pathname, limit: 1, token });
     const blob = result.blobs.find((item) => item.pathname === pathname);
     if (!blob) return fallbackValue;
     const response = await fetch(blob.url, { cache: 'no-store' });
@@ -29,13 +31,15 @@ async function readBlobJson(pathname, fallbackValue) {
 }
 
 async function writeBlobJson(pathname, data) {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    throw new Error('Missing BLOB_READ_WRITE_TOKEN');
+  const token = blobToken();
+  if (!token) {
+    throw new Error('Missing BLOB1_READ_WRITE_TOKEN');
   }
   await put(pathname, JSON.stringify(data, null, 2), {
     access: 'public',
     contentType: 'application/json',
     allowOverwrite: true,
+    token,
   });
 }
 
