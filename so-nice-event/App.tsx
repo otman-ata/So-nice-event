@@ -88,14 +88,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    // This effect runs after the component re-renders due to route change
-    if (scrollToTarget && (route === '' || route === '#/' || route === '#')) {
-        scrollToElement(scrollToTarget);
-        setScrollToTarget(null); // Reset after scrolling
-    }
-  }, [route, scrollToTarget]);
-
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     const targetId = href.substring(1);
