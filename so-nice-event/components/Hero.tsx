@@ -44,7 +44,7 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
   }, [slideImages.length]);
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden zellige-band">
       {slideImages.map((bg, idx) => (
         <div
           key={`${bg}-${idx}`}
@@ -52,9 +52,11 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
           style={{ backgroundImage: `url('${bg}')` }}
         />
       ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#3b070c]/45 to-[#7a121c]/80" />
-      <div className="absolute inset-x-0 bottom-0 h-40 opacity-30 bg-[linear-gradient(135deg,rgba(243,199,77,.55)_25%,transparent_25%,transparent_50%,rgba(243,199,77,.55)_50%,rgba(243,199,77,.55)_75%,transparent_75%)] bg-[length:34px_34px]" />
-      <div className="absolute left-0 right-0 top-28 mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-[#f3c74d]/70 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/68 via-[#3b070c]/50 to-[#76121d]/86" />
+      <div className="absolute inset-x-0 bottom-0 h-48 opacity-35 bg-[radial-gradient(circle_at_50%_50%,rgba(247,217,121,.85)_0_2px,transparent_2.5px),linear-gradient(45deg,transparent_46%,rgba(217,166,41,.75)_47%,rgba(217,166,41,.75)_53%,transparent_54%)] bg-[length:38px_38px]" />
+      <div className="absolute left-0 right-0 top-28 mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-[#f7d979]/80 to-transparent" />
+      <div className="absolute left-6 top-32 hidden h-56 w-20 rounded-t-full border border-[#f7d979]/35 bg-[#450a0a]/20 md:block" />
+      <div className="absolute right-6 bottom-28 hidden h-56 w-20 rounded-t-full border border-[#f7d979]/35 bg-[#450a0a]/20 md:block" />
       {edit && (
         <label className="absolute bottom-8 right-6 z-20 cursor-pointer rounded-full bg-black/65 px-4 py-2 text-sm font-semibold text-white hover:bg-black/80">
           Upload hero slideshow
@@ -92,10 +94,11 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
         </label>
       )}
       <div className="relative text-center text-white px-6 pt-24 z-10 max-w-5xl">
-        <p className="mb-5 inline-flex items-center gap-3 rounded-full border border-[#f3c74d]/70 bg-black/25 px-5 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.22em] text-[#f3c74d] backdrop-blur">
+        <div className="ornament-rule mx-auto mb-6 w-64 opacity-90" />
+        <p className="mb-5 inline-flex items-center gap-3 rounded-full border border-[#f7d979]/70 bg-black/30 px-5 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.18em] text-[#f7d979] backdrop-blur">
           {eyebrow}
         </p>
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-tight italic">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-tight italic drop-shadow-[0_8px_28px_rgba(0,0,0,.35)]">
           {content.title}
         </h1>
         <p className="mt-5 text-xl md:text-3xl font-light text-[#fff7d6]">{content.subtitle1}</p>
@@ -103,7 +106,7 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
         <a
           href="#contact"
           onClick={(e) => onCtaClick(e, '#contact')}
-          className="mt-9 inline-block border border-[#f3c74d] bg-[#f3c74d] text-[#450a0a] py-3 px-10 rounded-full text-lg font-semibold shadow-xl shadow-black/20 transition-transform duration-300 transform hover:scale-105 hover:bg-white"
+          className="mt-9 inline-block border border-[#f7d979] bg-[#d9a629] text-[#450a0a] py-3 px-10 rounded-full text-lg font-semibold shadow-xl shadow-black/20 transition-transform duration-300 transform hover:scale-105 hover:bg-[#fff4c9]"
         >
           {content.ctaButton}
         </a>

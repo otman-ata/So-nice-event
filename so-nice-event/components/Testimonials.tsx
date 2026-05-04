@@ -24,16 +24,16 @@ const Testimonials: React.FC<TestimonialsProps> = ({ content }) => {
   };
 
   return (
-    <section id="testimonials" className="py-24 bg-[#450a0a] text-white moroccan-pattern" ref={sectionRef}>
+    <section id="testimonials" className="py-24 custom-bg text-white moroccan-pattern zellige-band" ref={sectionRef}>
       <div className="container mx-auto px-6 section-inner">
         <div className={`text-center mb-12 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-[#f3c74d]">{copy.eyebrow}</p>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 font-serif italic">{content.title}</h2>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#f7d979]">{copy.eyebrow}</p>
+          <h2 className="moroccan-heading text-4xl md:text-5xl font-bold text-white mb-4 font-serif italic">{content.title}</h2>
           <p className="text-lg text-white/70 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {content.testimonialList.map((review, idx) => (
-            <article key={idx} className="bg-white p-6 rounded-lg shadow-xl shadow-black/15 border border-[#f3c74d]/25 h-full flex flex-col">
+            <article key={idx} className="tile-border bg-white p-6 rounded-lg shadow-xl shadow-black/15 h-full flex flex-col">
               <div className="flex items-center justify-between mb-3">
                 <span className="font-semibold text-stone-800">{review.author}</span>
                 <span className="rounded-full bg-[#fff4c9] px-3 py-1 text-xs font-bold text-[#7a121c]" aria-label="5 star review">5.0</span>
@@ -47,7 +47,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ content }) => {
             href="https://maps.app.goo.gl/Jk8vCG9F4qkn9iUR8"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-[#f3c74d] hover:underline"
+            className="font-semibold text-[#f7d979] hover:underline"
           >
             {copy.link}
           </a>

@@ -12,10 +12,11 @@ interface GalleryProps {
 
 const GalleryImageCard: React.FC<{ image: GalleryImageProps }> = ({ image }) => {
     return (
-        <FadeInOnScroll yOffset={3} className="group relative overflow-hidden rounded-lg border border-[#f3c74d]/25 shadow-lg shadow-[#450a0a]/10">
+        <FadeInOnScroll yOffset={3} className="group relative overflow-hidden rounded-lg border-4 border-white shadow-xl shadow-[#450a0a]/15 ring-1 ring-[#d9a629]/35">
             <img src={image.src} alt={image.category} className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110" />
+            <div className="absolute inset-3 border border-[#f7d979]/45 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#450a0a]/85 to-transparent p-4 pt-16">
-              <span className="inline-flex rounded-full bg-[#f3c74d] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#450a0a]">
+              <span className="inline-flex rounded-full bg-[#d9a629] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#450a0a]">
                 {image.category}
               </span>
             </div>
@@ -99,11 +100,11 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
   const filtered = activeCategory === 'All' ? images : images.filter(i => i.category === activeCategory);
 
   return (
-    <section id="gallery" className="py-24 bg-[#fffdf7] moroccan-pattern" ref={sectionRef}>
+    <section id="gallery" className="py-24 bg-[#fffaf0] moroccan-pattern zellige-band" ref={sectionRef}>
       <div className="container mx-auto px-6 section-inner">
         <div className={`text-center mb-12 transition-opacity duration-1000 ${isSectionVisible ? 'opacity-100' : 'opacity-0'}`}>
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-[#7a121c]">{copy.eyebrow}</p>
-          <h2 className="text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#7a121c]">{copy.eyebrow}</p>
+          <h2 className="moroccan-heading text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
 
@@ -123,7 +124,7 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
             <button
               key={cat.key}
               onClick={() => { setActiveCategory(cat.key as any); setVisibleCount(9); }}
-              className={`px-4 py-2 rounded-full border font-semibold transition-colors ${activeCategory === (cat.key as any) ? 'bg-[#7a121c] text-white border-transparent shadow-md shadow-[#450a0a]/15' : 'border-[#7a121c]/25 bg-white/80 text-[#7a121c] hover:border-[#f3c74d] hover:text-[#450a0a]'}`}
+              className={`px-4 py-2 rounded-full border font-semibold transition-colors ${activeCategory === (cat.key as any) ? 'bg-[#76121d] text-white border-transparent shadow-md shadow-[#450a0a]/15' : 'border-[#7a121c]/25 bg-white/85 text-[#7a121c] hover:border-[#d9a629] hover:text-[#450a0a]'}`}
             >
               {cat.label}
             </button>

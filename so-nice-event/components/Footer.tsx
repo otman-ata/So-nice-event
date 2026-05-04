@@ -30,9 +30,9 @@ const Footer: React.FC<FooterProps> = ({ content, onNavClick }) => {
   ];
 
   return (
-    <footer className="custom-bg text-white">
+    <footer className="custom-bg text-white moroccan-pattern">
       <div className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 text-center md:text-left rtl:md:text-right">
+        <div className="section-inner grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 text-center md:text-left rtl:md:text-right">
           
           <div className="mb-8 md:mb-0 flex flex-col items-center md:items-start">
             <img src={siteImages.logoWhite} alt="So Nice Event Logo" className="h-28 w-auto object-contain mb-4" />
@@ -48,7 +48,7 @@ const Footer: React.FC<FooterProps> = ({ content, onNavClick }) => {
              </div>
              <div className="flex justify-center md:justify-start rtl:md:justify-end space-x-4 rtl:space-x-reverse mt-6">
               {socialLinks.map(link => (
-                <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.name} className="hover:opacity-75 transition-opacity">
+                <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.name} className="rounded-full border border-[#f7d979]/35 bg-white/10 p-2 text-[#f7d979] transition-colors hover:bg-[#f7d979] hover:text-[#450a0a]">
                   {link.icon}
                 </a>
               ))}
@@ -73,7 +73,7 @@ const Footer: React.FC<FooterProps> = ({ content, onNavClick }) => {
 
           <div>
              <p className="font-semibold mb-4 text-lg">{content.mapTitle}</p>
-             <div className="h-48 rounded-lg overflow-hidden shadow-lg">
+             <div className="h-48 rounded-lg overflow-hidden shadow-lg ring-1 ring-[#f7d979]/40">
                 <iframe 
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3440.852139045354!2d-9.56661462447954!3d30.41162097474441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xdb3b6f0d1a4913d%3A0x68e421591c2b55f1!2sAv.%20Arreda%2C%20Agadir%2080000%2C%20Morocco!5e0!3m2!1sen!2sus!4v1721325654321!5m2!1sen!2sus" 
                   width="100%" 

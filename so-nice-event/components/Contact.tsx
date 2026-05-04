@@ -65,22 +65,23 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
   };
 
   return (
-    <section id="contact" className="py-24 bg-[#fffdf7] moroccan-pattern">
+    <section id="contact" className="py-24 bg-[#fffaf0] moroccan-pattern">
       <div className="container mx-auto px-6 section-inner">
         <div className="text-center mb-12">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-[#7a121c]">{copy.eyebrow}</p>
-          <h2 className="text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#7a121c]">{copy.eyebrow}</p>
+          <h2 className="moroccan-heading text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
 
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-8 md:p-12 rounded-lg border border-[#f3c74d]/35 shadow-2xl shadow-[#450a0a]/10">
-          <div className="rounded-lg bg-[#7a121c] p-8 text-white">
-            <h3 className="text-2xl font-semibold mb-6 text-[#f3c74d]">{content.details.title}</h3>
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 tile-border lantern-glow bg-white p-8 md:p-12 rounded-lg">
+          <div className="moroccan-arch rounded-lg custom-bg p-8 text-white">
+            <h3 className="text-2xl font-semibold mb-6 text-[#f7d979]">{content.details.title}</h3>
             <div className="space-y-4 text-white/82">
-               <p><strong>{content.details.emailLabel}</strong> <a href="mailto:Soniceevent04@gmail.com" className="hover:underline text-[#f3c74d]">Soniceevent04@gmail.com</a></p>
-               <p><strong>{content.details.phoneLabel}</strong> <a href="tel:+212666757403" className="hover:underline text-[#f3c74d]" dir="ltr">+212 666-757403</a></p>
+               <p><strong>{content.details.emailLabel}</strong> <a href="mailto:Soniceevent04@gmail.com" className="hover:underline text-[#f7d979]">Soniceevent04@gmail.com</a></p>
+               <p><strong>{content.details.phoneLabel}</strong> <a href="tel:+212666757403" className="hover:underline text-[#f7d979]" dir="ltr">+212 666-757403</a></p>
                <p><strong>{content.details.addressLabel}</strong> Avenue Arreda 13, 80650 Agadir, Maroc</p>
             </div>
+            <div className="ornament-rule mt-8 opacity-80" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -104,7 +105,7 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full bg-[#f3c74d] text-[#450a0a] py-3 px-6 rounded-md text-lg font-bold transition-colors hover:bg-[#ffe690] disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full bg-[#d9a629] text-[#450a0a] py-3 px-6 rounded-md text-lg font-bold transition-colors hover:bg-[#f7d979] disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {status === 'loading' ? copy.sending : content.form.submit}
               </button>
