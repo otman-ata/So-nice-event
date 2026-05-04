@@ -140,6 +140,7 @@
         <button type="button" class="tab active" data-panel="hero">Hero Slideshow</button>
         <button type="button" class="tab" data-panel="site">Site Images</button>
         <button type="button" class="tab" data-panel="gallery">Gallery</button>
+        <button type="button" class="ghost" id="clearDrafts">Clear local drafts</button>
       </div>
       <p class="status" id="status"></p>
 
@@ -214,6 +215,7 @@
 
     const $ = (id) => document.getElementById(id);
     const apiBase = () => '';
+    const isLocalHost = () => ['localhost', '127.0.0.1'].includes(window.location.hostname);
     const localServerBase = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
     const status = (msg) => { $('status').textContent = msg; };
 
@@ -241,6 +243,15 @@
         const data = await cloudResponse.json();
         if (data.ok && data.path) return data.path;
       }
+      let cloudError = 'Cloud upload failed.';
+      try {
+        const data = await cloudResponse.json();
+        cloudError = data.error || cloudError;
+      } catch {}
+
+      if (!isLocalHost()) {
+        throw new Error(cloudError);
+      }
 
       const fd = new FormData();
       fd.append('file', file);
@@ -259,6 +270,12 @@
         body: JSON.stringify({ siteImages }),
       });
       if (response.ok) return;
+      let cloudError = 'Could not save image settings.';
+      try {
+        const data = await response.json();
+        cloudError = data.error || cloudError;
+      } catch {}
+      if (!isLocalHost()) throw new Error(cloudError);
 
       const localResponse = await fetch(localServerBase() + '/save-site', {
         method: 'POST',
@@ -334,7 +351,7 @@
       }
       try {
         const draft = JSON.parse(localStorage.getItem(SITE_DRAFT) || '{}');
-        siteImages = Object.assign({}, siteImages, draft);
+        if (isLocalHost()) siteImages = Object.assign({}, siteImages, draft);
       } catch {}
       if (!Array.isArray(siteImages.heroSlides)) siteImages.heroSlides = [siteImages.heroBg].filter(Boolean);
       renderHero();
@@ -342,7 +359,7 @@
     }
 
     async function loadGallery(preferDraft = true) {
-      if (preferDraft) {
+      if (preferDraft && isLocalHost()) {
         try {
           const draft = JSON.parse(localStorage.getItem(GALLERY_DRAFT) || '');
           if (Array.isArray(draft) && draft.length) {
@@ -514,6 +531,12 @@
           body: JSON.stringify({ gallery: galleryData }),
         });
         if (!response.ok) {
+          let cloudError = 'Could not save gallery.';
+          try {
+            const data = await response.json();
+            cloudError = data.error || cloudError;
+          } catch {}
+          if (!isLocalHost()) throw new Error(cloudError);
           const localResponse = await fetch(localServerBase() + '/save-gallery', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -525,6 +548,12 @@
       } catch (error) {
         status(error.message || 'Could not save gallery.');
       }
+    };
+    $('clearDrafts').onclick = async () => {
+      localStorage.removeItem(GALLERY_DRAFT);
+      localStorage.removeItem(SITE_DRAFT);
+      await Promise.all([loadSiteImages(), loadGallery(false)]);
+      status('Local drafts cleared. Showing cloud data.');
     };
   </script>
 </body>
