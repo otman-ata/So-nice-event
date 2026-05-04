@@ -15,7 +15,7 @@ export const translations = {
     hero: {
       title: 'So Nice Event',
       subtitle1: 'Créateurs de moments inoubliables.',
-      subtitle2: 'Wedding & Event Planning à Agadir, Maroc',
+      subtitle2: 'Organisation de mariages et d\'evenements a Agadir, Maroc',
       ctaButton: 'Demander un devis',
     },
     services: {
@@ -39,7 +39,7 @@ export const translations = {
         },
         {
           image: siteImages.serviceBabyShower,
-          title: 'Baby Shower',
+          title: 'Fete prenatale',
           description: 'Un univers doux et raffiné pour célébrer l\'arrivée de bébé avec une scénographie chaleureuse et des détails personnalisés.',
         },
         {
@@ -57,7 +57,7 @@ export const translations = {
         weddings: 'Mariages',
         private: 'Événements Privés',
         corporate: 'Événements d\'Entreprise',
-        babyShower: 'Baby Shower',
+        babyShower: 'Fete prenatale',
         birthdays: 'Anniversaires'
       }
     },

@@ -1,10 +1,10 @@
-import type { SiteImageKey } from './images';
+import type { SiteImageKey, SiteImageValue } from './images';
 
 export const SITE_IMAGES_EVENT = 'so-nice-site-images';
 
-export function writeSiteImageOverride(key: SiteImageKey, value: string) {
+export function writeSiteImageOverride(key: SiteImageKey, value: SiteImageValue) {
   if (typeof window === 'undefined') return;
-  const next: Partial<Record<SiteImageKey, string>> = { ...(window.__SITE_IMAGES || {}) };
+  const next: Partial<Record<SiteImageKey, SiteImageValue>> = { ...(window.__SITE_IMAGES || {}) };
   next[key] = value;
   window.__SITE_IMAGES = next;
   try {

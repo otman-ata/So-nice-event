@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   const useGoldFilter = scrolled && yellow === white;
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-300 ${scrolled ? 'custom-bg shadow-md border-white/10' : 'bg-transparent border-transparent'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${scrolled ? 'bg-[#7a121c]/95 shadow-xl shadow-black/15 border-[#f3c74d]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#home" onClick={(e) => onNavClick(e, '#home')} className="flex items-center" aria-label="So Nice Event Home">
           {cmsEdit ? (
@@ -144,13 +144,13 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
         </a>
 
         <div className="hidden md:flex items-center space-x-8">
-          <nav className="flex space-x-8" aria-label="Main navigation">
+          <nav className="flex space-x-2" aria-label="Main navigation">
             {content.navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => onNavClick(e, link.href)}
-                className="font-medium text-lg text-white/90 hover:text-amber-200 transition-colors"
+                className="rounded-full px-4 py-2 font-medium text-base text-white/90 hover:bg-white/10 hover:text-[#f3c74d] transition-colors"
               >
                 {link.text}
               </a>

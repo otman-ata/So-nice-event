@@ -4,256 +4,477 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Gallery · Manage photos</title>
+  <title>So Nice Event Admin</title>
   <style>
-    :root { --rose:#8d555f; --rose-hover:#74464f; --paper:#fdfbf8; --ink:#1c1917; --muted:#78716c; --line:#e7e5e4; --card:#fff; --radius:14px; }
+    :root {
+      --red: #7a121c;
+      --red-dark: #450a0a;
+      --gold: #f3c74d;
+      --cream: #fff8e8;
+      --paper: #fffdf7;
+      --ink: #211815;
+      --muted: #7c6f64;
+      --line: rgba(122, 18, 28, .18);
+      --card: #fff;
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; background: linear-gradient(165deg, #f5f0f1 0%, var(--paper) 45%); color: var(--ink); }
-    .shell { max-width: 860px; margin: 0 auto; padding: 28px 20px 48px; }
-    .brand { text-align: center; margin-bottom: 24px; }
-    .brand h1 { margin: 0; color: var(--rose); font-size: 1.5rem; }
-    .brand p { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
-    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--line); padding: 18px; box-shadow: 0 2px 14px rgba(28,25,23,.05); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18px 18px, rgba(243, 199, 77, .22) 2px, transparent 2.5px) 0 0 / 36px 36px,
+        linear-gradient(135deg, #fffdf7 0%, #fff2d1 45%, #fff 100%);
+    }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 28px 20px 54px; }
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 20px;
+      padding: 22px;
+      border-radius: 18px;
+      color: white;
+      background: linear-gradient(135deg, var(--red-dark), var(--red));
+      box-shadow: 0 20px 48px rgba(69, 10, 10, .18);
+      position: relative;
+      overflow: hidden;
+    }
+    .brand::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .16;
+      background-image: linear-gradient(135deg, var(--gold) 25%, transparent 25%, transparent 50%, var(--gold) 50%, var(--gold) 75%, transparent 75%);
+      background-size: 32px 32px;
+    }
+    .brand > * { position: relative; z-index: 1; }
+    h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); letter-spacing: .01em; }
+    .brand p { margin: 6px 0 0; color: rgba(255,255,255,.78); }
+    .pill { border: 1px solid rgba(243,199,77,.65); color: var(--gold); border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; white-space: nowrap; }
+    .card {
+      background: rgba(255,255,255,.9);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 10px 26px rgba(33, 24, 21, .06);
+      backdrop-filter: blur(10px);
+    }
+    #gate { max-width: 460px; margin: 46px auto; }
+    .hidden { display: none !important; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0; }
+    .tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--red-dark);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .tab.active { background: var(--red); color: #fff; border-color: var(--red); }
+    .panel { display: none; }
+    .panel.active { display: block; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    input[type="password"], input[type="text"], input[type="number"], select { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
-    button { padding: 10px 14px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; }
-    .btn { background: var(--rose); color: #fff; }
-    .ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
-    .danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-    .app.hidden, #gate.hidden { display: none !important; }
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
-    .tab { padding: 10px 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--muted); }
-    .tab.active { background: var(--rose); color: #fff; border-color: var(--rose); }
-    .gallery-list { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
-    .photo-card { display: flex; gap: 14px; flex-wrap: wrap; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
-    .photo-thumb { width: 132px; height: 100px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: #f5f5f4; display: flex; align-items: center; justify-content: center; color: #a8a29e; font-size: 11px; text-align: center; padding: 8px; }
-    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: none; }
-    .photo-thumb img.show { display: block; }
-    .photo-body { flex: 1; min-width: 220px; }
-    .field { margin-bottom: 10px; }
-    .field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
-    .status { min-height: 20px; margin-top: 8px; color: var(--muted); font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    label { display: block; color: var(--muted); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    input[type="password"], input[type="text"], input[type="number"], select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      background: #fff;
+    }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 850;
+      font: inherit;
+    }
+    .btn { background: var(--red); color: #fff; }
+    .btn:hover { background: var(--red-dark); }
+    .gold { background: var(--gold); color: var(--red-dark); }
+    .ghost { background: #fff; color: var(--red-dark); border: 1px solid var(--line); }
+    .danger { background: #fff1f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .status { min-height: 22px; color: var(--muted); margin: 10px 0; font-size: 13px; }
+    .list { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+    .item { display: grid; grid-template-columns: 150px 1fr; gap: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .thumb { width: 150px; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; background: #f8f1e4; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .thumb img.show { display: block; }
+    .item-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .section-title { margin: 0 0 12px; color: var(--red-dark); font-size: 1.2rem; }
+    .hint { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 14px; }
+    @media (max-width: 680px) {
+      .brand { align-items: flex-start; flex-direction: column; }
+      .item { grid-template-columns: 1fr; }
+      .thumb { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="shell">
+  <main class="shell">
     <header class="brand">
-      <h1 id="title">Gallery</h1>
-      <p id="subtitle">Upload and organize website images.</p>
+      <div>
+        <h1>So Nice Event Admin</h1>
+        <p>Manage the hero slideshow, uploaded images, gallery, and editable text.</p>
+      </div>
+      <span class="pill">Staff only</span>
     </header>
 
-    <section id="gate">
-      <div class="card">
-        <label id="passwordLabel" for="pass">Password</label>
-        <div class="row">
-          <input id="pass" type="password" autocomplete="current-password" />
-          <button type="button" class="btn" id="enter">Enter</button>
-          <select id="lang" title="Language">
-            <option value="en">EN</option>
-            <option value="fr">FR</option>
-            <option value="ar">AR</option>
-          </select>
-        </div>
+    <section id="gate" class="card">
+      <label for="pass">Password</label>
+      <div class="row">
+        <input id="pass" type="password" autocomplete="current-password" placeholder="soniceevent-admin" />
+        <button type="button" class="btn" id="enter">Enter</button>
       </div>
     </section>
 
-    <section id="app" class="app hidden">
-      <div class="card">
-        <div class="tabs">
-          <button class="tab active" data-tab="Weddings">Weddings</button>
-          <button class="tab" data-tab="Private Events">Private events</button>
-          <button class="tab" data-tab="Corporate Events">Corporate</button>
-          <button class="tab" data-tab="Baby Shower">Baby Shower</button>
-          <button class="tab" data-tab="Birthdays">Birthdays</button>
+    <section id="app" class="hidden">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-panel="hero">Hero Slideshow</button>
+        <button type="button" class="tab" data-panel="site">Site Images</button>
+        <button type="button" class="tab" data-panel="gallery">Gallery</button>
+      </div>
+      <p class="status" id="status"></p>
+
+      <section id="panel-hero" class="panel active card">
+        <h2 class="section-title">Header Slideshow</h2>
+        <p class="hint">Upload several hero images, reorder them, then save. The public header slideshow changes every 2 seconds.</p>
+        <div class="row">
+          <input id="heroUpload" type="file" accept="image/*" multiple />
+          <button type="button" class="gold" id="addHero">Add uploaded images</button>
+          <button type="button" class="btn" id="saveHero">Save slideshow</button>
+        </div>
+        <div id="heroList" class="list"></div>
+      </section>
+
+      <section id="panel-site" class="panel card">
+        <h2 class="section-title">Site Images</h2>
+        <p class="hint">Replace logos, service images, and About image. These uploads are saved into the project assets folder.</p>
+        <div class="grid">
+          <div>
+            <label for="siteImageKey">Image slot</label>
+            <select id="siteImageKey">
+              <option value="logoWhite">White logo</option>
+              <option value="logoYellow">Yellow logo</option>
+              <option value="heroBg">Fallback hero image</option>
+              <option value="aboutUs">About image</option>
+              <option value="serviceWedding">Wedding service</option>
+              <option value="servicePrivate">Private service</option>
+              <option value="serviceCorporate">Corporate service</option>
+              <option value="serviceBabyShower">Baby shower service</option>
+              <option value="serviceBirthday">Birthday service</option>
+            </select>
+          </div>
+          <div>
+            <label for="siteImageUpload">Upload replacement</label>
+            <input id="siteImageUpload" type="file" accept="image/*" />
+          </div>
+        </div>
+        <div class="row" style="margin-top: 12px;">
+          <button type="button" class="btn" id="saveSiteImageUrls">Save image URLs</button>
+        </div>
+        <div id="siteImagePreview" class="list"></div>
+      </section>
+
+      <section id="panel-gallery" class="panel card">
+        <h2 class="section-title">Gallery</h2>
+        <div class="tabs" id="galleryTabs">
+          <button type="button" class="tab active" data-category="Weddings">Weddings</button>
+          <button type="button" class="tab" data-category="Private Events">Private</button>
+          <button type="button" class="tab" data-category="Corporate Events">Corporate</button>
+          <button type="button" class="tab" data-category="Baby Shower">Baby Shower</button>
+          <button type="button" class="tab" data-category="Birthdays">Birthdays</button>
         </div>
         <div class="row">
-          <button type="button" id="add" class="btn">+ Add photo</button>
-          <button type="button" id="reload" class="ghost">Reload list</button>
-          <button type="button" id="saveGallery" class="btn">Save changes</button>
+          <button type="button" class="gold" id="addGallery">Add photo</button>
+          <button type="button" class="ghost" id="reloadGallery">Reload gallery</button>
+          <button type="button" class="btn" id="saveGallery">Save gallery</button>
         </div>
-        <p id="status" class="status"></p>
-        <div id="galleryCards" class="gallery-list"></div>
-      </div>
+        <div id="galleryList" class="list"></div>
+      </section>
+
     </section>
-  </div>
+  </main>
 
   <script>
-    const PASSPHRASES = ["soniceevent-admin", "soniceevent-staff"];
-    const DRAFT_KEY = "so_nice_gallery_draft";
-    const data = { "Weddings": [], "Private Events": [], "Corporate Events": [], "Baby Shower": [], "Birthdays": [] };
-    let active = "Weddings";
-    const lang = document.getElementById("lang");
-    const base = () => (localStorage.getItem("cms_local_server") || "http://localhost:4000").replace(/\/$/, "");
+    const PASSPHRASES = ['soniceevent-admin', 'soniceevent-staff'];
+    const CATEGORIES = ['Weddings', 'Private Events', 'Corporate Events', 'Baby Shower', 'Birthdays'];
+    const GALLERY_DRAFT = 'so_nice_gallery_draft';
+    const SITE_DRAFT = 'site_images_override';
+    let siteImages = {};
+    let galleryData = [];
+    let activeCategory = 'Weddings';
 
-    const T = {
-      en: { title:"Gallery", subtitle:"Upload and organize website images.", password:"Password", enter:"Enter", wrong:"Wrong password", add:"+ Add photo", reload:"Reload list", save:"Save changes", saved:"Saved on server.", local:"Server unavailable - saved only in this browser.", updated:"Updated.", del:"Delete this photo?", upload:"Upload image", id:"ID", url:"Image URL", up:"Up", down:"Down", delete:"Delete", noImage:"No image" },
-      fr: { title:"Galerie", subtitle:"Televerser et organiser les images du site.", password:"Mot de passe", enter:"Entrer", wrong:"Mot de passe incorrect", add:"+ Ajouter photo", reload:"Recharger", save:"Enregistrer", saved:"Enregistre sur le serveur.", local:"Serveur indisponible - enregistre dans ce navigateur.", updated:"Mise a jour.", del:"Supprimer cette photo ?", upload:"Televerser image", id:"ID", url:"URL image", up:"Haut", down:"Bas", delete:"Supprimer", noImage:"Aucune image" },
-      ar: { title:"المعرض", subtitle:"رفع وتنظيم صور الموقع.", password:"كلمة المرور", enter:"دخول", wrong:"كلمة مرور خاطئة", add:"+ إضافة صورة", reload:"تحديث", save:"حفظ", saved:"تم الحفظ على الخادم.", local:"الخادم غير متاح - تم الحفظ في المتصفح فقط.", updated:"تم التحديث.", del:"حذف هذه الصورة؟", upload:"رفع صورة", id:"المعرف", url:"رابط الصورة", up:"أعلى", down:"أسفل", delete:"حذف", noImage:"لا صورة" }
-    };
-    const d = () => T[lang.value] || T.en;
+    const $ = (id) => document.getElementById(id);
+    const serverBase = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
+    const status = (msg) => { $('status').textContent = msg; };
 
-    function applyLang() {
-      const x = d();
-      document.getElementById("title").textContent = x.title;
-      document.getElementById("subtitle").textContent = x.subtitle;
-      document.getElementById("passwordLabel").textContent = x.password;
-      document.getElementById("enter").textContent = x.enter;
-      document.getElementById("add").textContent = x.add;
-      document.getElementById("reload").textContent = x.reload;
-      document.getElementById("saveGallery").textContent = x.save;
-      document.documentElement.dir = lang.value === "ar" ? "rtl" : "ltr";
-      render();
-    }
-
-    function merged() {
-      return Object.keys(data).flatMap((c) => (data[c] || []).map((i) => ({ id: Number(i.id), src: String(i.src || ""), category: c })));
-    }
-    function persistDraft() {
-      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(merged())); } catch {}
-      document.getElementById("status").textContent = d().updated;
-    }
-
-    async function upload(file) {
+    async function uploadFile(file) {
       const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch(base() + "/upload-image", { method: "POST", body: fd });
-      if (!res.ok) throw new Error("upload");
-      const j = await res.json();
-      if (!j.ok || !j.path) throw new Error("upload");
-      return j.path;
+      fd.append('file', file);
+      const response = await fetch(serverBase() + '/upload-image', { method: 'POST', body: fd });
+      if (!response.ok) throw new Error('Upload failed');
+      const data = await response.json();
+      if (!data.ok || !data.path) throw new Error(data.error || 'Upload failed');
+      return data.path;
     }
 
-    function render() {
-      const root = document.getElementById("galleryCards");
-      root.innerHTML = "";
-      const arr = data[active] || [];
-      arr.forEach((it, idx) => {
-        const card = document.createElement("div");
-        card.className = "photo-card";
-        card.innerHTML = `
-          <div class="photo-thumb"><img id="img_${idx}" /><span id="empty_${idx}">${d().noImage}</span></div>
-          <div class="photo-body">
-            <div class="field"><label>${d().id}</label><input id="id_${idx}" type="number" value="${Number(it.id) || idx + 1}" /></div>
-            <div class="field"><label>${d().url}</label><input id="src_${idx}" type="text" value="${it.src || ""}" /></div>
-            <div class="row">
-              <button type="button" class="btn" id="up_${idx}">${d().upload}</button>
-              <button type="button" class="ghost" id="mvup_${idx}">${d().up}</button>
-              <button type="button" class="ghost" id="mvdn_${idx}">${d().down}</button>
-              <button type="button" class="danger" id="del_${idx}">${d().delete}</button>
-              <input id="file_${idx}" type="file" accept="image/*" style="display:none" />
+    async function persistSiteImages() {
+      localStorage.setItem(SITE_DRAFT, JSON.stringify(siteImages));
+      const response = await fetch(serverBase() + '/save-site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(siteImages),
+      });
+      if (!response.ok) throw new Error('Could not save site-images.json');
+    }
+
+    function imageThumb(src, label) {
+      return `<div class="thumb"><img src="${src || ''}" class="${src ? 'show' : ''}" onerror="this.classList.remove('show'); this.nextElementSibling.style.display='block';" /><span style="${src ? 'display:none' : ''}">${label || 'No image'}</span></div>`;
+    }
+
+    function renderHero() {
+      const slides = Array.isArray(siteImages.heroSlides) ? siteImages.heroSlides : [];
+      $('heroList').innerHTML = slides.map((src, index) => `
+        <article class="item">
+          ${imageThumb(src, 'Hero slide')}
+          <div>
+            <label>Slide URL</label>
+            <input type="text" value="${src}" data-hero-url="${index}" />
+            <div class="item-actions">
+              <input type="file" accept="image/*" data-hero-file="${index}" style="max-width:220px;" />
+              <button type="button" class="ghost" data-hero-up="${index}">Up</button>
+              <button type="button" class="ghost" data-hero-down="${index}">Down</button>
+              <button type="button" class="danger" data-hero-delete="${index}">Delete</button>
             </div>
           </div>
-        `;
-        root.appendChild(card);
-
-        const img = document.getElementById(`img_${idx}`);
-        const empty = document.getElementById(`empty_${idx}`);
-        const sync = () => {
-          const s = String(arr[idx].src || "").trim();
-          if (!s) {
-            img.classList.remove("show");
-            img.removeAttribute("src");
-            empty.style.display = "";
-            return;
-          }
-          img.src = s;
-          img.classList.add("show");
-          empty.style.display = "none";
-        };
-        sync();
-
-        document.getElementById(`id_${idx}`).onchange = (e) => { arr[idx].id = Number(e.target.value) || idx + 1; persistDraft(); };
-        document.getElementById(`src_${idx}`).onchange = (e) => { arr[idx].src = e.target.value.trim(); sync(); persistDraft(); };
-        document.getElementById(`up_${idx}`).onclick = () => document.getElementById(`file_${idx}`).click();
-        document.getElementById(`file_${idx}`).onchange = async (e) => {
-          const f = e.target.files && e.target.files[0];
-          if (!f) return;
-          try {
-            arr[idx].src = await upload(f);
-            document.getElementById(`src_${idx}`).value = arr[idx].src;
-            sync();
-            persistDraft();
-          } catch {}
-        };
-        document.getElementById(`del_${idx}`).onclick = () => {
-          if (!confirm(d().del)) return;
-          arr.splice(idx, 1);
-          render();
-          persistDraft();
-        };
-        document.getElementById(`mvup_${idx}`).onclick = () => {
-          if (idx < 1) return;
-          [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
-          render();
-          persistDraft();
-        };
-        document.getElementById(`mvdn_${idx}`).onclick = () => {
-          if (idx >= arr.length - 1) return;
-          [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
-          render();
-          persistDraft();
-        };
-      });
+        </article>
+      `).join('');
     }
 
-    async function load(preferDraft) {
+    function renderGallery() {
+      const items = galleryData.filter((item) => item.category === activeCategory);
+      $('galleryList').innerHTML = items.map((item, index) => `
+        <article class="item">
+          ${imageThumb(item.src, 'Gallery image')}
+          <div>
+            <div class="grid">
+              <div><label>ID</label><input type="number" value="${Number(item.id) || index + 1}" data-gallery-id="${item.id}" /></div>
+              <div><label>Image URL</label><input type="text" value="${item.src || ''}" data-gallery-url="${item.id}" /></div>
+            </div>
+            <div class="item-actions">
+              <input type="file" accept="image/*" data-gallery-file="${item.id}" style="max-width:220px;" />
+              <button type="button" class="danger" data-gallery-delete="${item.id}">Delete</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function renderSitePreview() {
+      const keys = ['logoWhite', 'logoYellow', 'heroBg', 'aboutUs', 'serviceWedding', 'servicePrivate', 'serviceCorporate', 'serviceBabyShower', 'serviceBirthday'];
+      $('siteImagePreview').innerHTML = keys.map((key) => `
+        <article class="item">
+          ${imageThumb(siteImages[key], key)}
+          <div>
+            <label>${key}</label>
+            <input type="text" value="${siteImages[key] || ''}" data-site-url="${key}" />
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadSiteImages() {
+      const response = await fetch('/assets/site-images.json', { cache: 'no-cache' });
+      siteImages = response.ok ? await response.json() : {};
+      try {
+        const draft = JSON.parse(localStorage.getItem(SITE_DRAFT) || '{}');
+        siteImages = Object.assign({}, siteImages, draft);
+      } catch {}
+      if (!Array.isArray(siteImages.heroSlides)) siteImages.heroSlides = [siteImages.heroBg].filter(Boolean);
+      renderHero();
+      renderSitePreview();
+    }
+
+    async function loadGallery(preferDraft = true) {
       if (preferDraft) {
         try {
-          const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "");
+          const draft = JSON.parse(localStorage.getItem(GALLERY_DRAFT) || '');
           if (Array.isArray(draft) && draft.length) {
-            Object.keys(data).forEach((k) => (data[k] = draft.filter((i) => i.category === k)));
-            render();
+            galleryData = draft;
+            renderGallery();
             return;
           }
         } catch {}
       }
-      try {
-        const res = await fetch("/assets/gallery.json", { cache: "no-cache" });
-        if (res.ok) {
-          const arr = await res.json();
-          Object.keys(data).forEach((k) => (data[k] = arr.filter((i) => i.category === k)));
-        }
-      } catch {}
-      render();
+      const response = await fetch('/assets/gallery.json', { cache: 'no-cache' });
+      galleryData = response.ok ? await response.json() : [];
+      renderGallery();
     }
 
-    document.querySelectorAll(".tab").forEach((el) => el.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
-      el.classList.add("active");
-      active = el.getAttribute("data-tab");
-      render();
-    }));
-    lang.addEventListener("change", applyLang);
-    document.getElementById("enter").onclick = async () => {
-      const v = document.getElementById("pass").value.trim();
-      if (!PASSPHRASES.includes(v)) return alert(d().wrong);
-      document.getElementById("gate").classList.add("hidden");
-      document.getElementById("app").classList.remove("hidden");
-      applyLang();
-      await load(true);
-    };
-    document.getElementById("add").onclick = () => {
-      const arr = data[active];
-      const next = arr.length ? Math.max(...arr.map((x) => Number(x.id) || 0)) + 1 : 1;
-      arr.push({ id: next, src: "", category: active });
-      render();
-      persistDraft();
-    };
-    document.getElementById("reload").onclick = async () => { await load(false); };
-    document.getElementById("saveGallery").onclick = async () => {
-      persistDraft();
+    document.addEventListener('input', (event) => {
+      const el = event.target;
+      if (el.dataset.heroUrl) {
+        siteImages.heroSlides[Number(el.dataset.heroUrl)] = el.value.trim();
+      }
+      if (el.dataset.galleryUrl) {
+        const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryUrl));
+        if (item) item.src = el.value.trim();
+      }
+      if (el.dataset.galleryId) {
+        const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryId));
+        if (item) item.id = Number(el.value) || item.id;
+      }
+      if (el.dataset.siteUrl) {
+        siteImages[el.dataset.siteUrl] = el.value.trim();
+      }
+    });
+
+    document.addEventListener('change', async (event) => {
+      const el = event.target;
       try {
-        const r = await fetch(base() + "/save-gallery", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(merged()),
-        });
-        alert(r.ok ? d().saved : d().local);
-      } catch {
-        alert(d().local);
+        if (el.dataset.heroFile) {
+          const file = el.files && el.files[0];
+          if (!file) return;
+          siteImages.heroSlides[Number(el.dataset.heroFile)] = await uploadFile(file);
+          renderHero();
+          status('Hero slide uploaded. Save slideshow to publish it.');
+        }
+        if (el.dataset.galleryFile) {
+          const file = el.files && el.files[0];
+          if (!file) return;
+          const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryFile));
+          if (item) item.src = await uploadFile(file);
+          localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+          renderGallery();
+          status('Gallery image uploaded. Save gallery to publish it.');
+        }
+      } catch (error) {
+        status(error.message || 'Upload failed.');
+      }
+    });
+
+    document.addEventListener('click', async (event) => {
+      const el = event.target;
+      if (el.dataset.panel) {
+        document.querySelectorAll('.tabs > .tab[data-panel]').forEach((tab) => tab.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach((panel) => panel.classList.remove('active'));
+        el.classList.add('active');
+        $('panel-' + el.dataset.panel).classList.add('active');
+      }
+      if (el.dataset.category) {
+        document.querySelectorAll('#galleryTabs .tab').forEach((tab) => tab.classList.remove('active'));
+        el.classList.add('active');
+        activeCategory = el.dataset.category;
+        renderGallery();
+      }
+      if (el.dataset.heroDelete) {
+        siteImages.heroSlides.splice(Number(el.dataset.heroDelete), 1);
+        renderHero();
+      }
+      if (el.dataset.heroUp) {
+        const i = Number(el.dataset.heroUp);
+        if (i > 0) [siteImages.heroSlides[i - 1], siteImages.heroSlides[i]] = [siteImages.heroSlides[i], siteImages.heroSlides[i - 1]];
+        renderHero();
+      }
+      if (el.dataset.heroDown) {
+        const i = Number(el.dataset.heroDown);
+        if (i < siteImages.heroSlides.length - 1) [siteImages.heroSlides[i + 1], siteImages.heroSlides[i]] = [siteImages.heroSlides[i], siteImages.heroSlides[i + 1]];
+        renderHero();
+      }
+      if (el.dataset.galleryDelete) {
+        galleryData = galleryData.filter((item) => String(item.id) !== String(el.dataset.galleryDelete));
+        localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+        renderGallery();
+      }
+    });
+
+    $('enter').onclick = async () => {
+      if (!PASSPHRASES.includes($('pass').value.trim())) return alert('Wrong password');
+      $('gate').classList.add('hidden');
+      $('app').classList.remove('hidden');
+      await Promise.all([loadSiteImages(), loadGallery(true)]);
+      status('Ready.');
+    };
+
+    $('addHero').onclick = async () => {
+      const files = Array.from($('heroUpload').files || []);
+      if (!files.length) return status('Choose hero images first.');
+      try {
+        for (const file of files) siteImages.heroSlides.push(await uploadFile(file));
+        $('heroUpload').value = '';
+        renderHero();
+        status('Hero images uploaded. Save slideshow to publish.');
+      } catch (error) {
+        status(error.message || 'Upload failed.');
       }
     };
-    applyLang();
+
+    $('saveHero').onclick = async () => {
+      try {
+        siteImages.heroSlides = siteImages.heroSlides.filter(Boolean);
+        if (!siteImages.heroSlides.length) throw new Error('Add at least one hero slide.');
+        siteImages.heroBg = siteImages.heroSlides[0];
+        await persistSiteImages();
+        renderSitePreview();
+        status('Hero slideshow saved.');
+      } catch (error) {
+        status(error.message || 'Could not save slideshow.');
+      }
+    };
+
+    $('siteImageUpload').onchange = async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      try {
+        const key = $('siteImageKey').value;
+        siteImages[key] = await uploadFile(file);
+        await persistSiteImages();
+        renderSitePreview();
+        event.target.value = '';
+        status('Site image uploaded and saved.');
+      } catch (error) {
+        status(error.message || 'Upload failed.');
+      }
+    };
+    $('saveSiteImageUrls').onclick = async () => {
+      try {
+        await persistSiteImages();
+        renderSitePreview();
+        status('Site image URLs saved.');
+      } catch (error) {
+        status(error.message || 'Could not save site image URLs.');
+      }
+    };
+
+    $('addGallery').onclick = () => {
+      const nextId = galleryData.length ? Math.max(...galleryData.map((item) => Number(item.id) || 0)) + 1 : 1;
+      galleryData.push({ id: nextId, src: '', category: activeCategory });
+      localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+      renderGallery();
+    };
+    $('reloadGallery').onclick = () => loadGallery(false);
+    $('saveGallery').onclick = async () => {
+      try {
+        localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+        const response = await fetch(serverBase() + '/save-gallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(galleryData),
+        });
+        if (!response.ok) throw new Error('Could not save gallery.json');
+        status('Gallery saved.');
+      } catch (error) {
+        status(error.message || 'Could not save gallery.');
+      }
+    };
   </script>
 </body>
 </html>

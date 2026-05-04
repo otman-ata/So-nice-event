@@ -24,7 +24,9 @@
       }
       body {
         font-family: 'Montserrat', sans-serif;
-        background-color: var(--color-cream);
+        background:
+          radial-gradient(circle at 18px 18px, rgba(243, 199, 77, .16) 2px, transparent 2.5px) 0 0 / 36px 36px,
+          linear-gradient(180deg, #fffdf7 0%, var(--color-cream) 48%, #fff 100%);
         color: var(--color-ink);
       }
       h1, h2, h3, h4, h5, h6, .font-serif {
@@ -44,23 +46,34 @@
       .custom-text-dark {
         color: #450a0a;
       }
+      .gold-bg {
+        background-color: var(--color-accent);
+      }
+      .gold-text {
+        color: var(--color-accent);
+      }
       .moroccan-pattern {
         position: relative;
+        overflow: hidden;
       }
       .moroccan-pattern::before {
         content: '';
         position: absolute;
         inset: 0;
         pointer-events: none;
-        opacity: 0.1;
+        opacity: 0.12;
         background-image:
-          radial-gradient(circle at 25% 25%, var(--color-accent) 0 1px, transparent 1px),
-          radial-gradient(circle at 75% 75%, #ffffff 0 1px, transparent 1px);
-        background-size: 28px 28px;
+          linear-gradient(135deg, rgba(243,199,77,.75) 25%, transparent 25%, transparent 50%, rgba(243,199,77,.75) 50%, rgba(243,199,77,.75) 75%, transparent 75%),
+          radial-gradient(circle at 50% 50%, rgba(122,18,28,.6) 0 2px, transparent 2.5px);
+        background-size: 34px 34px, 34px 34px;
+      }
+      .section-inner {
+        position: relative;
+        z-index: 1;
       }
       /* White header logo → warm gold when scrolled (no separate asset required) */
       .header-logo--gold {
-        filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(350deg)
+        filter: brightness(0) saturate(100%) invert(78%) sepia(86%) saturate(607%) hue-rotate(350deg) brightness(99%) contrast(92%)
           drop-shadow(0 0 1px rgba(251, 191, 36, 0.35));
       }
 

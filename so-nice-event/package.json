@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "cms": "node server/upload-server.js"
+    "cms": "node server/upload-server.cjs"
   },
   "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

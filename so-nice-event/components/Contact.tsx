@@ -7,6 +7,7 @@ interface ContactProps {
     form: {
       name: string;
       email: string;
+      phone?: string;
       message: string;
       submit: string;
     };
@@ -26,6 +27,14 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
   const [status, setStatus] = useState<FormStatus>('idle');
   const [responseMessage, setResponseMessage] = useState('');
+  const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'fr';
+  const copy = {
+    eyebrow: lang === 'ar' ? 'ابدأ التخطيط' : lang === 'fr' ? 'Commencer votre projet' : 'Start planning',
+    sending: lang === 'ar' ? 'جار الارسال...' : lang === 'fr' ? 'Envoi...' : 'Sending...',
+    requestTitle: lang === 'ar' ? 'طلب مناسبة جديد' : lang === 'fr' ? 'Nouvelle demande d\'evenement' : 'New Event Request',
+    redirecting: lang === 'ar' ? 'جار فتح واتساب...' : lang === 'fr' ? 'Ouverture de WhatsApp...' : 'Redirecting to WhatsApp...',
+    error: lang === 'ar' ? 'تعذر فتح واتساب. يرجى المحاولة مرة اخرى.' : lang === 'fr' ? 'Impossible d\'ouvrir WhatsApp. Veuillez reessayer.' : 'Could not open WhatsApp. Please try again.',
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,7 +47,7 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
     setResponseMessage('');
     try {
       const payload = [
-        'New Event Request',
+        copy.requestTitle,
         `Name: ${formData.name || '-'}`,
         `Email: ${formData.email || '-'}`,
         `Phone: ${formData.phone || '-'}`,
@@ -47,56 +56,57 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
       const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(payload)}`;
       window.location.href = url;
       setStatus('success');
-      setResponseMessage('Redirecting to WhatsApp...');
+      setResponseMessage(copy.redirecting);
     } catch (error) {
       setStatus('error');
-      setResponseMessage('Could not open WhatsApp. Please try again.');
+      setResponseMessage(copy.error);
       console.error('WhatsApp redirect error', error);
     }
   };
 
   return (
-    <section id="contact" className="py-20 bg-[#fffdf7] moroccan-pattern">
-      <div className="container mx-auto px-6">
+    <section id="contact" className="py-24 bg-[#fffdf7] moroccan-pattern">
+      <div className="container mx-auto px-6 section-inner">
         <div className="text-center mb-12">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.24em] text-[#7a121c]">{copy.eyebrow}</p>
           <h2 className="text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
 
-        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 bg-gray-50 p-8 md:p-12 rounded-lg shadow-lg">
-          <div>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-6">{content.details.title}</h3>
-            <div className="space-y-4 text-gray-600">
-               <p><strong>{content.details.emailLabel}</strong> <a href="mailto:Soniceevent04@gmail.com" className="hover:underline custom-text">Soniceevent04@gmail.com</a></p>
-               <p><strong>{content.details.phoneLabel}</strong> <a href="tel:+212666757403" className="hover:underline custom-text" dir="ltr">+212 666-757403</a></p>
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-8 md:p-12 rounded-lg border border-[#f3c74d]/35 shadow-2xl shadow-[#450a0a]/10">
+          <div className="rounded-lg bg-[#7a121c] p-8 text-white">
+            <h3 className="text-2xl font-semibold mb-6 text-[#f3c74d]">{content.details.title}</h3>
+            <div className="space-y-4 text-white/82">
+               <p><strong>{content.details.emailLabel}</strong> <a href="mailto:Soniceevent04@gmail.com" className="hover:underline text-[#f3c74d]">Soniceevent04@gmail.com</a></p>
+               <p><strong>{content.details.phoneLabel}</strong> <a href="tel:+212666757403" className="hover:underline text-[#f3c74d]" dir="ltr">+212 666-757403</a></p>
                <p><strong>{content.details.addressLabel}</strong> Avenue Arreda 13, 80650 Agadir, Maroc</p>
             </div>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{content.form.name}</label>
-              <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
+              <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{content.form.email}</label>
-              <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
+              <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
             </div>
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{content.form.phone || 'Phone Number'}</label>
-              <input type="tel" name="phone" id="phone" dir="ltr" placeholder="+212 666-757403" value={formData.phone} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
+              <input type="tel" name="phone" id="phone" dir="ltr" placeholder="+212 666-757403" value={formData.phone} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]" />
             </div>
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">{content.form.message}</label>
-              <textarea name="message" id="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]"></textarea>
+              <textarea name="message" id="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full px-4 py-3 border border-[#7a121c]/20 rounded-md focus:ring-[#7f1d1d] focus:border-[#7f1d1d]"></textarea>
             </div>
             <div>
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full custom-bg text-white py-3 px-6 rounded-md text-lg font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full bg-[#f3c74d] text-[#450a0a] py-3 px-6 rounded-md text-lg font-bold transition-colors hover:bg-[#ffe690] disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {status === 'loading' ? 'Sending...' : content.form.submit}
+                {status === 'loading' ? copy.sending : content.form.submit}
               </button>
             </div>
             <div className="h-6 text-sm text-center">

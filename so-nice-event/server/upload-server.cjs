@@ -23,6 +23,10 @@ app.use((req, res, next) => {
 // Ensure directories exist
 fs.mkdirSync(IMAGES_DIR, { recursive: true });
 
+app.get('/health', (req, res) => {
+  res.json({ ok: true });
+});
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, IMAGES_DIR),
   filename: (req, file, cb) => {
