@@ -208,11 +208,51 @@
       });
     }
 
+    function canvasToBlob(canvas, type, quality) {
+      return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+    }
+
+    async function prepareImageForUpload(file) {
+      if (!file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') return file;
+      const maxBytes = 2.5 * 1024 * 1024;
+      if (file.size <= maxBytes) return file;
+
+      const imageUrl = URL.createObjectURL(file);
+      try {
+        const image = new Image();
+        image.decoding = 'async';
+        image.src = imageUrl;
+        await image.decode();
+
+        const maxSide = 2200;
+        const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        let quality = 0.86;
+        let blob = await canvasToBlob(canvas, 'image/webp', quality);
+        while (blob && blob.size > maxBytes && quality > 0.55) {
+          quality -= 0.1;
+          blob = await canvasToBlob(canvas, 'image/webp', quality);
+        }
+        if (!blob) return file;
+        const safeName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-').replace(/^-+|-+$/g, '') || 'upload';
+        return new File([blob], `${safeName}.webp`, { type: blob.type || 'image/webp' });
+      } finally {
+        URL.revokeObjectURL(imageUrl);
+      }
+    }
+
     async function uploadFile(file) {
+      status(`Uploading ${file.name}...`);
+      const preparedFile = await prepareImageForUpload(file);
       const body = {
-        filename: file.name,
-        contentType: file.type || 'application/octet-stream',
-        data: await readAsBase64(file),
+        filename: preparedFile.name,
+        contentType: preparedFile.type || 'application/octet-stream',
+        data: await readAsBase64(preparedFile),
       };
       const cloudResponse = await fetch(apiBase() + '/api/upload-image', {
         method: 'POST',
@@ -402,7 +442,7 @@
     document.addEventListener('change', async (event) => {
       const el = event.target;
       try {
-        if (el.dataset.heroFile) {
+        if ('heroFile' in el.dataset) {
           const file = el.files && el.files[0];
           if (!file) return;
           siteImages.heroSlides[Number(el.dataset.heroFile)] = await uploadFile(file);
@@ -412,7 +452,7 @@
           renderSitePreview();
           status('Hero slide uploaded and saved.');
         }
-        if (el.dataset.siteFile) {
+        if ('siteFile' in el.dataset) {
           const file = el.files && el.files[0];
           if (!file) return;
           siteImages[el.dataset.siteFile] = await uploadFile(file);
@@ -420,7 +460,7 @@
           renderSitePreview();
           status('Site image uploaded and saved.');
         }
-        if (el.dataset.galleryFile) {
+        if ('galleryFile' in el.dataset) {
           const file = el.files && el.files[0];
           if (!file) return;
           const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryFile));
@@ -448,7 +488,7 @@
         activeCategory = el.dataset.category;
         renderGallery();
       }
-      if (el.dataset.heroDelete) {
+      if ('heroDelete' in el.dataset) {
         siteImages.heroSlides.splice(Number(el.dataset.heroDelete), 1);
         syncHeroFallback();
         await persistSiteImages();
@@ -456,7 +496,7 @@
         renderSitePreview();
         status('Hero slide deleted and saved.');
       }
-      if (el.dataset.heroUp) {
+      if ('heroUp' in el.dataset) {
         const i = Number(el.dataset.heroUp);
         if (i > 0) [siteImages.heroSlides[i - 1], siteImages.heroSlides[i]] = [siteImages.heroSlides[i], siteImages.heroSlides[i - 1]];
         syncHeroFallback();
@@ -465,7 +505,7 @@
         renderSitePreview();
         status('Hero order saved.');
       }
-      if (el.dataset.heroDown) {
+      if ('heroDown' in el.dataset) {
         const i = Number(el.dataset.heroDown);
         if (i < siteImages.heroSlides.length - 1) [siteImages.heroSlides[i + 1], siteImages.heroSlides[i]] = [siteImages.heroSlides[i], siteImages.heroSlides[i + 1]];
         syncHeroFallback();
@@ -474,7 +514,7 @@
         renderSitePreview();
         status('Hero order saved.');
       }
-      if (el.dataset.siteSave) {
+      if ('siteSave' in el.dataset) {
         await persistSiteImages();
         renderSitePreview();
         status('Site image saved.');
