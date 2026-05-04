@@ -157,29 +157,9 @@
 
       <section id="panel-site" class="panel card">
         <h2 class="section-title">Site Images</h2>
-        <p class="hint">Replace logos, service images, and About image. Uploaded images are saved to cloud storage after deployment.</p>
-        <div class="grid">
-          <div>
-            <label for="siteImageKey">Image slot</label>
-            <select id="siteImageKey">
-              <option value="logoWhite">White logo</option>
-              <option value="logoYellow">Yellow logo</option>
-              <option value="heroBg">Fallback hero image</option>
-              <option value="aboutUs">About image</option>
-              <option value="serviceWedding">Wedding service</option>
-              <option value="servicePrivate">Private service</option>
-              <option value="serviceCorporate">Corporate service</option>
-              <option value="serviceBabyShower">Baby shower service</option>
-              <option value="serviceBirthday">Birthday service</option>
-            </select>
-          </div>
-          <div>
-            <label for="siteImageUpload">Upload replacement</label>
-            <input id="siteImageUpload" type="file" accept="image/*" />
-          </div>
-        </div>
+        <p class="hint">Replace logos, service images, and About image from one flexible list. Each upload is saved to cloud storage and published immediately.</p>
         <div class="row" style="margin-top: 12px;">
-          <button type="button" class="btn" id="saveSiteImageUrls">Save image URLs</button>
+          <button type="button" class="btn" id="saveSiteImageUrls">Save all image URLs</button>
         </div>
         <div id="siteImagePreview" class="list"></div>
       </section>
@@ -289,6 +269,12 @@
       return `<div class="thumb"><img src="${src || ''}" class="${src ? 'show' : ''}" onerror="this.classList.remove('show'); this.nextElementSibling.style.display='block';" /><span style="${src ? 'display:none' : ''}">${label || 'No image'}</span></div>`;
     }
 
+    function syncHeroFallback() {
+      if (!Array.isArray(siteImages.heroSlides)) siteImages.heroSlides = [];
+      siteImages.heroSlides = siteImages.heroSlides.filter(Boolean);
+      if (siteImages.heroSlides[0]) siteImages.heroBg = siteImages.heroSlides[0];
+    }
+
     function renderHero() {
       const slides = Array.isArray(siteImages.heroSlides) ? siteImages.heroSlides : [];
       $('heroList').innerHTML = slides.map((src, index) => `
@@ -329,12 +315,27 @@
 
     function renderSitePreview() {
       const keys = ['logoWhite', 'logoYellow', 'heroBg', 'aboutUs', 'serviceWedding', 'servicePrivate', 'serviceCorporate', 'serviceBabyShower', 'serviceBirthday'];
+      const labels = {
+        logoWhite: 'White logo',
+        logoYellow: 'Yellow logo',
+        heroBg: 'Fallback hero image',
+        aboutUs: 'About image',
+        serviceWedding: 'Wedding service',
+        servicePrivate: 'Private service',
+        serviceCorporate: 'Corporate service',
+        serviceBabyShower: 'Baby shower service',
+        serviceBirthday: 'Birthday service',
+      };
       $('siteImagePreview').innerHTML = keys.map((key) => `
         <article class="item">
-          ${imageThumb(siteImages[key], key)}
+          ${imageThumb(siteImages[key], labels[key] || key)}
           <div>
-            <label>${key}</label>
+            <label>${labels[key] || key}</label>
             <input type="text" value="${siteImages[key] || ''}" data-site-url="${key}" />
+            <div class="item-actions">
+              <input type="file" accept="image/*" data-site-file="${key}" style="max-width:220px;" />
+              <button type="button" class="btn" data-site-save="${key}">Save</button>
+            </div>
           </div>
         </article>
       `).join('');
@@ -405,8 +406,19 @@
           const file = el.files && el.files[0];
           if (!file) return;
           siteImages.heroSlides[Number(el.dataset.heroFile)] = await uploadFile(file);
+          syncHeroFallback();
+          await persistSiteImages();
           renderHero();
-          status('Hero slide uploaded. Save slideshow to publish it.');
+          renderSitePreview();
+          status('Hero slide uploaded and saved.');
+        }
+        if (el.dataset.siteFile) {
+          const file = el.files && el.files[0];
+          if (!file) return;
+          siteImages[el.dataset.siteFile] = await uploadFile(file);
+          await persistSiteImages();
+          renderSitePreview();
+          status('Site image uploaded and saved.');
         }
         if (el.dataset.galleryFile) {
           const file = el.files && el.files[0];
@@ -438,17 +450,34 @@
       }
       if (el.dataset.heroDelete) {
         siteImages.heroSlides.splice(Number(el.dataset.heroDelete), 1);
+        syncHeroFallback();
+        await persistSiteImages();
         renderHero();
+        renderSitePreview();
+        status('Hero slide deleted and saved.');
       }
       if (el.dataset.heroUp) {
         const i = Number(el.dataset.heroUp);
         if (i > 0) [siteImages.heroSlides[i - 1], siteImages.heroSlides[i]] = [siteImages.heroSlides[i], siteImages.heroSlides[i - 1]];
+        syncHeroFallback();
+        await persistSiteImages();
         renderHero();
+        renderSitePreview();
+        status('Hero order saved.');
       }
       if (el.dataset.heroDown) {
         const i = Number(el.dataset.heroDown);
         if (i < siteImages.heroSlides.length - 1) [siteImages.heroSlides[i + 1], siteImages.heroSlides[i]] = [siteImages.heroSlides[i], siteImages.heroSlides[i + 1]];
+        syncHeroFallback();
+        await persistSiteImages();
         renderHero();
+        renderSitePreview();
+        status('Hero order saved.');
+      }
+      if (el.dataset.siteSave) {
+        await persistSiteImages();
+        renderSitePreview();
+        status('Site image saved.');
       }
       if (el.dataset.galleryDelete) {
         galleryData = galleryData.filter((item) => String(item.id) !== String(el.dataset.galleryDelete));
@@ -470,9 +499,12 @@
       if (!files.length) return status('Choose hero images first.');
       try {
         for (const file of files) siteImages.heroSlides.push(await uploadFile(file));
+        syncHeroFallback();
+        await persistSiteImages();
         $('heroUpload').value = '';
         renderHero();
-        status('Hero images uploaded. Save slideshow to publish.');
+        renderSitePreview();
+        status('Hero images uploaded and saved.');
       } catch (error) {
         status(error.message || 'Upload failed.');
       }
@@ -480,10 +512,10 @@
 
     $('saveHero').onclick = async () => {
       try {
-        siteImages.heroSlides = siteImages.heroSlides.filter(Boolean);
+        syncHeroFallback();
         if (!siteImages.heroSlides.length) throw new Error('Add at least one hero slide.');
-        siteImages.heroBg = siteImages.heroSlides[0];
         await persistSiteImages();
+        renderHero();
         renderSitePreview();
         status('Hero slideshow saved.');
       } catch (error) {
@@ -491,20 +523,6 @@
       }
     };
 
-    $('siteImageUpload').onchange = async (event) => {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      try {
-        const key = $('siteImageKey').value;
-        siteImages[key] = await uploadFile(file);
-        await persistSiteImages();
-        renderSitePreview();
-        event.target.value = '';
-        status('Site image uploaded and saved.');
-      } catch (error) {
-        status(error.message || 'Upload failed.');
-      }
-    };
     $('saveSiteImageUrls').onclick = async () => {
       try {
         await persistSiteImages();
