@@ -122,7 +122,7 @@
     <header class="brand">
       <div>
         <h1>So Nice Event Admin</h1>
-        <p>Manage hero, site, and gallery images from one cloud-backed dashboard.</p>
+        <p>Manage hero slideshow and gallery images from one cloud-backed dashboard.</p>
       </div>
       <span class="pill">Staff only</span>
     </header>
@@ -138,7 +138,6 @@
     <section id="app" class="hidden">
       <div class="tabs" role="tablist">
         <button type="button" class="tab active" data-panel="hero">Hero Slideshow</button>
-        <button type="button" class="tab" data-panel="site">Site Images</button>
         <button type="button" class="tab" data-panel="gallery">Gallery</button>
         <button type="button" class="ghost" id="clearDrafts">Clear local drafts</button>
       </div>
@@ -155,15 +154,6 @@
         <div id="heroList" class="list"></div>
       </section>
 
-      <section id="panel-site" class="panel card">
-        <h2 class="section-title">Site Images</h2>
-        <p class="hint">Replace logos, service images, and About image from one flexible list. Each upload is saved to cloud storage and published immediately.</p>
-        <div class="row" style="margin-top: 12px;">
-          <button type="button" class="btn" id="saveSiteImageUrls">Save all image URLs</button>
-        </div>
-        <div id="siteImagePreview" class="list"></div>
-      </section>
-
       <section id="panel-gallery" class="panel card">
         <h2 class="section-title">Gallery</h2>
         <div class="tabs" id="galleryTabs">
@@ -172,6 +162,7 @@
           <button type="button" class="tab" data-category="Corporate Events">Corporate</button>
           <button type="button" class="tab" data-category="Baby Shower">Baby Shower</button>
           <button type="button" class="tab" data-category="Birthdays">Birthdays</button>
+          <button type="button" class="tab" data-category="About Us">About Us</button>
         </div>
         <div class="row">
           <button type="button" class="gold" id="addGallery">Add photo</button>
@@ -186,7 +177,7 @@
 
   <script>
     const PASSPHRASES = ['soniceevent-admin', 'soniceevent-staff'];
-    const CATEGORIES = ['Weddings', 'Private Events', 'Corporate Events', 'Baby Shower', 'Birthdays'];
+    const CATEGORIES = ['Weddings', 'Private Events', 'Corporate Events', 'Baby Shower', 'Birthdays', 'About Us'];
     const GALLERY_DRAFT = 'so_nice_gallery_draft';
     const SITE_DRAFT = 'site_images_override';
     let siteImages = {};
@@ -354,31 +345,13 @@
     }
 
     function renderSitePreview() {
-      const keys = ['logoWhite', 'logoYellow', 'heroBg', 'aboutUs', 'serviceWedding', 'servicePrivate', 'serviceCorporate', 'serviceBabyShower', 'serviceBirthday'];
-      const labels = {
-        logoWhite: 'White logo',
-        logoYellow: 'Yellow logo',
-        heroBg: 'Fallback hero image',
-        aboutUs: 'About image',
-        serviceWedding: 'Wedding service',
-        servicePrivate: 'Private service',
-        serviceCorporate: 'Corporate service',
-        serviceBabyShower: 'Baby shower service',
-        serviceBirthday: 'Birthday service',
-      };
-      $('siteImagePreview').innerHTML = keys.map((key) => `
-        <article class="item">
-          ${imageThumb(siteImages[key], labels[key] || key)}
-          <div>
-            <label>${labels[key] || key}</label>
-            <input type="text" value="${siteImages[key] || ''}" data-site-url="${key}" />
-            <div class="item-actions">
-              <input type="file" accept="image/*" data-site-file="${key}" style="max-width:220px;" />
-              <button type="button" class="btn" data-site-save="${key}">Save</button>
-            </div>
-          </div>
-        </article>
-      `).join('');
+      return;
+    }
+
+    function ensureAboutGalleryItem() {
+      if (galleryData.some((item) => item.category === 'About Us')) return;
+      const nextId = galleryData.length ? Math.max(...galleryData.map((item) => Number(item.id) || 0)) + 1 : 1;
+      galleryData.push({ id: nextId, src: '/assets/images/about-us.jpeg', category: 'About Us' });
     }
 
     async function loadSiteImages() {
@@ -405,6 +378,7 @@
           const draft = JSON.parse(localStorage.getItem(GALLERY_DRAFT) || '');
           if (Array.isArray(draft) && draft.length) {
             galleryData = draft;
+            ensureAboutGalleryItem();
             renderGallery();
             return;
           }
@@ -418,6 +392,7 @@
         const response = await fetch('/assets/gallery.json', { cache: 'no-cache' });
         galleryData = response.ok ? await response.json() : [];
       }
+      ensureAboutGalleryItem();
       renderGallery();
     }
 
@@ -434,9 +409,6 @@
         const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryId));
         if (item) item.id = Number(el.value) || item.id;
       }
-      if (el.dataset.siteUrl) {
-        siteImages[el.dataset.siteUrl] = el.value.trim();
-      }
     });
 
     document.addEventListener('change', async (event) => {
@@ -451,14 +423,6 @@
           renderHero();
           renderSitePreview();
           status('Hero slide uploaded and saved.');
-        }
-        if ('siteFile' in el.dataset) {
-          const file = el.files && el.files[0];
-          if (!file) return;
-          siteImages[el.dataset.siteFile] = await uploadFile(file);
-          await persistSiteImages();
-          renderSitePreview();
-          status('Site image uploaded and saved.');
         }
         if ('galleryFile' in el.dataset) {
           const file = el.files && el.files[0];
@@ -514,11 +478,6 @@
         renderSitePreview();
         status('Hero order saved.');
       }
-      if ('siteSave' in el.dataset) {
-        await persistSiteImages();
-        renderSitePreview();
-        status('Site image saved.');
-      }
       if (el.dataset.galleryDelete) {
         galleryData = galleryData.filter((item) => String(item.id) !== String(el.dataset.galleryDelete));
         localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
@@ -560,16 +519,6 @@
         status('Hero slideshow saved.');
       } catch (error) {
         status(error.message || 'Could not save slideshow.');
-      }
-    };
-
-    $('saveSiteImageUrls').onclick = async () => {
-      try {
-        await persistSiteImages();
-        renderSitePreview();
-        status('Site image URLs saved.');
-      } catch (error) {
-        status(error.message || 'Could not save site image URLs.');
       }
     };
 

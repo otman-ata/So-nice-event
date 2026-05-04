@@ -23,11 +23,17 @@ const GalleryImageCard: React.FC<{ image: GalleryImageProps }> = ({ image }) => 
     );
 }
 
+function withRequiredGallerySections(items: GalleryImageProps[]) {
+  if (items.some((item) => item.category === 'About Us')) return items;
+  const nextId = items.length ? Math.max(...items.map((item) => Number(item.id) || 0)) + 1 : 1;
+  return [...items, { id: nextId, src: '/assets/images/about-us.jpeg', category: 'About Us' as const }];
+}
+
 const Gallery: React.FC<GalleryProps> = ({ content }) => {
   const [visibleCount, setVisibleCount] = useState(9);
   const [images, setImages] = useState<GalleryImageProps[]>(defaultGalleryImages);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays'>('All');
+  const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays' | 'About Us'>('All');
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const isSectionVisible = useIntersectionObserver(sectionRef, { threshold: 0.1, triggerOnce: true });
   const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'fr';
@@ -72,7 +78,7 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
         const merged =
           draft && draft.length > 0 ? draft : remote && remote.length > 0 ? remote : null;
         if (isMounted && merged && merged.length > 0) {
-          setImages(merged);
+          setImages(withRequiredGallerySections(merged));
         }
       } catch (_) {
         /* keep defaults */
@@ -111,7 +117,8 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
             { key: 'Private Events', label: (content as any).filterLabels?.private || 'Private Events' },
             { key: 'Corporate Events', label: (content as any).filterLabels?.corporate || 'Corporate Events' },
             { key: 'Baby Shower', label: (content as any).filterLabels?.babyShower || 'Baby Shower' },
-            { key: 'Birthdays', label: (content as any).filterLabels?.birthdays || 'Birthdays' }
+            { key: 'Birthdays', label: (content as any).filterLabels?.birthdays || 'Birthdays' },
+            { key: 'About Us', label: (content as any).filterLabels?.aboutUs || 'About Us' }
           ] as const).map(cat => (
             <button
               key={cat.key}

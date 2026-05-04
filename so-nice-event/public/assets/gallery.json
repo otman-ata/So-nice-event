@@ -33,5 +33,10 @@
     "id": 7,
     "src": "/assets/images/gallery-7.jpeg",
     "category": "Corporate Events"
+  },
+  {
+    "id": 8,
+    "src": "/assets/images/about-us.jpeg",
+    "category": "About Us"
   }
 ]

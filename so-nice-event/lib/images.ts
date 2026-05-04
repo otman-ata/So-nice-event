@@ -1,7 +1,7 @@
 export interface GalleryImage {
   id: number;
   src: string;
-  category: 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays';
+  category: 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays' | 'About Us';
 }
 
 export const defaultSiteImages = {
@@ -51,4 +51,5 @@ export const galleryImages: GalleryImage[] = [
   { id: 5, src: '/assets/images/gallery-5.jpeg', category: 'Weddings' },
   { id: 6, src: '/assets/images/gallery-6.jpeg', category: 'Corporate Events' },
   { id: 7, src: '/assets/images/gallery-7.jpeg', category: 'Weddings' },
+  { id: 8, src: '/assets/images/about-us.jpeg', category: 'About Us' },
 ];

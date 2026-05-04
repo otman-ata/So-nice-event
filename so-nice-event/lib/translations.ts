@@ -58,7 +58,8 @@ export const translations = {
         private: 'Événements Privés',
         corporate: 'Événements d\'Entreprise',
         babyShower: 'Fete prenatale',
-        birthdays: 'Anniversaires'
+        birthdays: 'Anniversaires',
+        aboutUs: 'À Propos'
       }
     },
     testimonials: {
@@ -248,7 +249,8 @@ export const translations = {
         private: 'Private Events',
         corporate: 'Corporate Events',
         babyShower: 'Baby Shower',
-        birthdays: 'Birthdays'
+        birthdays: 'Birthdays',
+        aboutUs: 'About Us'
       }
     },
     testimonials: {
@@ -438,7 +440,8 @@ export const translations = {
         private: 'مناسبات خاصة',
         corporate: 'مناسبات الشركات',
         babyShower: 'حفل استقبال مولود',
-        birthdays: 'أعياد الميلاد'
+        birthdays: 'أعياد الميلاد',
+        aboutUs: 'من نحن'
       }
     },
     testimonials: {
