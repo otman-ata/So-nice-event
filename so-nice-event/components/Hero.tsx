@@ -27,11 +27,11 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
   const overrideSlides = (typeof window !== 'undefined' && (window as any).__SITE_IMAGES?.heroSlides) || [];
   const slideImages: string[] = Array.isArray(overrideSlides) && overrideSlides.length > 0
     ? overrideSlides.filter((s: unknown) => typeof s === 'string' && s.trim().length > 0)
-    : [siteImages.heroBg];
+    : [siteImages.heroBg, siteImages.serviceWedding, siteImages.servicePrivate].filter(Boolean);
 
   useEffect(() => {
     setActiveSlide(0);
-    if (slideImages.length <= 1) return;
+    if (slideImages.length === 0) return;
     const id = window.setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % slideImages.length);
     }, 2000);

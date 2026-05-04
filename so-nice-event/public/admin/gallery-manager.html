@@ -4,305 +4,256 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>So Nice Event CMS</title>
+  <title>Gallery · Manage photos</title>
   <style>
-    :root { --red:#7a121c; --yellow:#f3c74d; --bg:#fff8e8; --line:#eadfca; --text:#2b231d; }
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
-    body { margin:0; background:var(--bg); color:var(--text); }
-    .wrap { max-width:1000px; margin:0 auto; padding:24px; }
-    .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:16px; }
-    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .col { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
-    input, textarea, select, button { border:1px solid #d8cdb8; border-radius:8px; padding:10px; }
-    textarea { min-height:82px; }
-    button { background:var(--red); color:#fff; font-weight:600; cursor:pointer; }
-    .ghost { background:#fff; color:var(--red); }
-    h1,h2 { margin:0 0 10px; }
-    .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-    .tab { background:#fff; color:var(--red); }
-    .tab.active { background:var(--red); color:#fff; }
-    .hidden { display:none; }
+    :root { --rose:#8d555f; --rose-hover:#74464f; --paper:#fdfbf8; --ink:#1c1917; --muted:#78716c; --line:#e7e5e4; --card:#fff; --radius:14px; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; background: linear-gradient(165deg, #f5f0f1 0%, var(--paper) 45%); color: var(--ink); }
+    .shell { max-width: 860px; margin: 0 auto; padding: 28px 20px 48px; }
+    .brand { text-align: center; margin-bottom: 24px; }
+    .brand h1 { margin: 0; color: var(--rose); font-size: 1.5rem; }
+    .brand p { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
+    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--line); padding: 18px; box-shadow: 0 2px 14px rgba(28,25,23,.05); }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    input[type="password"], input[type="text"], input[type="number"], select { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
+    button { padding: 10px 14px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600; }
+    .btn { background: var(--rose); color: #fff; }
+    .ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    .danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .app.hidden, #gate.hidden { display: none !important; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+    .tab { padding: 10px 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--muted); }
+    .tab.active { background: var(--rose); color: #fff; border-color: var(--rose); }
+    .gallery-list { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+    .photo-card { display: flex; gap: 14px; flex-wrap: wrap; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .photo-thumb { width: 132px; height: 100px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: #f5f5f4; display: flex; align-items: center; justify-content: center; color: #a8a29e; font-size: 11px; text-align: center; padding: 8px; }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .photo-thumb img.show { display: block; }
+    .photo-body { flex: 1; min-width: 220px; }
+    .field { margin-bottom: 10px; }
+    .field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; }
+    .status { min-height: 20px; margin-top: 8px; color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>So Nice Event CMS</h1>
-    <div class="card">
-      <div class="row">
-        <div class="col">
-          <label>Password</label>
-          <input id="pass" type="password" />
-        </div>
-        <div class="col">
-          <label>Language</label>
-          <select id="lang"><option value="fr">FR</option><option value="en">EN</option><option value="ar">AR</option></select>
-        </div>
-      </div>
-      <button id="enter">Enter</button>
-    </div>
+  <div class="shell">
+    <header class="brand">
+      <h1 id="title">Gallery</h1>
+      <p id="subtitle">Upload and organize website images.</p>
+    </header>
 
-    <section id="app" class="hidden">
-      <div class="tabs">
-        <button class="tab active" data-tab="header">Header & Hero</button>
-        <button class="tab" data-tab="services">Services</button>
-        <button class="tab" data-tab="about">About</button>
-        <button class="tab" data-tab="gallery">Gallery</button>
-      </div>
-
-      <div class="card panel" data-panel="header">
-        <h2>Header & Hero</h2>
-        <div class="col"><label>Hero Title</label><input id="hero_title" /></div>
-        <div class="col"><label>Hero Subtitle 1</label><input id="hero_sub1" /></div>
-        <div class="col"><label>Hero Subtitle 2</label><input id="hero_sub2" /></div>
-        <div class="col"><label>Hero CTA</label><input id="hero_cta" /></div>
-        <div class="col"><label>White Logo URL</label><input id="img_logoWhite" /></div>
-        <div class="col"><label>Yellow Logo URL</label><input id="img_logoYellow" /></div>
-        <div class="col"><label>Upload slideshow images (multiple)</label><input id="heroSlides" type="file" accept="image/*" multiple /></div>
-      </div>
-
-      <div class="card panel hidden" data-panel="services">
-        <h2>Services</h2>
-        <div class="col"><label>Section Title</label><input id="services_title" /></div>
-        <div class="col"><label>Section Subtitle</label><input id="services_subtitle" /></div>
-        <div id="services_list"></div>
-      </div>
-
-      <div class="card panel hidden" data-panel="about">
-        <h2>About</h2>
-        <div class="col"><label>Title</label><input id="about_title" /></div>
-        <div class="col"><label>Paragraph 1</label><textarea id="about_p1"></textarea></div>
-        <div class="col"><label>Paragraph 2</label><textarea id="about_p2"></textarea></div>
-        <div class="col"><label>About image URL</label><input id="img_aboutUs" /></div>
-      </div>
-
-      <div class="card panel hidden" data-panel="gallery">
-        <h2>Gallery</h2>
-        <div class="col"><label>Section Title</label><input id="gallery_title" /></div>
-        <div class="col"><label>Section Subtitle</label><input id="gallery_subtitle" /></div>
-        <div class="row">
-          <div class="col"><label>All label</label><input id="gallery_all" /></div>
-          <div class="col"><label>Weddings label</label><input id="gallery_weddings" /></div>
-          <div class="col"><label>Private label</label><input id="gallery_private" /></div>
-          <div class="col"><label>Corporate label</label><input id="gallery_corporate" /></div>
-          <div class="col"><label>Baby Shower label</label><input id="gallery_baby" /></div>
-          <div class="col"><label>Birthdays label</label><input id="gallery_birthdays" /></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <label>Upload gallery image</label>
-            <input id="gallery_upload" type="file" accept="image/*" />
-          </div>
-          <div class="col">
-            <label>Category</label>
-            <select id="gallery_upload_category">
-              <option>Weddings</option>
-              <option>Private Events</option>
-              <option>Corporate Events</option>
-              <option>Baby Shower</option>
-              <option>Birthdays</option>
-            </select>
-          </div>
-        </div>
-        <button id="gallery_add" type="button">Add uploaded image to gallery</button>
-        <div class="col">
-          <label>Gallery JSON (advanced edit)</label>
-          <textarea id="gallery_json" style="min-height:220px"></textarea>
-        </div>
-      </div>
-
+    <section id="gate">
       <div class="card">
-        <button id="saveAll">Save All</button>
-        <button id="reload" class="ghost">Reload</button>
-        <p id="status"></p>
+        <label id="passwordLabel" for="pass">Password</label>
+        <div class="row">
+          <input id="pass" type="password" autocomplete="current-password" />
+          <button type="button" class="btn" id="enter">Enter</button>
+          <select id="lang" title="Language">
+            <option value="en">EN</option>
+            <option value="fr">FR</option>
+            <option value="ar">AR</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section id="app" class="app hidden">
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" data-tab="Weddings">Weddings</button>
+          <button class="tab" data-tab="Private Events">Private events</button>
+          <button class="tab" data-tab="Corporate Events">Corporate</button>
+          <button class="tab" data-tab="Baby Shower">Baby Shower</button>
+          <button class="tab" data-tab="Birthdays">Birthdays</button>
+        </div>
+        <div class="row">
+          <button type="button" id="add" class="btn">+ Add photo</button>
+          <button type="button" id="reload" class="ghost">Reload list</button>
+          <button type="button" id="saveGallery" class="btn">Save changes</button>
+        </div>
+        <p id="status" class="status"></p>
+        <div id="galleryCards" class="gallery-list"></div>
       </div>
     </section>
   </div>
 
   <script>
-    const PASSPHRASES = ['soniceevent-admin', 'soniceevent-staff'];
-    const base = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
-    let cms = {};
-    let site = {};
-    let gallery = [];
-    let currentLang = 'fr';
+    const PASSPHRASES = ["soniceevent-admin", "soniceevent-staff"];
+    const DRAFT_KEY = "so_nice_gallery_draft";
+    const data = { "Weddings": [], "Private Events": [], "Corporate Events": [], "Baby Shower": [], "Birthdays": [] };
+    let active = "Weddings";
+    const lang = document.getElementById("lang");
+    const base = () => (localStorage.getItem("cms_local_server") || "http://localhost:4000").replace(/\/$/, "");
 
-    async function fetchJson(path, fallback) {
-      try { const r = await fetch(path, { cache: 'no-cache' }); if (r.ok) return await r.json(); } catch (_) {}
-      return fallback;
-    }
+    const T = {
+      en: { title:"Gallery", subtitle:"Upload and organize website images.", password:"Password", enter:"Enter", wrong:"Wrong password", add:"+ Add photo", reload:"Reload list", save:"Save changes", saved:"Saved on server.", local:"Server unavailable - saved only in this browser.", updated:"Updated.", del:"Delete this photo?", upload:"Upload image", id:"ID", url:"Image URL", up:"Up", down:"Down", delete:"Delete", noImage:"No image" },
+      fr: { title:"Galerie", subtitle:"Televerser et organiser les images du site.", password:"Mot de passe", enter:"Entrer", wrong:"Mot de passe incorrect", add:"+ Ajouter photo", reload:"Recharger", save:"Enregistrer", saved:"Enregistre sur le serveur.", local:"Serveur indisponible - enregistre dans ce navigateur.", updated:"Mise a jour.", del:"Supprimer cette photo ?", upload:"Televerser image", id:"ID", url:"URL image", up:"Haut", down:"Bas", delete:"Supprimer", noImage:"Aucune image" },
+      ar: { title:"المعرض", subtitle:"رفع وتنظيم صور الموقع.", password:"كلمة المرور", enter:"دخول", wrong:"كلمة مرور خاطئة", add:"+ إضافة صورة", reload:"تحديث", save:"حفظ", saved:"تم الحفظ على الخادم.", local:"الخادم غير متاح - تم الحفظ في المتصفح فقط.", updated:"تم التحديث.", del:"حذف هذه الصورة؟", upload:"رفع صورة", id:"المعرف", url:"رابط الصورة", up:"أعلى", down:"أسفل", delete:"حذف", noImage:"لا صورة" }
+    };
+    const d = () => T[lang.value] || T.en;
 
-    async function uploadFile(file) {
-      const fd = new FormData(); fd.append('file', file);
-      const r = await fetch(base() + '/upload-image', { method:'POST', body:fd });
-      if (!r.ok) throw new Error('upload failed');
-      const j = await r.json();
-      if (!j.ok || !j.path) throw new Error('bad upload');
-      return j.path;
-    }
-
-    function setStatus(msg) { document.getElementById('status').textContent = msg; }
-
-    function ensureLang() {
-      cms[currentLang] = cms[currentLang] || {};
-      cms[currentLang].hero = cms[currentLang].hero || {};
-      cms[currentLang].services = cms[currentLang].services || { serviceList: [] };
-      cms[currentLang].gallery = cms[currentLang].gallery || { filterLabels: {} };
-      cms[currentLang].about = cms[currentLang].about || {};
-      while ((cms[currentLang].services.serviceList || []).length < 5) {
-        cms[currentLang].services.serviceList.push({ title:'', description:'' });
-      }
-    }
-
-    function render() {
-      ensureLang();
-      const c = cms[currentLang];
-      document.getElementById('hero_title').value = c.hero.title || '';
-      document.getElementById('hero_sub1').value = c.hero.subtitle1 || '';
-      document.getElementById('hero_sub2').value = c.hero.subtitle2 || '';
-      document.getElementById('hero_cta').value = c.hero.ctaButton || '';
-      document.getElementById('img_logoWhite').value = site.logoWhite || '';
-      document.getElementById('img_logoYellow').value = site.logoYellow || '';
-      document.getElementById('services_title').value = c.services.title || '';
-      document.getElementById('services_subtitle').value = c.services.subtitle || '';
-      document.getElementById('about_title').value = c.about.title || '';
-      document.getElementById('about_p1').value = c.about.paragraph1 || '';
-      document.getElementById('about_p2').value = c.about.paragraph2 || '';
-      document.getElementById('img_aboutUs').value = site.aboutUs || '';
-      document.getElementById('gallery_title').value = c.gallery.title || '';
-      document.getElementById('gallery_subtitle').value = c.gallery.subtitle || '';
-      document.getElementById('gallery_all').value = c.gallery.filterLabels?.all || '';
-      document.getElementById('gallery_weddings').value = c.gallery.filterLabels?.weddings || '';
-      document.getElementById('gallery_private').value = c.gallery.filterLabels?.private || '';
-      document.getElementById('gallery_corporate').value = c.gallery.filterLabels?.corporate || '';
-      document.getElementById('gallery_baby').value = c.gallery.filterLabels?.babyShower || '';
-      document.getElementById('gallery_birthdays').value = c.gallery.filterLabels?.birthdays || '';
-      document.getElementById('gallery_json').value = JSON.stringify(gallery, null, 2);
-
-      const root = document.getElementById('services_list');
-      root.innerHTML = '';
-      c.services.serviceList.forEach((s, idx) => {
-        const block = document.createElement('div');
-        block.className = 'card';
-        block.innerHTML = `
-          <div class="col"><label>Service ${idx + 1} title</label><input id="sv_t_${idx}" /></div>
-          <div class="col"><label>Service ${idx + 1} description</label><textarea id="sv_d_${idx}"></textarea></div>
-          <div class="col"><label>Service ${idx + 1} image URL</label><input id="sv_i_${idx}" /></div>
-          <div class="col"><label>Upload image</label><input id="sv_u_${idx}" type="file" accept="image/*" /></div>
-        `;
-        root.appendChild(block);
-        document.getElementById(`sv_t_${idx}`).value = s.title || '';
-        document.getElementById(`sv_d_${idx}`).value = s.description || '';
-        const imgKey = ['serviceWedding','servicePrivate','serviceCorporate','serviceBabyShower','serviceBirthday'][idx];
-        document.getElementById(`sv_i_${idx}`).value = site[imgKey] || '';
-        document.getElementById(`sv_u_${idx}`).addEventListener('change', async (e) => {
-          const f = e.target.files && e.target.files[0];
-          if (!f) return;
-          const p = await uploadFile(f);
-          site[imgKey] = p;
-          document.getElementById(`sv_i_${idx}`).value = p;
-        });
-      });
-    }
-
-    function collect() {
-      ensureLang();
-      const c = cms[currentLang];
-      c.hero.title = document.getElementById('hero_title').value.trim();
-      c.hero.subtitle1 = document.getElementById('hero_sub1').value.trim();
-      c.hero.subtitle2 = document.getElementById('hero_sub2').value.trim();
-      c.hero.ctaButton = document.getElementById('hero_cta').value.trim();
-      site.logoWhite = document.getElementById('img_logoWhite').value.trim();
-      site.logoYellow = document.getElementById('img_logoYellow').value.trim();
-      c.services.title = document.getElementById('services_title').value.trim();
-      c.services.subtitle = document.getElementById('services_subtitle').value.trim();
-      c.services.serviceList = c.services.serviceList.map((s, idx) => ({
-        ...s,
-        title: document.getElementById(`sv_t_${idx}`).value.trim(),
-        description: document.getElementById(`sv_d_${idx}`).value.trim(),
-      }));
-      site.serviceWedding = document.getElementById('sv_i_0').value.trim();
-      site.servicePrivate = document.getElementById('sv_i_1').value.trim();
-      site.serviceCorporate = document.getElementById('sv_i_2').value.trim();
-      site.serviceBabyShower = document.getElementById('sv_i_3').value.trim();
-      site.serviceBirthday = document.getElementById('sv_i_4').value.trim();
-      c.about.title = document.getElementById('about_title').value.trim();
-      c.about.paragraph1 = document.getElementById('about_p1').value.trim();
-      c.about.paragraph2 = document.getElementById('about_p2').value.trim();
-      site.aboutUs = document.getElementById('img_aboutUs').value.trim();
-      c.gallery.title = document.getElementById('gallery_title').value.trim();
-      c.gallery.subtitle = document.getElementById('gallery_subtitle').value.trim();
-      c.gallery.filterLabels = {
-        all: document.getElementById('gallery_all').value.trim(),
-        weddings: document.getElementById('gallery_weddings').value.trim(),
-        private: document.getElementById('gallery_private').value.trim(),
-        corporate: document.getElementById('gallery_corporate').value.trim(),
-        babyShower: document.getElementById('gallery_baby').value.trim(),
-        birthdays: document.getElementById('gallery_birthdays').value.trim(),
-      };
-      gallery = JSON.parse(document.getElementById('gallery_json').value || '[]');
-    }
-
-    async function init() {
-      cms = await fetchJson('/assets/cms-content.json', {});
-      site = await fetchJson('/assets/site-images.json', {});
-      gallery = await fetchJson('/assets/gallery.json', []);
+    function applyLang() {
+      const x = d();
+      document.getElementById("title").textContent = x.title;
+      document.getElementById("subtitle").textContent = x.subtitle;
+      document.getElementById("passwordLabel").textContent = x.password;
+      document.getElementById("enter").textContent = x.enter;
+      document.getElementById("add").textContent = x.add;
+      document.getElementById("reload").textContent = x.reload;
+      document.getElementById("saveGallery").textContent = x.save;
+      document.documentElement.dir = lang.value === "ar" ? "rtl" : "ltr";
       render();
     }
 
-    document.getElementById('enter').onclick = async () => {
-      const v = document.getElementById('pass').value.trim();
-      if (!PASSPHRASES.includes(v)) return alert('Wrong password');
-      document.getElementById('app').classList.remove('hidden');
-      currentLang = document.getElementById('lang').value;
-      await init();
-    };
+    function merged() {
+      return Object.keys(data).flatMap((c) => (data[c] || []).map((i) => ({ id: Number(i.id), src: String(i.src || ""), category: c })));
+    }
+    function persistDraft() {
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(merged())); } catch {}
+      document.getElementById("status").textContent = d().updated;
+    }
 
-    document.getElementById('lang').onchange = (e) => { currentLang = e.target.value; render(); };
-    document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-      const tab = btn.getAttribute('data-tab');
-      document.querySelectorAll('.panel').forEach((p) => p.classList.add('hidden'));
-      document.querySelector(`.panel[data-panel="${tab}"]`).classList.remove('hidden');
+    async function upload(file) {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch(base() + "/upload-image", { method: "POST", body: fd });
+      if (!res.ok) throw new Error("upload");
+      const j = await res.json();
+      if (!j.ok || !j.path) throw new Error("upload");
+      return j.path;
+    }
+
+    function render() {
+      const root = document.getElementById("galleryCards");
+      root.innerHTML = "";
+      const arr = data[active] || [];
+      arr.forEach((it, idx) => {
+        const card = document.createElement("div");
+        card.className = "photo-card";
+        card.innerHTML = `
+          <div class="photo-thumb"><img id="img_${idx}" /><span id="empty_${idx}">${d().noImage}</span></div>
+          <div class="photo-body">
+            <div class="field"><label>${d().id}</label><input id="id_${idx}" type="number" value="${Number(it.id) || idx + 1}" /></div>
+            <div class="field"><label>${d().url}</label><input id="src_${idx}" type="text" value="${it.src || ""}" /></div>
+            <div class="row">
+              <button type="button" class="btn" id="up_${idx}">${d().upload}</button>
+              <button type="button" class="ghost" id="mvup_${idx}">${d().up}</button>
+              <button type="button" class="ghost" id="mvdn_${idx}">${d().down}</button>
+              <button type="button" class="danger" id="del_${idx}">${d().delete}</button>
+              <input id="file_${idx}" type="file" accept="image/*" style="display:none" />
+            </div>
+          </div>
+        `;
+        root.appendChild(card);
+
+        const img = document.getElementById(`img_${idx}`);
+        const empty = document.getElementById(`empty_${idx}`);
+        const sync = () => {
+          const s = String(arr[idx].src || "").trim();
+          if (!s) {
+            img.classList.remove("show");
+            img.removeAttribute("src");
+            empty.style.display = "";
+            return;
+          }
+          img.src = s;
+          img.classList.add("show");
+          empty.style.display = "none";
+        };
+        sync();
+
+        document.getElementById(`id_${idx}`).onchange = (e) => { arr[idx].id = Number(e.target.value) || idx + 1; persistDraft(); };
+        document.getElementById(`src_${idx}`).onchange = (e) => { arr[idx].src = e.target.value.trim(); sync(); persistDraft(); };
+        document.getElementById(`up_${idx}`).onclick = () => document.getElementById(`file_${idx}`).click();
+        document.getElementById(`file_${idx}`).onchange = async (e) => {
+          const f = e.target.files && e.target.files[0];
+          if (!f) return;
+          try {
+            arr[idx].src = await upload(f);
+            document.getElementById(`src_${idx}`).value = arr[idx].src;
+            sync();
+            persistDraft();
+          } catch {}
+        };
+        document.getElementById(`del_${idx}`).onclick = () => {
+          if (!confirm(d().del)) return;
+          arr.splice(idx, 1);
+          render();
+          persistDraft();
+        };
+        document.getElementById(`mvup_${idx}`).onclick = () => {
+          if (idx < 1) return;
+          [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+          render();
+          persistDraft();
+        };
+        document.getElementById(`mvdn_${idx}`).onclick = () => {
+          if (idx >= arr.length - 1) return;
+          [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
+          render();
+          persistDraft();
+        };
+      });
+    }
+
+    async function load(preferDraft) {
+      if (preferDraft) {
+        try {
+          const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "");
+          if (Array.isArray(draft) && draft.length) {
+            Object.keys(data).forEach((k) => (data[k] = draft.filter((i) => i.category === k)));
+            render();
+            return;
+          }
+        } catch {}
+      }
+      try {
+        const res = await fetch("/assets/gallery.json", { cache: "no-cache" });
+        if (res.ok) {
+          const arr = await res.json();
+          Object.keys(data).forEach((k) => (data[k] = arr.filter((i) => i.category === k)));
+        }
+      } catch {}
+      render();
+    }
+
+    document.querySelectorAll(".tab").forEach((el) => el.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
+      el.classList.add("active");
+      active = el.getAttribute("data-tab");
+      render();
     }));
-
-    document.getElementById('heroSlides').addEventListener('change', async (e) => {
-      const files = Array.from(e.target.files || []);
-      if (!files.length) return;
-      setStatus('Uploading slideshow images...');
-      const urls = [];
-      for (const f of files) urls.push(await uploadFile(f));
-      site.heroSlides = urls;
-      setStatus('Slideshow images uploaded.');
-    });
-
-    document.getElementById('saveAll').onclick = async () => {
+    lang.addEventListener("change", applyLang);
+    document.getElementById("enter").onclick = async () => {
+      const v = document.getElementById("pass").value.trim();
+      if (!PASSPHRASES.includes(v)) return alert(d().wrong);
+      document.getElementById("gate").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      applyLang();
+      await load(true);
+    };
+    document.getElementById("add").onclick = () => {
+      const arr = data[active];
+      const next = arr.length ? Math.max(...arr.map((x) => Number(x.id) || 0)) + 1 : 1;
+      arr.push({ id: next, src: "", category: active });
+      render();
+      persistDraft();
+    };
+    document.getElementById("reload").onclick = async () => { await load(false); };
+    document.getElementById("saveGallery").onclick = async () => {
+      persistDraft();
       try {
-        collect();
-        await fetch(base() + '/save-site', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(site) });
-        await fetch(base() + '/save-content', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(cms) });
-        await fetch(base() + '/save-gallery', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(gallery) });
-        setStatus('Saved successfully.');
-      } catch (e) {
-        setStatus('Save failed. Check upload server.');
+        const r = await fetch(base() + "/save-gallery", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(merged()),
+        });
+        alert(r.ok ? d().saved : d().local);
+      } catch {
+        alert(d().local);
       }
     };
-    document.getElementById('gallery_add').onclick = async () => {
-      try {
-        const inp = document.getElementById('gallery_upload');
-        const f = inp.files && inp.files[0];
-        if (!f) return alert('Choose an image first');
-        const category = document.getElementById('gallery_upload_category').value;
-        const src = await uploadFile(f);
-        const nextId = gallery.length ? Math.max(...gallery.map((g) => Number(g.id) || 0)) + 1 : 1;
-        gallery.push({ id: nextId, src, category });
-        document.getElementById('gallery_json').value = JSON.stringify(gallery, null, 2);
-        setStatus('Gallery image added.');
-      } catch (_) {
-        setStatus('Could not add image.');
-      }
-    };
-    document.getElementById('reload').onclick = init;
+    applyLang();
   </script>
 </body>
 </html>
