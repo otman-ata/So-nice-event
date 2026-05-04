@@ -13,8 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
       :root {
-        --color-primary: #7f1d1d;
-        --color-primary-hover: #991b1b;
+        --color-primary: #7a121c;
+        --color-primary-hover: #951727;
+        --color-accent: #f3c74d;
+        --color-cream: #fff8e8;
         --color-ink: #292524;
       }
       html {
@@ -22,7 +24,7 @@
       }
       body {
         font-family: 'Montserrat', sans-serif;
-        background-color: #faf5f5;
+        background-color: var(--color-cream);
         color: var(--color-ink);
       }
       h1, h2, h3, h4, h5, h6, .font-serif {
@@ -41,6 +43,20 @@
       }
       .custom-text-dark {
         color: #450a0a;
+      }
+      .moroccan-pattern {
+        position: relative;
+      }
+      .moroccan-pattern::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.1;
+        background-image:
+          radial-gradient(circle at 25% 25%, var(--color-accent) 0 1px, transparent 1px),
+          radial-gradient(circle at 75% 75%, #ffffff 0 1px, transparent 1px);
+        background-size: 28px 28px;
       }
       /* White header logo → warm gold when scrolled (no separate asset required) */
       .header-logo--gold {

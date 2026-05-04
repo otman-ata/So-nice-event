@@ -81,4 +81,15 @@ app.post('/save-site', (req, res) => {
   }
 });
 
+app.post('/save-content', (req, res) => {
+  try {
+    const data = req.body || {};
+    const file = path.join(PUBLIC_DIR, 'assets', 'cms-content.json');
+    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+    return res.json({ ok: true });
+  } catch (e) {
+    return res.status(400).json({ ok: false, error: e.message });
+  }
+});
+
 app.listen(PORT, () => console.log(`Upload server running at http://localhost:${PORT}`));

@@ -20,6 +20,7 @@ interface ContactProps {
 }
 
 type FormStatus = 'idle' | 'loading' | 'success' | 'error';
+const WHATSAPP_NUMBER = '212666757403';
 
 const Contact: React.FC<ContactProps> = ({ content }) => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
@@ -34,37 +35,28 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('loading');
-    setResponseMessage(''); // Clear previous message
-
-    // This is a placeholder URL. Replace with your actual Google Apps Script Web App URL.
-    const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
-
-    const form = new FormData();
-    form.append('name', formData.name);
-    form.append('email', formData.email);
-    form.append('phone', formData.phone);
-    form.append('message', formData.message);
-
-    fetch(SCRIPT_URL, { method: 'POST', body: form })
-      .then(response => response.json())
-      .then(data => {
-        if (data.result === 'success') {
-          setStatus('success');
-          setResponseMessage('Your quote request has been sent! We will get back to you shortly.');
-          setFormData({ name: '', email: '', message: '' });
-        } else {
-          throw new Error(data.error || 'An unknown error occurred.');
-        }
-      })
-      .catch(error => {
-        setStatus('error');
-        setResponseMessage('There was an issue sending your message. Please check your connection or try again.');
-        console.error('Error!', error.message);
-      });
+    setResponseMessage('');
+    try {
+      const payload = [
+        'New Event Request',
+        `Name: ${formData.name || '-'}`,
+        `Email: ${formData.email || '-'}`,
+        `Phone: ${formData.phone || '-'}`,
+        `Message: ${formData.message || '-'}`,
+      ].join('\n');
+      const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(payload)}`;
+      window.location.href = url;
+      setStatus('success');
+      setResponseMessage('Redirecting to WhatsApp...');
+    } catch (error) {
+      setStatus('error');
+      setResponseMessage('Could not open WhatsApp. Please try again.');
+      console.error('WhatsApp redirect error', error);
+    }
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-20 bg-[#fffdf7] moroccan-pattern">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>

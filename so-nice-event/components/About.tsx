@@ -15,7 +15,7 @@ const About: React.FC<AboutProps> = ({ content }) => {
   const isVisible = useIntersectionObserver(sectionRef, { threshold: 0.3, triggerOnce: true });
 
   return (
-    <section id="about" className="py-20 bg-stone-100">
+    <section id="about" className="py-20 bg-[#fff8e8] moroccan-pattern">
       <div
         ref={sectionRef}
         className={`container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center transition-opacity duration-1000 ${

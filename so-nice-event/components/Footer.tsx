@@ -1,8 +1,6 @@
 import React from 'react';
 import { siteImages } from '../lib/images';
 
-const isAdminLink = (href: string) => href === '/admin';
-
 interface FooterProps {
   content: {
     navTitle: string;
@@ -53,22 +51,16 @@ const Footer: React.FC<FooterProps> = ({ content, onNavClick }) => {
           <div className="mb-8 md:mb-0">
             <p className="font-semibold mb-4 text-lg">{content.navTitle}</p>
             <nav className="flex flex-col space-y-2 opacity-80">
-              {content.navLinks.map((link) =>
-                isAdminLink(link.href) ? (
-                  <a key={link.href} href={link.href} className="hover:underline cursor-pointer">
-                    {link.text}
-                  </a>
-                ) : (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={(e) => onNavClick(e, link.href)}
-                    className="hover:underline cursor-pointer"
-                  >
-                    {link.text}
-                  </a>
-                )
-              )}
+              {content.navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => onNavClick(e, link.href)}
+                  className="hover:underline cursor-pointer"
+                >
+                  {link.text}
+                </a>
+              ))}
             </nav>
           </div>
 

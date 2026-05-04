@@ -3,10 +3,15 @@
   "logoWhite": "/assets/logos/logo-white.png",
   "logoYellow": "",
   "heroBg": "/assets/images/hero-bg.jpeg",
+  "heroSlides": [
+    "/assets/images/hero-bg.jpeg"
+  ],
   "aboutUs": "/assets/images/about-us.jpeg",
   "serviceWedding": "/assets/images/service-wedding.jpeg",
   "servicePrivate": "/assets/images/service-private.jpeg",
   "serviceCorporate": "/assets/images/service-corporate.jpeg",
+  "serviceBabyShower": "/assets/images/gallery-8.jpeg",
+  "serviceBirthday": "/assets/images/gallery-11.jpeg",
   "blogPalette": "/assets/images/gallery-7.jpeg",
   "blogNegafa": "/assets/images/gallery-3.jpeg",
   "blogVenues": "/assets/images/gallery-2.jpeg",

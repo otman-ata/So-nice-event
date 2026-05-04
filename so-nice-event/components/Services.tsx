@@ -17,7 +17,7 @@ interface ServicesProps {
   };
 }
 
-const SERVICE_KEYS: SiteImageKey[] = ['serviceWedding', 'servicePrivate', 'serviceCorporate'];
+const SERVICE_KEYS: SiteImageKey[] = ['serviceWedding', 'servicePrivate', 'serviceCorporate', 'serviceBabyShower', 'serviceBirthday'];
 
 const ServiceCard: React.FC<{ service: Service; index: number }> = ({ service, index }) => {
   const siteKey = SERVICE_KEYS[index];
@@ -51,7 +51,7 @@ const ServiceCard: React.FC<{ service: Service; index: number }> = ({ service, i
 
 const Services: React.FC<ServicesProps> = ({ content }) => {
   return (
-    <section id="services" className="py-20 bg-stone-100">
+    <section id="services" className="py-20 bg-[#fff8e8] moroccan-pattern">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>

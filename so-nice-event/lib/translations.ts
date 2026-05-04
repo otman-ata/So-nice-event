@@ -8,10 +8,8 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Nos Services' },
         { href: '#gallery', text: 'Galerie' },
-        { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'À Propos' },
         { href: '#contact', text: 'Contact' },
-        { href: '/admin', text: 'Gestion' },
       ],
     },
     hero: {
@@ -39,6 +37,16 @@ export const translations = {
           title: 'Événements d\'Entreprise',
           description: 'Conférences, lancements de produits ou soirées de gala. Nous créons des événements professionnels et créatifs qui marquent les esprits.',
         },
+        {
+          image: siteImages.serviceBabyShower,
+          title: 'Baby Shower',
+          description: 'Un univers doux et raffiné pour célébrer l\'arrivée de bébé avec une scénographie chaleureuse et des détails personnalisés.',
+        },
+        {
+          image: siteImages.serviceBirthday,
+          title: 'Anniversaires',
+          description: 'Des anniversaires sur-mesure pour enfants et adultes, pensés autour de thèmes créatifs et d\'une ambiance festive.',
+        },
       ],
     },
     gallery: {
@@ -48,7 +56,9 @@ export const translations = {
         all: 'Tous',
         weddings: 'Mariages',
         private: 'Événements Privés',
-        corporate: 'Événements d\'Entreprise'
+        corporate: 'Événements d\'Entreprise',
+        babyShower: 'Baby Shower',
+        birthdays: 'Anniversaires'
       }
     },
     testimonials: {
@@ -178,10 +188,8 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Nos Services' },
         { href: '#gallery', text: 'Galerie' },
-        { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'À Propos' },
         { href: '#contact', text: 'Contact' },
-        { href: '/admin', text: 'Gestion' },
       ],
     },
   },
@@ -190,10 +198,8 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Our Services' },
         { href: '#gallery', text: 'Gallery' },
-        { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'About Us' },
         { href: '#contact', text: 'Contact' },
-        { href: '/admin', text: 'Manage' },
       ],
     },
     hero: {
@@ -221,6 +227,16 @@ export const translations = {
           title: 'Corporate Events',
           description: 'Conferences, product launches, or gala evenings. We create professional and creative events that make a lasting impression.',
         },
+        {
+          image: siteImages.serviceBabyShower,
+          title: 'Baby Shower',
+          description: 'A soft and elegant setup to celebrate your baby on the way, with personalized decor and memorable moments.',
+        },
+        {
+          image: siteImages.serviceBirthday,
+          title: 'Birthdays',
+          description: 'Custom birthday celebrations for kids and adults, designed around creative themes and joyful entertainment.',
+        },
       ],
     },
     gallery: {
@@ -230,7 +246,9 @@ export const translations = {
         all: 'All',
         weddings: 'Weddings',
         private: 'Private Events',
-        corporate: 'Corporate Events'
+        corporate: 'Corporate Events',
+        babyShower: 'Baby Shower',
+        birthdays: 'Birthdays'
       }
     },
     testimonials: {
@@ -360,10 +378,8 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Our Services' },
         { href: '#gallery', text: 'Gallery' },
-        { href: '#blog', text: 'Blog' },
         { href: '#about', text: 'About Us' },
         { href: '#contact', text: 'Contact' },
-        { href: '/admin', text: 'Manage' },
       ],
     },
   },
@@ -372,10 +388,8 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'خدماتنا' },
         { href: '#gallery', text: 'المعرض' },
-        { href: '#blog', text: 'المدونة' },
         { href: '#about', text: 'من نحن' },
         { href: '#contact', text: 'اتصل بنا' },
-        { href: '/admin', text: 'إدارة' },
       ],
     },
     hero: {
@@ -403,6 +417,16 @@ export const translations = {
           title: 'مناسبات الشركات',
           description: 'مؤتمرات، إطلاق منتجات، أو أمسيات احتفالية. نبتكر مناسبات احترافية وإبداعية تترك انطباعًا دائمًا.',
         },
+        {
+          image: siteImages.serviceBabyShower,
+          title: 'حفل استقبال مولود',
+          description: 'تصميم أنيق ودافئ للاحتفال بقدوم المولود مع تفاصيل مخصصة تناسب العائلة والضيوف.',
+        },
+        {
+          image: siteImages.serviceBirthday,
+          title: 'حفلات أعياد الميلاد',
+          description: 'حفلات ميلاد مميزة للأطفال والكبار مع أفكار إبداعية وأجواء احتفالية متكاملة.',
+        },
       ],
     },
     gallery: {
@@ -412,7 +436,9 @@ export const translations = {
         all: 'الكل',
         weddings: 'حفلات الزفاف',
         private: 'مناسبات خاصة',
-        corporate: 'مناسبات الشركات'
+        corporate: 'مناسبات الشركات',
+        babyShower: 'حفل استقبال مولود',
+        birthdays: 'أعياد الميلاد'
       }
     },
     testimonials: {
@@ -542,10 +568,8 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'خدماتنا' },
         { href: '#gallery', text: 'المعرض' },
-        { href: '#blog', text: 'المدونة' },
         { href: '#about', text: 'من نحن' },
         { href: '#contact', text: 'اتصل بنا' },
-        { href: '/admin', text: 'إدارة' },
       ],
     },
   },

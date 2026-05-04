@@ -14,8 +14,6 @@ interface HeaderProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, href: string) => void;
 }
 
-const isAdminLink = (href: string) => href === '/admin';
-
 const LanguageSwitcher: React.FC<{
   language: Language;
   setLanguage: (lang: Language) => void;
@@ -97,9 +95,17 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   const cmsEdit = useCmsEditMode();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => {
+      const heroHeight = document.getElementById('home')?.offsetHeight || window.innerHeight;
+      setScrolled(window.scrollY > heroHeight - 100);
+    };
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -109,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   }, []);
 
   const handleMobileLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!isAdminLink(href)) onNavClick(e, href);
+    onNavClick(e, href);
     setMenuOpen(false);
   };
 
@@ -118,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   const useGoldFilter = scrolled && yellow === white;
 
   return (
-    <header className="sticky top-0 z-50 custom-bg text-white shadow-md border-b border-white/10">
+    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-300 ${scrolled ? 'custom-bg shadow-md border-white/10' : 'bg-transparent border-transparent'}`}>
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#home" onClick={(e) => onNavClick(e, '#home')} className="flex items-center" aria-label="So Nice Event Home">
           {cmsEdit ? (
@@ -139,26 +145,16 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
 
         <div className="hidden md:flex items-center space-x-8">
           <nav className="flex space-x-8" aria-label="Main navigation">
-            {content.navLinks.map((link) =>
-              isAdminLink(link.href) ? (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="font-medium text-lg text-white/90 hover:text-amber-200 transition-colors"
-                >
-                  {link.text}
-                </a>
-              ) : (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => onNavClick(e, link.href)}
-                  className="font-medium text-lg text-white/90 hover:text-amber-200 transition-colors"
-                >
-                  {link.text}
-                </a>
-              )
-            )}
+            {content.navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => onNavClick(e, link.href)}
+                className="font-medium text-lg text-white/90 hover:text-amber-200 transition-colors"
+              >
+                {link.text}
+              </a>
+            ))}
           </nav>
           <LanguageSwitcher language={language} setLanguage={setLanguage} />
         </div>
@@ -186,22 +182,16 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
       {menuOpen && (
         <nav id="mobile-menu" className="md:hidden border-t border-white/10 bg-[#5c1212]" aria-label="Mobile navigation">
           <div className="flex flex-col items-center py-4 space-y-4">
-            {content.navLinks.map((link) =>
-              isAdminLink(link.href) ? (
-                <a key={link.href} href={link.href} className="py-2 text-white hover:text-amber-200 font-medium text-lg">
-                  {link.text}
-                </a>
-              ) : (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleMobileLinkClick(e, link.href)}
-                  className="py-2 text-white hover:text-amber-200 font-medium text-lg transition-colors"
-                >
-                  {link.text}
-                </a>
-              )
-            )}
+            {content.navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleMobileLinkClick(e, link.href)}
+                className="py-2 text-white hover:text-amber-200 font-medium text-lg transition-colors"
+              >
+                {link.text}
+              </a>
+            ))}
             <div className="pt-2">
               <LanguageSwitcher language={language} setLanguage={setLanguage} isMobile={true} />
             </div>

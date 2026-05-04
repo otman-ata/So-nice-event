@@ -22,7 +22,7 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
   const [visibleCount, setVisibleCount] = useState(9);
   const [images, setImages] = useState<GalleryImageProps[]>(defaultGalleryImages);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events'>('All');
+  const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays'>('All');
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const isSectionVisible = useIntersectionObserver(sectionRef, { threshold: 0.1, triggerOnce: true });
 
@@ -77,7 +77,7 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
   const filtered = activeCategory === 'All' ? images : images.filter(i => i.category === activeCategory);
 
   return (
-    <section id="gallery" className="py-20 bg-white" ref={sectionRef}>
+    <section id="gallery" className="py-20 bg-[#fffdf7] moroccan-pattern" ref={sectionRef}>
       <div className="container mx-auto px-6">
         <div className={`text-center mb-12 transition-opacity duration-1000 ${isSectionVisible ? 'opacity-100' : 'opacity-0'}`}>
           <h2 className="text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
@@ -92,7 +92,9 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
             { key: 'All', label: (content as any).filterLabels?.all || 'All' },
             { key: 'Weddings', label: (content as any).filterLabels?.weddings || 'Weddings' },
             { key: 'Private Events', label: (content as any).filterLabels?.private || 'Private Events' },
-            { key: 'Corporate Events', label: (content as any).filterLabels?.corporate || 'Corporate Events' }
+            { key: 'Corporate Events', label: (content as any).filterLabels?.corporate || 'Corporate Events' },
+            { key: 'Baby Shower', label: (content as any).filterLabels?.babyShower || 'Baby Shower' },
+            { key: 'Birthdays', label: (content as any).filterLabels?.birthdays || 'Birthdays' }
           ] as const).map(cat => (
             <button
               key={cat.key}

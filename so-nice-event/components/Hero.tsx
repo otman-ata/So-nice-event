@@ -16,6 +16,7 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
   const edit = useCmsEditMode();
   const [, bump] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     const h = () => bump((n) => n + 1);
@@ -23,14 +24,29 @@ const Hero: React.FC<HeroProps> = ({ content, onCtaClick }) => {
     return () => window.removeEventListener(SITE_IMAGES_EVENT, h);
   }, []);
 
-  const bg = siteImages.heroBg;
+  const overrideSlides = (typeof window !== 'undefined' && (window as any).__SITE_IMAGES?.heroSlides) || [];
+  const slideImages: string[] = Array.isArray(overrideSlides) && overrideSlides.length > 0
+    ? overrideSlides.filter((s: unknown) => typeof s === 'string' && s.trim().length > 0)
+    : [siteImages.heroBg];
+
+  useEffect(() => {
+    setActiveSlide(0);
+    if (slideImages.length <= 1) return;
+    const id = window.setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slideImages.length);
+    }, 2000);
+    return () => window.clearInterval(id);
+  }, [slideImages.length]);
 
   return (
     <section id="home" className="relative h-screen flex items-center justify-center -mt-20 md:-mt-24">
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-opacity duration-300"
-        style={{ backgroundImage: `url('${bg}')` }}
-      />
+      {slideImages.map((bg, idx) => (
+        <div
+          key={`${bg}-${idx}`}
+          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${idx === activeSlide ? 'opacity-100' : 'opacity-0'}`}
+          style={{ backgroundImage: `url('${bg}')` }}
+        />
+      ))}
       <div className="absolute inset-0 bg-black/50" />
       {edit && (
         <label className="absolute bottom-8 right-6 z-20 cursor-pointer rounded-full bg-black/65 px-4 py-2 text-sm font-semibold text-white hover:bg-black/80">

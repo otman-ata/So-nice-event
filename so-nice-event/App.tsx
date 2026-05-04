@@ -4,11 +4,9 @@ import Hero from './components/Hero';
 import Services from './components/Services';
 import Gallery from './components/Gallery';
 import Testimonials from './components/Testimonials';
-import Blog from './components/Blog';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import BlogPost from './components/BlogPost';
 import { translations, Language } from './lib/translations';
 import { CmsEditProvider } from './context/CmsEditContext';
 
@@ -17,8 +15,7 @@ const HEADER_OFFSET = 80;
 function App() {
   const [language, setLanguage] = useState<Language>('fr');
   const [content, setContent] = useState(translations[language]);
-  const [route, setRoute] = useState(window.location.hash);
-  const [scrollToTarget, setScrollToTarget] = useState<string | null>(null);
+  const [cmsTextOverrides, setCmsTextOverrides] = useState<any>({});
   const [cmsEditMode, setCmsEditMode] = useState(
     () => typeof window !== 'undefined' && sessionStorage.getItem('so_nice_cms_edit') === '1'
   );
@@ -40,20 +37,43 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setRoute(window.location.hash);
-      window.scrollTo(0, 0); // Scroll to top on page change
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-  
-  useEffect(() => {
-    setContent(translations[language]);
+    const base = translations[language];
+    const override = cmsTextOverrides?.[language] || {};
+    setContent({
+      ...base,
+      hero: { ...base.hero, ...(override.hero || {}) },
+      services: {
+        ...base.services,
+        ...(override.services || {}),
+        serviceList: override?.services?.serviceList || base.services.serviceList,
+      },
+      gallery: {
+        ...base.gallery,
+        ...(override.gallery || {}),
+        filterLabels: { ...base.gallery.filterLabels, ...(override?.gallery?.filterLabels || {}) },
+      },
+      about: { ...base.about, ...(override.about || {}) },
+    });
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-  }, [language]);
+  }, [language, cmsTextOverrides]);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/assets/cms-content.json', { cache: 'no-cache' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted && data && typeof data === 'object') setCmsTextOverrides(data);
+      } catch {
+        /* keep translation defaults */
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const scrollToElement = (id: string) => {
     const targetElement = document.getElementById(id);
@@ -77,44 +97,11 @@ function App() {
   }, [route, scrollToTarget]);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href === '/admin') return;
     e.preventDefault();
     const targetId = href.substring(1);
-    
-    if (route.startsWith('#/blog/')) {
-        setScrollToTarget(targetId); // Set the target
-        window.location.hash = '/'; // Navigate home, which will trigger the useEffect
-    } else {
-        // Already on home page, just scroll directly
-        scrollToElement(targetId);
-    }
+    scrollToElement(targetId);
   };
   
-  const renderPage = () => {
-    const blogPostMatch = route.match(/^#\/blog\/(.+)$/);
-
-    if (blogPostMatch) {
-      const slug = blogPostMatch[1];
-      const post = content.blog.postList.find(p => p.slug === slug);
-      if (post) {
-        return <BlogPost post={post} content={{ backToBlog: content.blog.backToBlog }} />;
-      }
-    }
-
-    // Default to main page
-    return (
-      <>
-        <Hero content={content.hero} onCtaClick={handleNavClick} />
-        <Services content={content.services} />
-        <Gallery content={content.gallery} />
-        <Testimonials content={content.testimonials} />
-        <Blog content={content.blog} />
-        <About content={content.about} />
-        <Contact content={content.contact} />
-      </>
-    );
-  };
-
   return (
     <CmsEditProvider value={cmsEditMode}>
       <div>
@@ -124,7 +111,14 @@ function App() {
           content={content.header}
           onNavClick={handleNavClick}
         />
-        <main>{renderPage()}</main>
+        <main>
+          <Hero content={content.hero} onCtaClick={handleNavClick} />
+          <Services content={content.services} />
+          <Gallery content={content.gallery} />
+          <Testimonials content={content.testimonials} />
+          <About content={content.about} />
+          <Contact content={content.contact} />
+        </main>
         <Footer content={content.footer} onNavClick={handleNavClick} />
       </div>
     </CmsEditProvider>
