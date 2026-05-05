@@ -142,13 +142,6 @@ function localizePack(pack: Pack, language: Language): Pack {
   };
 }
 
-function serviceTitle(service: string, language: Language) {
-  if (serviceLabels[service]?.[language]) return serviceLabels[service][language];
-  if (language === 'ar') return `باقات ${service}`;
-  if (language === 'fr') return `Packs ${service}`;
-  return `${service} Packs`;
-}
-
 export default function Packs({ packs = [], language = 'fr' }: { packs?: Pack[]; language?: Language }) {
   const visiblePacks = packs.length ? packs : defaultPacks;
   const copy = pageCopy[language] || pageCopy.fr;
@@ -173,7 +166,7 @@ export default function Packs({ packs = [], language = 'fr' }: { packs?: Pack[];
             <section key={service} aria-labelledby={`pack-service-${service.replace(/\s+/g, '-')}`}>
               <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-[#f0bdd5] pb-4">
                 <h2 id={`pack-service-${service.replace(/\s+/g, '-')}`} className="text-3xl font-serif font-bold italic text-[#831843]">
-                  {serviceTitle(service, language)}
+                  {serviceLabels[service]?.[language] || service}
                 </h2>
                 <span className="rounded-full bg-[#f7d979] px-4 py-2 text-sm font-extrabold text-[#831843]">
                   {servicePacks.length} {copy.countLabel}

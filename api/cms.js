@@ -7,7 +7,6 @@ const CMS_GALLERY_PATH = 'cms/gallery.json';
 const CMS_CONTENT_PATH = 'cms/content.json';
 const CMS_PACKS_PATH = 'cms/packs.json';
 const blobToken = () => process.env.BLOB1_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
-const TARGET_PACK_LANGUAGES = ['ar', 'en'];
 
 async function readFallbackJson(relativePath, fallbackValue) {
   try {
@@ -35,48 +34,6 @@ function mergeSiteImages(fallbackSiteImages = {}, storedSiteImages = {}) {
   return merged;
 }
 
-async function translateText(text, target) {
-  const value = String(text || '').trim();
-  if (!value) return '';
-  const url = new URL('https://api.mymemory.translated.net/get');
-  url.searchParams.set('q', value);
-  url.searchParams.set('langpair', `fr|${target}`);
-  try {
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) return value;
-    const data = await response.json();
-    return data?.responseData?.translatedText || value;
-  } catch {
-    return value;
-  }
-}
-
-async function enrichPacks(packs = []) {
-  if (!Array.isArray(packs)) return [];
-  const enriched = [];
-  for (const pack of packs) {
-    const translations = {
-      ...(pack.translations || {}),
-      fr: {
-        name: pack.name || '',
-        highlight: pack.highlight || '',
-        items: Array.isArray(pack.items) ? pack.items : [],
-      },
-    };
-    for (const lang of TARGET_PACK_LANGUAGES) {
-      if (!translations[lang]?.name || !Array.isArray(translations[lang]?.items) || !translations[lang].items.length) {
-        translations[lang] = {
-          name: await translateText(pack.name, lang),
-          highlight: await translateText(pack.highlight, lang),
-          items: await Promise.all((Array.isArray(pack.items) ? pack.items : []).map((item) => translateText(item, lang))),
-        };
-      }
-    }
-    enriched.push({ ...pack, translations });
-  }
-  return enriched;
-}
-
 async function getCmsData() {
   const fallbackSiteImages = await readFallbackJson('site-images.json', {});
   const fallbackGallery = await readFallbackJson('gallery.json', []);
@@ -89,7 +46,7 @@ async function getCmsData() {
   const siteImages = mergeSiteImages(fallbackSiteImages, storedSiteImages);
   const gallery = storedGallery.length ? storedGallery : fallbackGallery;
   const content = Object.keys(storedContent || {}).length ? storedContent : fallbackContent;
-  const packs = await enrichPacks(Array.isArray(storedPacks) && storedPacks.length ? storedPacks : fallbackPacks);
+  const packs = Array.isArray(storedPacks) && storedPacks.length ? storedPacks : fallbackPacks;
   return { ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery, content, packs };
 }
 
@@ -140,7 +97,7 @@ export default async function handler(req, res) {
       if (siteImages) await writeBlobJson(CMS_SITE_PATH, siteImages);
       if (gallery) await writeBlobJson(CMS_GALLERY_PATH, normalizeGallery(gallery));
       if (content) await writeBlobJson(CMS_CONTENT_PATH, content);
-      if (packs) await writeBlobJson(CMS_PACKS_PATH, await enrichPacks(Array.isArray(packs) ? packs : []));
+      if (packs) await writeBlobJson(CMS_PACKS_PATH, Array.isArray(packs) ? packs : []);
       return res.status(200).json(await getCmsData());
     } catch (error) {
       return res.status(500).json({ ok: false, error: error.message || 'Save failed' });
