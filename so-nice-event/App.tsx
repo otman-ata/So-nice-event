@@ -147,7 +147,7 @@ function App() {
         />
         {page === 'packs' ? (
           <main>
-            <Packs packs={cmsPacks} />
+            <Packs packs={cmsPacks} language={language} />
           </main>
         ) : (
           <main>

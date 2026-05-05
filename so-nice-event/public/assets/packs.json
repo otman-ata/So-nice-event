@@ -10,7 +10,31 @@
       "Eclairage d'ambiance",
       "Carte assiettes",
       "Buffet fin de soiree: plateau bague, bougie, table cake"
-    ]
+    ],
+    "translations": {
+      "ar": {
+        "name": "الباقة الاقتصادية",
+        "highlight": "أساسيات حفل الزفاف",
+        "items": [
+          "لوحة استقبال حسب الاختيار",
+          "خلفية ورود",
+          "إضاءة أجواء",
+          "كارت الصحون",
+          "بوفيه نهاية الحفل: صينية الخواتم، شموع، طاولة الكيك"
+        ]
+      },
+      "en": {
+        "name": "Economy Pack",
+        "highlight": "Wedding essentials",
+        "items": [
+          "Welcome board of your choice",
+          "Floral backdrop",
+          "Ambient lighting",
+          "Plate cards",
+          "End-of-night buffet: ring tray, candles, cake table"
+        ]
+      }
+    }
   },
   {
     "name": "Pack Elegance",
@@ -24,7 +48,33 @@
       "Eclairage professionnel complet",
       "Carte assiettes",
       "Table cake"
-    ]
+    ],
+    "translations": {
+      "ar": {
+        "name": "باقة الأناقة",
+        "highlight": "مثالية للأعراس العائلية، 50 ضيفا",
+        "items": [
+          "لوحة استقبال مخصصة",
+          "خلفية ورود عصرية حسب الاختيار",
+          "منصة أنيقة 3/4",
+          "إضاءة احترافية كاملة",
+          "كارت الصحون",
+          "طاولة الكيك"
+        ]
+      },
+      "en": {
+        "name": "Elegance Pack",
+        "highlight": "Ideal for intimate weddings, 50 guests",
+        "items": [
+          "Personalized welcome board",
+          "Modern floral backdrop of your choice",
+          "Elegant 3/4 stage",
+          "Complete professional lighting",
+          "Plate cards",
+          "Cake table"
+        ]
+      }
+    }
   },
   {
     "name": "Pack Royal",
@@ -43,6 +93,42 @@
       "Ceremonie du the marocain",
       "Photobooth",
       "Table cake luxe"
-    ]
+    ],
+    "translations": {
+      "ar": {
+        "name": "الباقة الملكية",
+        "highlight": "تجربة فاخرة ومتكاملة",
+        "items": [
+          "لوحة استقبال مخصصة",
+          "ديكور مدخل فاخر: زربية وشموع",
+          "قوس ورود كبير مع خلفية حسب الاختيار",
+          "منصة 4/6",
+          "إضاءة فنية",
+          "بوفيه نهاية الحفل كامل",
+          "ستاند المدخل",
+          "دفتر الضيوف",
+          "حفل الشاي المغربي",
+          "فوتوبوث",
+          "طاولة كيك فاخرة"
+        ]
+      },
+      "en": {
+        "name": "Royal Pack",
+        "highlight": "Complete luxury experience",
+        "items": [
+          "Personalized welcome board",
+          "Luxury entrance decor: rug and candles",
+          "Giant floral arch with backdrop of your choice",
+          "4/6 stage",
+          "Artistic lighting",
+          "Complete end-of-night buffet",
+          "Entrance stand",
+          "Guest book",
+          "Moroccan tea ceremony",
+          "Photobooth",
+          "Luxury cake table"
+        ]
+      }
+    }
   }
 ]
