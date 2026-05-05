@@ -92,6 +92,7 @@ const LanguageSwitcher: React.FC<{
 
 const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavClick, packsPage = false }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [hiddenForContact, setHiddenForContact] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [, bumpLogo] = useState(0);
   const cmsEdit = useCmsEditMode();
@@ -100,6 +101,13 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
     const handleScroll = () => {
       const heroHeight = document.getElementById('home')?.offsetHeight || window.innerHeight;
       setScrolled(packsPage || window.scrollY > heroHeight - 100);
+      const contact = document.getElementById('contact');
+      if (!contact || packsPage) {
+        setHiddenForContact(false);
+        return;
+      }
+      const rect = contact.getBoundingClientRect();
+      setHiddenForContact(rect.top <= 120 && rect.bottom > 120);
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll);
@@ -134,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
       ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${solidHeader ? 'bg-[#be185d]/95 shadow-xl shadow-black/15 border-[#d9a629]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${hiddenForContact ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'} ${solidHeader ? 'bg-[#be185d]/95 shadow-xl shadow-black/15 border-[#d9a629]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#home" onClick={(e) => onNavClick(e, '#home')} className="flex items-center" aria-label="So Nice Event Home">
           {cmsEdit ? (

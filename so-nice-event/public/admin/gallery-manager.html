@@ -88,6 +88,41 @@
       font: inherit;
       background: #fff;
     }
+    input[type="file"] {
+      max-width: 100%;
+      color: var(--muted);
+      font: inherit;
+      font-weight: 750;
+    }
+    input[type="file"]::file-selector-button {
+      margin-right: 12px;
+      border: 1px solid rgba(243,199,77,.68);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      color: var(--red-dark);
+      background: linear-gradient(135deg, #f8dc82, var(--gold));
+      font: inherit;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(69, 10, 10, .08);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    input[type="file"]::file-selector-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(69, 10, 10, .13);
+    }
+    input[type="file"]::-webkit-file-upload-button {
+      margin-right: 12px;
+      border: 1px solid rgba(243,199,77,.68);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      color: var(--red-dark);
+      background: linear-gradient(135deg, #f8dc82, var(--gold));
+      font: inherit;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(69, 10, 10, .08);
+    }
     textarea { min-height: 120px; resize: vertical; }
     button {
       border: 0;
@@ -189,7 +224,6 @@
           <input id="galleryUpload" type="file" accept="image/*" multiple />
           <button type="button" class="gold" id="uploadGallery" data-i18n="uploadToService">Upload photos to this service</button>
           <button type="button" class="ghost" id="addGallery" data-i18n="addUrlRow">Add URL row</button>
-          <button type="button" class="ghost" id="reloadGallery" data-i18n="reloadGallery">Reload gallery</button>
           <button type="button" class="btn" id="saveGallery" data-i18n="saveGallery">Save gallery</button>
         </div>
         <div id="serviceCover" class="list"></div>
@@ -249,7 +283,6 @@
         galleryHint: 'Choose a service category, update its service cover image, then add the gallery photos for that same category. The service cover is always shown first on the public gallery.',
         uploadToService: 'Upload photos to this service',
         addUrlRow: 'Add URL row',
-        reloadGallery: 'Reload gallery',
         saveGallery: 'Save gallery',
         packsTitle: 'Packs',
         packsHint: 'Create and manage packs for any service. Each item should be on a separate line.',
@@ -277,7 +310,6 @@
         galleryHint: 'Choisissez un service, modifiez son image principale, puis ajoutez les photos de cette categorie.',
         uploadToService: 'Ajouter au service',
         addUrlRow: 'Ajouter une URL',
-        reloadGallery: 'Recharger',
         saveGallery: 'Sauvegarder la galerie',
         packsTitle: 'Packs',
         packsHint: 'Creez et gerez des packs pour chaque service. Une ligne par element.',
@@ -305,7 +337,6 @@
         galleryHint: 'اختر الخدمة، حدث صورتها الرئيسية، ثم أضف صور المعرض الخاصة بها.',
         uploadToService: 'رفع صور لهذه الخدمة',
         addUrlRow: 'إضافة رابط صورة',
-        reloadGallery: 'تحديث المعرض',
         saveGallery: 'حفظ المعرض',
         packsTitle: 'الباقات',
         packsHint: 'أضف وعدل الباقات لأي خدمة. كل عنصر في سطر منفصل.',
@@ -914,7 +945,6 @@
         status(error.message || 'Upload failed.');
       }
     };
-    $('reloadGallery').onclick = () => loadGallery(false);
     $('saveGallery').onclick = async () => {
       try {
         await persistGallery();
