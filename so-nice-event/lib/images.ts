@@ -46,13 +46,13 @@ export const siteImages = new Proxy(defaultSiteImages, {
 });
 
 export const galleryImages: GalleryImage[] = [
-  { id: 1, src: '/assets/images/gallery-1.jpeg', category: 'Weddings' },
+  { id: 1, src: defaultSiteImages.serviceWedding, category: 'Weddings' },
   { id: 2, src: '/assets/images/gallery-2.jpeg', category: 'Weddings' },
   { id: 3, src: '/assets/images/gallery-3.jpeg', category: 'Weddings' },
-  { id: 4, src: '/assets/images/gallery-4.jpeg', category: 'Baby Shower' },
-  { id: 5, src: '/assets/images/gallery-5.jpeg', category: 'Private Events' },
-  { id: 6, src: '/assets/images/gallery-6.jpeg', category: 'Birthdays' },
-  { id: 7, src: '/assets/images/gallery-7.jpeg', category: 'Corporate Events' },
-  { id: 8, src: '/assets/images/gallery-5.jpeg', category: 'Birth Celebration' },
-  { id: 9, src: '/assets/images/gallery-7.jpeg', category: 'Graduation Parties' },
+  { id: 4, src: defaultSiteImages.servicePrivate, category: 'Private Events' },
+  { id: 5, src: defaultSiteImages.serviceCorporate, category: 'Corporate Events' },
+  { id: 6, src: defaultSiteImages.serviceBabyShower, category: 'Baby Shower' },
+  { id: 7, src: defaultSiteImages.serviceBirthday, category: 'Birthdays' },
+  { id: 8, src: defaultSiteImages.serviceBirthCelebration, category: 'Birth Celebration' },
+  { id: 9, src: defaultSiteImages.serviceGraduation, category: 'Graduation Parties' },
 ];

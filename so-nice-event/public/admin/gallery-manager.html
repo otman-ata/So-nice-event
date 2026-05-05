@@ -166,7 +166,8 @@
       </section>
 
       <section id="panel-gallery" class="panel card">
-        <h2 class="section-title">Gallery</h2>
+        <h2 class="section-title">Gallery by Service</h2>
+        <p class="hint">Choose a service category, update its service cover image, then add the gallery photos for that same category. The service cover is always shown first on the public gallery.</p>
         <div class="tabs" id="galleryTabs">
           <button type="button" class="tab active" data-category="Weddings">Weddings</button>
           <button type="button" class="tab" data-category="Private Events">Private</button>
@@ -177,10 +178,13 @@
           <button type="button" class="tab" data-category="Graduation Parties">Graduation</button>
         </div>
         <div class="row">
-          <button type="button" class="gold" id="addGallery">Add photo</button>
+          <input id="galleryUpload" type="file" accept="image/*" multiple />
+          <button type="button" class="gold" id="uploadGallery">Upload photos to this service</button>
+          <button type="button" class="ghost" id="addGallery">Add URL row</button>
           <button type="button" class="ghost" id="reloadGallery">Reload gallery</button>
           <button type="button" class="btn" id="saveGallery">Save gallery</button>
         </div>
+        <div id="serviceCover" class="list"></div>
         <div id="galleryList" class="list"></div>
       </section>
 
@@ -189,7 +193,16 @@
 
   <script>
     const PASSPHRASES = ['soniceevent-admin', 'soniceevent-staff'];
-    const CATEGORIES = ['Weddings', 'Private Events', 'Corporate Events', 'Baby Shower', 'Birthdays', 'Birth Celebration', 'Graduation Parties'];
+    const SERVICE_CATEGORIES = [
+      { category: 'Weddings', label: 'Weddings', siteKey: 'serviceWedding' },
+      { category: 'Private Events', label: 'Private Events', siteKey: 'servicePrivate' },
+      { category: 'Corporate Events', label: 'Corporate Events', siteKey: 'serviceCorporate' },
+      { category: 'Baby Shower', label: 'Baby Shower', siteKey: 'serviceBabyShower' },
+      { category: 'Birthdays', label: 'Birthdays', siteKey: 'serviceBirthday' },
+      { category: 'Birth Celebration', label: 'Birth Celebration', siteKey: 'serviceBirthCelebration' },
+      { category: 'Graduation Parties', label: 'Graduation Parties', siteKey: 'serviceGraduation' },
+    ];
+    const CATEGORIES = SERVICE_CATEGORIES.map((service) => service.category);
     const GALLERY_DRAFT = 'so_nice_gallery_draft';
     const SITE_DRAFT = 'site_images_override';
     let siteImages = {};
@@ -338,6 +351,23 @@
     }
 
     function renderGallery() {
+      const service = SERVICE_CATEGORIES.find((entry) => entry.category === activeCategory);
+      const coverSrc = service ? siteImages[service.siteKey] : '';
+      $('serviceCover').innerHTML = service ? `
+        <article class="item">
+          ${imageThumb(coverSrc, `${service.label} service image`)}
+          <div>
+            <label>${service.label} service cover image</label>
+            <input type="text" value="${coverSrc || ''}" data-service-cover="${service.siteKey}" />
+            <p class="hint">This image is used in the Services section and appears first in this Gallery category.</p>
+            <div class="item-actions">
+              <input type="file" accept="image/*" data-service-cover-file="${service.siteKey}" style="max-width:220px;" />
+              <button type="button" class="btn" data-save-service-cover="${service.siteKey}">Save cover</button>
+            </div>
+          </div>
+        </article>
+      ` : '';
+
       const items = galleryData.filter((item) => item.category === activeCategory);
       $('galleryList').innerHTML = items.map((item, index) => `
         <article class="item">
@@ -422,6 +452,9 @@
       if ('aboutUrl' in el.dataset) {
         siteImages.aboutUs = el.value.trim();
       }
+      if (el.dataset.serviceCover) {
+        siteImages[el.dataset.serviceCover] = el.value.trim();
+      }
       if (el.dataset.galleryUrl) {
         const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryUrl));
         if (item) item.src = el.value.trim();
@@ -453,6 +486,14 @@
           localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
           renderGallery();
           status('Gallery image uploaded. Save gallery to publish it.');
+        }
+        if ('serviceCoverFile' in el.dataset) {
+          const file = el.files && el.files[0];
+          if (!file) return;
+          siteImages[el.dataset.serviceCoverFile] = await uploadFile(file);
+          await persistSiteImages();
+          renderGallery();
+          status('Service cover uploaded and saved.');
         }
       } catch (error) {
         status(error.message || 'Upload failed.');
@@ -503,6 +544,11 @@
         galleryData = galleryData.filter((item) => String(item.id) !== String(el.dataset.galleryDelete));
         localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
         renderGallery();
+      }
+      if (el.dataset.saveServiceCover) {
+        await persistSiteImages();
+        renderGallery();
+        status('Service cover saved.');
       }
     });
 
@@ -571,6 +617,22 @@
       galleryData.push({ id: nextId, src: '', category: activeCategory });
       localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
       renderGallery();
+    };
+    $('uploadGallery').onclick = async () => {
+      const files = Array.from($('galleryUpload').files || []);
+      if (!files.length) return status('Choose gallery images first.');
+      try {
+        let nextId = galleryData.length ? Math.max(...galleryData.map((item) => Number(item.id) || 0)) + 1 : 1;
+        for (const file of files) {
+          galleryData.push({ id: nextId++, src: await uploadFile(file), category: activeCategory });
+        }
+        localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+        $('galleryUpload').value = '';
+        renderGallery();
+        status('Gallery photos uploaded. Save gallery to publish them.');
+      } catch (error) {
+        status(error.message || 'Upload failed.');
+      }
     };
     $('reloadGallery').onclick = () => loadGallery(false);
     $('saveGallery').onclick = async () => {

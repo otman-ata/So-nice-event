@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { galleryImages as defaultGalleryImages, GalleryImage as GalleryImageProps } from '../lib/images';
+import { galleryImages as defaultGalleryImages, GalleryImage as GalleryImageProps, siteImages } from '../lib/images';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 import FadeInOnScroll from './common/FadeInOnScroll';
 
@@ -24,8 +24,36 @@ const GalleryImageCard: React.FC<{ image: GalleryImageProps }> = ({ image }) => 
     );
 }
 
+const CATEGORY_SERVICE_IMAGES: Array<{ category: GalleryImageProps['category']; siteKey: keyof typeof siteImages }> = [
+  { category: 'Weddings', siteKey: 'serviceWedding' },
+  { category: 'Private Events', siteKey: 'servicePrivate' },
+  { category: 'Corporate Events', siteKey: 'serviceCorporate' },
+  { category: 'Baby Shower', siteKey: 'serviceBabyShower' },
+  { category: 'Birthdays', siteKey: 'serviceBirthday' },
+  { category: 'Birth Celebration', siteKey: 'serviceBirthCelebration' },
+  { category: 'Graduation Parties', siteKey: 'serviceGraduation' },
+];
+
 function withRequiredGallerySections(items: GalleryImageProps[]) {
-  return items.filter((item) => item.src && item.category !== 'About Us');
+  const cleanItems = items.filter((item) => item.src && item.category !== 'About Us');
+  const result: GalleryImageProps[] = [];
+
+  CATEGORY_SERVICE_IMAGES.forEach(({ category, siteKey }, index) => {
+    const serviceSrc = siteImages[siteKey] as string;
+    const categoryItems = cleanItems.filter((item) => item.category === category && item.src !== serviceSrc);
+    if (serviceSrc) {
+      result.push({ id: 9000 + index, src: serviceSrc, category });
+    }
+    result.push(...categoryItems);
+  });
+
+  cleanItems.forEach((item) => {
+    if (!CATEGORY_SERVICE_IMAGES.some((entry) => entry.category === item.category)) {
+      result.push(item);
+    }
+  });
+
+  return result;
 }
 
 const Gallery: React.FC<GalleryProps> = ({ content }) => {
