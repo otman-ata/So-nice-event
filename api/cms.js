@@ -1,28 +1,35 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { list, put } from '@vercel/blob';
 
 const CMS_SITE_PATH = 'cms/site-images.json';
 const CMS_GALLERY_PATH = 'cms/gallery.json';
 const blobToken = () => process.env.BLOB1_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
 
-function isStaticContentImage(value) {
-  return typeof value === 'string' && value.startsWith('/assets/images/');
+async function readFallbackJson(relativePath, fallbackValue) {
+  try {
+    const file = path.join(process.cwd(), 'so-nice-event', 'public', 'assets', relativePath);
+    return JSON.parse(await fs.readFile(file, 'utf8'));
+  } catch {
+    return fallbackValue;
+  }
 }
 
-function sanitizeSiteImages(siteImages = {}) {
-  const next = { ...siteImages };
-  for (const [key, value] of Object.entries(next)) {
+function normalizeGallery(gallery = []) {
+  if (!Array.isArray(gallery)) return [];
+  return gallery.filter((item) => item && item.category !== 'About Us');
+}
+
+function mergeSiteImages(fallbackSiteImages = {}, storedSiteImages = {}) {
+  const merged = { ...fallbackSiteImages };
+  for (const [key, value] of Object.entries(storedSiteImages || {})) {
     if (Array.isArray(value)) {
-      next[key] = value.filter((item) => typeof item === 'string' && item && !isStaticContentImage(item));
-    } else if (isStaticContentImage(value)) {
-      next[key] = '';
+      if (value.length) merged[key] = value;
+    } else if (value) {
+      merged[key] = value;
     }
   }
-  return next;
-}
-
-function sanitizeGallery(gallery = []) {
-  if (!Array.isArray(gallery)) return [];
-  return gallery.filter((item) => item && typeof item.src === 'string' && item.src && !isStaticContentImage(item.src));
+  return merged;
 }
 
 async function readBlobJson(pathname, fallbackValue) {
@@ -58,8 +65,12 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   if (req.method === 'GET') {
-    const siteImages = sanitizeSiteImages(await readBlobJson(CMS_SITE_PATH, {}));
-    const gallery = sanitizeGallery(await readBlobJson(CMS_GALLERY_PATH, []));
+    const fallbackSiteImages = await readFallbackJson('site-images.json', {});
+    const fallbackGallery = await readFallbackJson('gallery.json', []);
+    const storedSiteImages = await readBlobJson(CMS_SITE_PATH, {});
+    const storedGallery = normalizeGallery(await readBlobJson(CMS_GALLERY_PATH, []));
+    const siteImages = mergeSiteImages(fallbackSiteImages, storedSiteImages);
+    const gallery = storedGallery.length ? storedGallery : fallbackGallery;
     return res.status(200).json({ ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery });
   }
 
@@ -67,7 +78,7 @@ export default async function handler(req, res) {
     try {
       const { siteImages, gallery } = req.body || {};
       if (siteImages) await writeBlobJson(CMS_SITE_PATH, siteImages);
-      if (gallery) await writeBlobJson(CMS_GALLERY_PATH, gallery);
+      if (gallery) await writeBlobJson(CMS_GALLERY_PATH, normalizeGallery(gallery));
       return res.status(200).json({ ok: true });
     } catch (error) {
       return res.status(500).json({ ok: false, error: error.message || 'Save failed' });

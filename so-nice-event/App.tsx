@@ -7,6 +7,7 @@ import Testimonials from './components/Testimonials';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Packs from './components/Packs';
 import { translations, Language } from './lib/translations';
 import { CmsEditProvider } from './context/CmsEditContext';
 
@@ -19,6 +20,7 @@ function App() {
   const [cmsEditMode, setCmsEditMode] = useState(
     () => typeof window !== 'undefined' && sessionStorage.getItem('so_nice_cms_edit') === '1'
   );
+  const [page, setPage] = useState(() => (typeof window !== 'undefined' && window.location.pathname === '/packs' ? 'packs' : 'home'));
 
   useEffect(() => {
     try {
@@ -90,9 +92,27 @@ function App() {
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
+    if (href === '/packs') {
+      window.history.pushState({}, '', '/packs');
+      setPage('packs');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (page !== 'home') {
+      window.history.pushState({}, '', '/');
+      setPage('home');
+      setTimeout(() => scrollToElement(href.substring(1)), 0);
+      return;
+    }
     const targetId = href.substring(1);
     scrollToElement(targetId);
   };
+
+  useEffect(() => {
+    const onPop = () => setPage(window.location.pathname === '/packs' ? 'packs' : 'home');
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
   
   return (
     <CmsEditProvider value={cmsEditMode}>
@@ -103,14 +123,20 @@ function App() {
           content={content.header}
           onNavClick={handleNavClick}
         />
-        <main>
-          <Hero content={content.hero} onCtaClick={handleNavClick} />
-          <Services content={content.services} />
-          <Gallery content={content.gallery} />
-          <Testimonials content={content.testimonials} />
-          <About content={content.about} />
-          <Contact content={content.contact} />
-        </main>
+        {page === 'packs' ? (
+          <main>
+            <Packs />
+          </main>
+        ) : (
+          <main>
+            <Hero content={content.hero} onCtaClick={handleNavClick} />
+            <Services content={content.services} />
+            <Gallery content={content.gallery} />
+            <Testimonials content={content.testimonials} />
+            <About content={content.about} />
+            <Contact content={content.contact} />
+          </main>
+        )}
         <Footer content={content.footer} onNavClick={handleNavClick} />
       </div>
     </CmsEditProvider>

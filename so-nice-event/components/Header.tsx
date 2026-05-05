@@ -64,7 +64,7 @@ const LanguageSwitcher: React.FC<{
       {isOpen && (
         <div
           id="language-menu"
-          className={`absolute top-full right-0 mt-2 w-28 rounded-lg shadow-lg z-10 border border-white/10 bg-[#4a0f14] ${isMobile ? 'left-0' : ''}`}
+          className={`absolute top-full right-0 mt-2 w-28 rounded-lg shadow-lg z-10 border border-white/10 bg-[#831843] ${isMobile ? 'left-0' : ''}`}
         >
           <ul className="py-1" role="menu">
             {languages.map((lang) => (
@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   const useGoldFilter = scrolled && yellow === white;
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${scrolled ? 'bg-[#7a121c]/95 shadow-xl shadow-black/15 border-[#f3c74d]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${scrolled ? 'bg-[#be185d]/95 shadow-xl shadow-black/15 border-[#d9a629]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#home" onClick={(e) => onNavClick(e, '#home')} className="flex items-center" aria-label="So Nice Event Home">
           {cmsEdit ? (
@@ -150,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
                 key={link.href}
                 href={link.href}
                 onClick={(e) => onNavClick(e, link.href)}
-                className="rounded-full px-4 py-2 font-medium text-base text-white/90 hover:bg-white/10 hover:text-[#f3c74d] transition-colors"
+                className="rounded-full px-4 py-2 font-medium text-base text-white/90 hover:bg-white/10 hover:text-[#d9a629] transition-colors"
               >
                 {link.text}
               </a>
@@ -180,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
       </div>
 
       {menuOpen && (
-        <nav id="mobile-menu" className="md:hidden border-t border-white/10 bg-[#5c1212]" aria-label="Mobile navigation">
+        <nav id="mobile-menu" className="md:hidden border-t border-white/10 bg-[#be185d]" aria-label="Mobile navigation">
           <div className="flex flex-col items-center py-4 space-y-4">
             {content.navLinks.map((link) => (
               <a

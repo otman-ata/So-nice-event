@@ -36,7 +36,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ content }) => {
             <article key={idx} className="tile-border bg-white p-6 rounded-lg shadow-xl shadow-black/15 h-full flex flex-col">
               <div className="flex items-center justify-between mb-3">
                 <span className="font-semibold text-stone-800">{review.author}</span>
-                <span className="rounded-full bg-[#fff4c9] px-3 py-1 text-xs font-bold text-[#7a121c]" aria-label="5 star review">5.0</span>
+                <span className="rounded-full bg-[#fff4c9] px-3 py-1 text-xs font-bold text-[#be185d]" aria-label="5 star review">5.0</span>
               </div>
               <p className="text-gray-600 italic leading-relaxed flex-grow">"{review.quote}"</p>
             </article>

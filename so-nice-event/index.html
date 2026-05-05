@@ -13,14 +13,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       :root {
-        --color-primary: #76121d;
-        --color-primary-hover: #9a1f2d;
+        --color-primary: #be185d;
+        --color-primary-hover: #db2777;
         --color-accent: #d9a629;
         --color-gold-soft: #f7d979;
         --color-terracotta: #b9532f;
         --color-earth: #7c4a2d;
         --color-cream: #fff4dc;
-        --color-ink: #271b18;
+        --color-ink: #2a1721;
       }
       html {
         scroll-behavior: smooth;
@@ -38,7 +38,7 @@
       .custom-bg {
         background:
           radial-gradient(circle at 12% 0%, rgba(247, 217, 121, .18), transparent 26%),
-          linear-gradient(135deg, #4a0a12 0%, var(--color-primary) 48%, #8f1b24 100%);
+          linear-gradient(135deg, #831843 0%, var(--color-primary) 48%, #db2777 100%);
         transition: background-color 0.3s ease;
       }
       .custom-bg:hover {
@@ -49,7 +49,7 @@
         color: var(--color-primary);
       }
       .custom-text-dark {
-        color: #450a0a;
+        color: #831843;
       }
       .gold-bg {
         background-color: var(--color-accent);
@@ -68,7 +68,7 @@
         pointer-events: none;
         opacity: 0.16;
         background-image:
-          radial-gradient(circle at 50% 50%, rgba(118,18,29,.72) 0 2px, transparent 2.5px),
+          radial-gradient(circle at 50% 50%, rgba(190,24,93,.55) 0 2px, transparent 2.5px),
           linear-gradient(45deg, transparent 46%, rgba(217,166,41,.75) 47%, rgba(217,166,41,.75) 53%, transparent 54%),
           linear-gradient(-45deg, transparent 46%, rgba(185,83,47,.35) 47%, rgba(185,83,47,.35) 53%, transparent 54%);
         background-size: 38px 38px, 38px 38px, 38px 38px;
@@ -89,7 +89,7 @@
         height: 13px;
         background:
           linear-gradient(135deg, transparent 25%, rgba(217,166,41,.9) 25% 50%, transparent 50% 75%, rgba(217,166,41,.9) 75%) 0 0 / 26px 13px,
-          linear-gradient(90deg, rgba(118,18,29,.85), rgba(185,83,47,.75), rgba(118,18,29,.85));
+          linear-gradient(90deg, rgba(190,24,93,.75), rgba(185,83,47,.65), rgba(190,24,93,.75));
       }
       .moroccan-heading {
         position: relative;
@@ -114,10 +114,10 @@
         border: 1px solid rgba(217, 166, 41, .38);
         background:
           linear-gradient(#fffdf7, #fffdf7) padding-box,
-          linear-gradient(135deg, rgba(217,166,41,.9), rgba(118,18,29,.55), rgba(185,83,47,.55)) border-box;
+          linear-gradient(135deg, rgba(217,166,41,.9), rgba(190,24,93,.5), rgba(185,83,47,.55)) border-box;
       }
       .lantern-glow {
-        box-shadow: 0 18px 55px rgba(69, 10, 10, .18), inset 0 1px 0 rgba(255,255,255,.45);
+        box-shadow: 0 18px 55px rgba(131, 24, 67, .18), inset 0 1px 0 rgba(255,255,255,.45);
       }
       .ornament-rule {
         height: 15px;
@@ -204,7 +204,16 @@
           if (ls) {
             try { window.__SITE_IMAGES = JSON.parse(ls); } catch(_) {}
           }
-          // 2) Load cloud CMS data when available. Public content images are admin-managed only.
+          // 2) Load file defaults and keep local admin preview overrides
+          const res = await fetch('/assets/site-images.json', { cache: 'no-cache' });
+          if (res.ok) {
+            const fileData = await res.json();
+            window.__SITE_IMAGES = Object.assign({}, fileData, window.__SITE_IMAGES || {});
+            if (fileData && fileData.cmsGalleryUrl) {
+              window.__CMS = Object.assign({}, window.__CMS || {}, { galleryUrl: fileData.cmsGalleryUrl });
+            }
+          }
+          // 3) Load cloud CMS data when available. Uploaded data overrides defaults.
           const cmsRes = await fetch('/api/cms', { cache: 'no-cache' });
           if (cmsRes.ok) {
             const cmsData = await cmsRes.json();

@@ -47,6 +47,16 @@ export const translations = {
           title: 'Anniversaires',
           description: 'Des anniversaires sur-mesure pour enfants et adultes, pensés autour de thèmes créatifs et d\'une ambiance festive.',
         },
+        {
+          image: siteImages.serviceBirthCelebration,
+          title: 'Célébration de naissance',
+          description: 'Une mise en scène douce et raffinée pour accueillir le nouveau-né et réunir la famille dans une ambiance chaleureuse.',
+        },
+        {
+          image: siteImages.serviceGraduation,
+          title: 'Fêtes de remise de diplôme',
+          description: 'Des décors élégants pour célébrer la réussite avec style, photos souvenirs et moments festifs.',
+        },
       ],
     },
     gallery: {
@@ -59,7 +69,8 @@ export const translations = {
         corporate: 'Événements d\'Entreprise',
         babyShower: 'Fete prenatale',
         birthdays: 'Anniversaires',
-        aboutUs: 'À Propos'
+        birthCelebration: 'Célébration de naissance',
+        graduation: 'Remise de diplôme'
       }
     },
     testimonials: {
@@ -238,6 +249,16 @@ export const translations = {
           title: 'Birthdays',
           description: 'Custom birthday celebrations for kids and adults, designed around creative themes and joyful entertainment.',
         },
+        {
+          image: siteImages.serviceBirthCelebration,
+          title: 'Birth Celebration',
+          description: 'Warm, elegant setups to welcome a newborn and gather family around a joyful, memorable celebration.',
+        },
+        {
+          image: siteImages.serviceGraduation,
+          title: 'Graduation Parties',
+          description: 'Clean, festive graduation decor for proud milestones, photos, family moments, and stylish celebrations.',
+        },
       ],
     },
     gallery: {
@@ -250,7 +271,8 @@ export const translations = {
         corporate: 'Corporate Events',
         babyShower: 'Baby Shower',
         birthdays: 'Birthdays',
-        aboutUs: 'About Us'
+        birthCelebration: 'Birth Celebration',
+        graduation: 'Graduation Parties'
       }
     },
     testimonials: {
@@ -429,6 +451,16 @@ export const translations = {
           title: 'حفلات أعياد الميلاد',
           description: 'حفلات ميلاد مميزة للأطفال والكبار مع أفكار إبداعية وأجواء احتفالية متكاملة.',
         },
+        {
+          image: siteImages.serviceBirthCelebration,
+          title: 'حفل الازدياد',
+          description: 'تنسيق دافئ وأنيق للاحتفال بقدوم المولود مع العائلة والأحباب.',
+        },
+        {
+          image: siteImages.serviceGraduation,
+          title: 'حفلات التخرج',
+          description: 'ديكور أنيق واحتفالي للتخرجات ولحظات الفخر مع العائلة والأصدقاء.',
+        },
       ],
     },
     gallery: {
@@ -441,7 +473,8 @@ export const translations = {
         corporate: 'مناسبات الشركات',
         babyShower: 'حفل استقبال مولود',
         birthdays: 'أعياد الميلاد',
-        aboutUs: 'من نحن'
+        birthCelebration: 'حفل الازدياد',
+        graduation: 'حفلات التخرج'
       }
     },
     testimonials: {

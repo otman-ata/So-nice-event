@@ -48,7 +48,7 @@ const Footer: React.FC<FooterProps> = ({ content, onNavClick }) => {
              </div>
              <div className="flex justify-center md:justify-start rtl:md:justify-end space-x-4 rtl:space-x-reverse mt-6">
               {socialLinks.map(link => (
-                <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.name} className="rounded-full border border-[#f7d979]/35 bg-white/10 p-2 text-[#f7d979] transition-colors hover:bg-[#f7d979] hover:text-[#450a0a]">
+                <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" aria-label={link.name} className="rounded-full border border-[#f7d979]/35 bg-white/10 p-2 text-[#f7d979] transition-colors hover:bg-[#f7d979] hover:text-[#831843]">
                   {link.icon}
                 </a>
               ))}

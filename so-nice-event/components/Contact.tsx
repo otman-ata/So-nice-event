@@ -68,12 +68,12 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
     <section id="contact" className="py-24 bg-[#fffaf0] moroccan-pattern">
       <div className="container mx-auto px-6 section-inner">
         <div className="text-center mb-12">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#7a121c]">{copy.eyebrow}</p>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#be185d]">{copy.eyebrow}</p>
           <h2 className="moroccan-heading text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
 
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 rounded-lg border border-[#d9a629]/35 bg-white/95 p-5 shadow-2xl shadow-[#450a0a]/10 md:grid-cols-[0.9fr_1.1fr] md:p-8">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 rounded-lg border border-[#d9a629]/35 bg-white/95 p-5 shadow-2xl shadow-[#831843]/10 md:grid-cols-[0.9fr_1.1fr] md:p-8">
           <div className="custom-bg rounded-lg p-7 text-white md:p-8">
             <h3 className="text-2xl font-semibold mb-6 text-[#f7d979]">{content.details.title}</h3>
             <div className="space-y-5 text-white/85">
@@ -87,25 +87,25 @@ const Contact: React.FC<ContactProps> = ({ content }) => {
           <form onSubmit={handleSubmit} className="grid gap-5 rounded-lg bg-[#fffaf0] p-5 md:p-7">
             <div className="grid gap-1.5">
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">{content.form.name}</label>
-              <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40" />
+              <input type="text" name="name" id="name" required value={formData.name} onChange={handleChange} className="w-full rounded-md border border-[#be185d]/20 bg-white px-4 py-3 outline-none transition focus:border-[#be185d] focus:ring-2 focus:ring-[#d9a629]/40" />
             </div>
             <div className="grid gap-1.5">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">{content.form.email}</label>
-              <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40" />
+              <input type="email" name="email" id="email" required value={formData.email} onChange={handleChange} className="w-full rounded-md border border-[#be185d]/20 bg-white px-4 py-3 outline-none transition focus:border-[#be185d] focus:ring-2 focus:ring-[#d9a629]/40" />
             </div>
             <div className="grid gap-1.5">
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">{content.form.phone || 'Phone Number'}</label>
-              <input type="tel" name="phone" id="phone" dir="ltr" placeholder="+212 666-757403" value={formData.phone} onChange={handleChange} className="w-full rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40" />
+              <input type="tel" name="phone" id="phone" dir="ltr" placeholder="+212 666-757403" value={formData.phone} onChange={handleChange} className="w-full rounded-md border border-[#be185d]/20 bg-white px-4 py-3 outline-none transition focus:border-[#be185d] focus:ring-2 focus:ring-[#d9a629]/40" />
             </div>
             <div className="grid gap-1.5">
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">{content.form.message}</label>
-              <textarea name="message" id="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full resize-y rounded-md border border-[#7a121c]/20 bg-white px-4 py-3 outline-none transition focus:border-[#7f1d1d] focus:ring-2 focus:ring-[#d9a629]/40"></textarea>
+              <textarea name="message" id="message" rows={5} required value={formData.message} onChange={handleChange} className="w-full resize-y rounded-md border border-[#be185d]/20 bg-white px-4 py-3 outline-none transition focus:border-[#be185d] focus:ring-2 focus:ring-[#d9a629]/40"></textarea>
             </div>
             <div>
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full bg-[#d9a629] text-[#450a0a] py-3 px-6 rounded-md text-lg font-bold transition-colors hover:bg-[#f7d979] disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full bg-[#d9a629] text-[#831843] py-3 px-6 rounded-md text-lg font-bold transition-colors hover:bg-[#f7d979] disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {status === 'loading' ? copy.sending : content.form.submit}
               </button>

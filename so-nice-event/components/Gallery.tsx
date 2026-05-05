@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { GalleryImage as GalleryImageProps } from '../lib/images';
+import { galleryImages as defaultGalleryImages, GalleryImage as GalleryImageProps } from '../lib/images';
 import useIntersectionObserver from '../hooks/useIntersectionObserver';
 import FadeInOnScroll from './common/FadeInOnScroll';
 
@@ -12,11 +12,11 @@ interface GalleryProps {
 
 const GalleryImageCard: React.FC<{ image: GalleryImageProps }> = ({ image }) => {
     return (
-        <FadeInOnScroll yOffset={3} className="group relative overflow-hidden rounded-lg border-4 border-white shadow-xl shadow-[#450a0a]/15 ring-1 ring-[#d9a629]/35">
+        <FadeInOnScroll yOffset={3} className="group relative overflow-hidden rounded-lg border-4 border-white shadow-xl shadow-[#831843]/15 ring-1 ring-[#d9a629]/35">
             <img src={image.src} alt={image.category} className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110" />
             <div className="absolute inset-3 border border-[#f7d979]/45 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#450a0a]/85 to-transparent p-4 pt-16">
-              <span className="inline-flex rounded-full bg-[#d9a629] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#450a0a]">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#831843]/85 to-transparent p-4 pt-16">
+              <span className="inline-flex rounded-full bg-[#d9a629] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#831843]">
                 {image.category}
               </span>
             </div>
@@ -25,14 +25,14 @@ const GalleryImageCard: React.FC<{ image: GalleryImageProps }> = ({ image }) => 
 }
 
 function withRequiredGallerySections(items: GalleryImageProps[]) {
-  return items.filter((item) => item.src && !item.src.startsWith('/assets/images/'));
+  return items.filter((item) => item.src && item.category !== 'About Us');
 }
 
 const Gallery: React.FC<GalleryProps> = ({ content }) => {
   const [visibleCount, setVisibleCount] = useState(9);
-  const [images, setImages] = useState<GalleryImageProps[]>([]);
+  const [images, setImages] = useState<GalleryImageProps[]>(defaultGalleryImages);
   const [loading, setLoading] = useState<boolean>(false);
-  const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays' | 'About Us'>('All');
+  const [activeCategory, setActiveCategory] = useState<'All' | 'Weddings' | 'Private Events' | 'Corporate Events' | 'Baby Shower' | 'Birthdays' | 'Birth Celebration' | 'Graduation Parties'>('All');
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const isSectionVisible = useIntersectionObserver(sectionRef, { threshold: 0.1, triggerOnce: true });
   const lang = typeof document !== 'undefined' ? document.documentElement.lang : 'fr';
@@ -62,12 +62,13 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
         const draft = readDraft();
         const cmsData = typeof window !== 'undefined' ? (window as any).__CMS?.galleryData : null;
         const cmsUrl = (typeof window !== 'undefined' && (window as any).__CMS?.galleryUrl) || '';
+        const url = cmsUrl && typeof cmsUrl === 'string' ? cmsUrl : '/assets/gallery.json';
         let remote: GalleryImageProps[] | null = null;
         try {
           if (Array.isArray(cmsData) && cmsData.length > 0) {
             remote = cmsData as GalleryImageProps[];
-          } else if (cmsUrl && typeof cmsUrl === 'string') {
-            const res = await fetch(cmsUrl, { cache: 'no-cache' });
+          } else {
+            const res = await fetch(url, { cache: 'no-cache' });
             if (res.ok) remote = (await res.json()) as GalleryImageProps[];
           }
         } catch {
@@ -100,7 +101,7 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
     <section id="gallery" className="py-24 bg-[#fffaf0] moroccan-pattern zellige-band" ref={sectionRef}>
       <div className="container mx-auto px-6 section-inner">
         <div className={`text-center mb-12 transition-opacity duration-1000 ${isSectionVisible ? 'opacity-100' : 'opacity-0'}`}>
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#7a121c]">{copy.eyebrow}</p>
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-[#be185d]">{copy.eyebrow}</p>
           <h2 className="moroccan-heading text-4xl md:text-5xl font-bold custom-text-dark mb-4 font-serif italic">{content.title}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">{content.subtitle}</p>
         </div>
@@ -116,12 +117,13 @@ const Gallery: React.FC<GalleryProps> = ({ content }) => {
             { key: 'Corporate Events', label: (content as any).filterLabels?.corporate || 'Corporate Events' },
             { key: 'Baby Shower', label: (content as any).filterLabels?.babyShower || 'Baby Shower' },
             { key: 'Birthdays', label: (content as any).filterLabels?.birthdays || 'Birthdays' },
-            { key: 'About Us', label: (content as any).filterLabels?.aboutUs || 'About Us' }
+            { key: 'Birth Celebration', label: (content as any).filterLabels?.birthCelebration || 'Birth Celebration' },
+            { key: 'Graduation Parties', label: (content as any).filterLabels?.graduation || 'Graduation Parties' }
           ] as const).map(cat => (
             <button
               key={cat.key}
               onClick={() => { setActiveCategory(cat.key as any); setVisibleCount(9); }}
-              className={`px-4 py-2 rounded-full border font-semibold transition-colors ${activeCategory === (cat.key as any) ? 'bg-[#76121d] text-white border-transparent shadow-md shadow-[#450a0a]/15' : 'border-[#7a121c]/25 bg-white/85 text-[#7a121c] hover:border-[#d9a629] hover:text-[#450a0a]'}`}
+              className={`px-4 py-2 rounded-full border font-semibold transition-colors ${activeCategory === (cat.key as any) ? 'bg-[#be185d] text-white border-transparent shadow-md shadow-[#831843]/15' : 'border-[#be185d]/25 bg-white/85 text-[#be185d] hover:border-[#d9a629] hover:text-[#831843]'}`}
             >
               {cat.label}
             </button>
