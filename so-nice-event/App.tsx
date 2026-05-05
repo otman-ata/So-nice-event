@@ -144,6 +144,7 @@ function App() {
           setLanguage={setLanguage}
           content={content.header}
           onNavClick={handleNavClick}
+          forceSolid={page === 'packs'}
         />
         {page === 'packs' ? (
           <main>
