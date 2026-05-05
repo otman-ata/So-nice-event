@@ -123,53 +123,59 @@
     <header class="brand">
       <div>
         <h1>So Nice Event Admin</h1>
-        <p>Manage hero, about, and gallery images from one cloud-backed dashboard.</p>
+        <p data-i18n="brandSubtitle">Manage hero, about, gallery, and packs from one cloud-backed dashboard.</p>
       </div>
-      <span class="pill">Staff only</span>
+      <div class="row" style="position:relative; z-index:1;">
+        <select id="adminLang" style="width:auto; min-width:120px;">
+          <option value="ar">العربية</option>
+          <option value="fr">Francais</option>
+          <option value="en">English</option>
+        </select>
+        <span class="pill" data-i18n="staffOnly">Staff only</span>
+      </div>
     </header>
 
     <section id="gate" class="card">
-      <label for="pass">Password</label>
+      <label for="pass" data-i18n="password">Password</label>
       <div class="row">
         <input id="pass" type="password" autocomplete="current-password" placeholder="soniceevent-admin" />
-        <button type="button" class="btn" id="enter">Enter</button>
+        <button type="button" class="btn" id="enter" data-i18n="enter">Enter</button>
       </div>
     </section>
 
     <section id="app" class="hidden">
       <div class="tabs" role="tablist">
-        <button type="button" class="tab active" data-panel="hero">Hero Slideshow</button>
-        <button type="button" class="tab" data-panel="about">About Us</button>
-        <button type="button" class="tab" data-panel="gallery">Gallery</button>
-        <button type="button" class="tab" data-panel="packs">Packs</button>
-        <button type="button" class="tab" data-panel="translations">Translations</button>
+        <button type="button" class="tab active" data-panel="hero" data-i18n="heroTab">Hero Slideshow</button>
+        <button type="button" class="tab" data-panel="about" data-i18n="aboutTab">About Us</button>
+        <button type="button" class="tab" data-panel="gallery" data-i18n="galleryTab">Gallery</button>
+        <button type="button" class="tab" data-panel="packs" data-i18n="packsTab">Packs</button>
       </div>
       <p class="status" id="status"></p>
 
       <section id="panel-hero" class="panel active card">
-        <h2 class="section-title">Header Slideshow</h2>
-        <p class="hint">Upload several hero images, reorder them, then save. The public header slideshow changes every 2 seconds.</p>
+        <h2 class="section-title" data-i18n="heroTitle">Header Slideshow</h2>
+        <p class="hint" data-i18n="heroHint">Upload several hero images, reorder them, then save. The public header slideshow changes every 2 seconds.</p>
         <div class="row">
           <input id="heroUpload" type="file" accept="image/*" multiple />
-          <button type="button" class="gold" id="addHero">Add uploaded images</button>
-          <button type="button" class="btn" id="saveHero">Save slideshow</button>
+          <button type="button" class="gold" id="addHero" data-i18n="addUploadedImages">Add uploaded images</button>
+          <button type="button" class="btn" id="saveHero" data-i18n="saveSlideshow">Save slideshow</button>
         </div>
         <div id="heroList" class="list"></div>
       </section>
 
       <section id="panel-about" class="panel card">
-        <h2 class="section-title">About Us Image</h2>
-        <p class="hint">Upload the image used in the About Us section. This is separate from the Gallery.</p>
+        <h2 class="section-title" data-i18n="aboutTitle">About Us Image</h2>
+        <p class="hint" data-i18n="aboutHint">Upload the image used in the About Us section. This is separate from the Gallery.</p>
         <div class="row">
           <input id="aboutUpload" type="file" accept="image/*" />
-          <button type="button" class="btn" id="saveAbout">Save About image</button>
+          <button type="button" class="btn" id="saveAbout" data-i18n="saveAbout">Save About image</button>
         </div>
         <div id="aboutPreview" class="list"></div>
       </section>
 
       <section id="panel-gallery" class="panel card">
-        <h2 class="section-title">Gallery by Service</h2>
-        <p class="hint">Choose a service category, update its service cover image, then add the gallery photos for that same category. The service cover is always shown first on the public gallery.</p>
+        <h2 class="section-title" data-i18n="galleryTitle">Gallery by Service</h2>
+        <p class="hint" data-i18n="galleryHint">Choose a service category, update its service cover image, then add the gallery photos for that same category. The service cover is always shown first on the public gallery.</p>
         <div class="tabs" id="galleryTabs">
           <button type="button" class="tab active" data-category="Weddings">Weddings</button>
           <button type="button" class="tab" data-category="Private Events">Private</button>
@@ -181,39 +187,24 @@
         </div>
         <div class="row">
           <input id="galleryUpload" type="file" accept="image/*" multiple />
-          <button type="button" class="gold" id="uploadGallery">Upload photos to this service</button>
-          <button type="button" class="ghost" id="addGallery">Add URL row</button>
-          <button type="button" class="ghost" id="reloadGallery">Reload gallery</button>
-          <button type="button" class="btn" id="saveGallery">Save gallery</button>
+          <button type="button" class="gold" id="uploadGallery" data-i18n="uploadToService">Upload photos to this service</button>
+          <button type="button" class="ghost" id="addGallery" data-i18n="addUrlRow">Add URL row</button>
+          <button type="button" class="ghost" id="reloadGallery" data-i18n="reloadGallery">Reload gallery</button>
+          <button type="button" class="btn" id="saveGallery" data-i18n="saveGallery">Save gallery</button>
         </div>
         <div id="serviceCover" class="list"></div>
         <div id="galleryList" class="list"></div>
       </section>
 
       <section id="panel-packs" class="panel card">
-        <h2 class="section-title">Packs</h2>
-        <p class="hint">Create and manage packs for any service. Each item should be on a separate line.</p>
+        <h2 class="section-title" data-i18n="packsTitle">Packs</h2>
+        <p class="hint" data-i18n="packsHint">Create and manage packs for any service. Each item should be on a separate line.</p>
         <div class="row">
-          <button type="button" class="gold" id="addPack">Add pack</button>
-          <button type="button" class="ghost" id="reloadPacks">Reload packs</button>
-          <button type="button" class="btn" id="savePacks">Save packs</button>
+          <button type="button" class="gold" id="addPack" data-i18n="addPack">Add pack</button>
+          <button type="button" class="ghost" id="reloadPacks" data-i18n="reloadPacks">Reload packs</button>
+          <button type="button" class="btn" id="savePacks" data-i18n="savePacks">Save packs</button>
         </div>
         <div id="packsList" class="list"></div>
-      </section>
-
-      <section id="panel-translations" class="panel card">
-        <h2 class="section-title">Translations</h2>
-        <p class="hint">Edit website text by language. Use valid JSON so the public site can load the translations safely.</p>
-        <div class="tabs" id="translationTabs">
-          <button type="button" class="tab active" data-lang="ar">Arabic</button>
-          <button type="button" class="tab" data-lang="fr">French</button>
-          <button type="button" class="tab" data-lang="en">English</button>
-        </div>
-        <textarea id="translationEditor" spellcheck="false"></textarea>
-        <div class="row" style="margin-top:12px;">
-          <button type="button" class="ghost" id="reloadTranslations">Reload translations</button>
-          <button type="button" class="btn" id="saveTranslations">Save translations</button>
-        </div>
       </section>
 
     </section>
@@ -231,14 +222,98 @@
       { category: 'Graduation Parties', label: 'Graduation Parties', siteKey: 'serviceGraduation' },
     ];
     const CATEGORIES = SERVICE_CATEGORIES.map((service) => service.category);
-    const GALLERY_DRAFT = 'so_nice_gallery_draft';
-    const SITE_DRAFT = 'site_images_override';
     let siteImages = {};
     let galleryData = [];
-    let contentData = {};
     let packsData = [];
     let activeCategory = 'Weddings';
-    let activeLang = 'ar';
+    let adminLang = localStorage.getItem('so_nice_admin_lang') || 'ar';
+
+    const ADMIN_COPY = {
+      en: {
+        brandSubtitle: 'Manage hero, about, gallery, and packs from one cloud-backed dashboard.',
+        staffOnly: 'Staff only',
+        password: 'Password',
+        enter: 'Enter',
+        heroTab: 'Hero Slideshow',
+        aboutTab: 'About Us',
+        galleryTab: 'Gallery',
+        packsTab: 'Packs',
+        heroTitle: 'Header Slideshow',
+        heroHint: 'Upload several hero images, reorder them, then save. The public header slideshow changes every 2 seconds.',
+        addUploadedImages: 'Add uploaded images',
+        saveSlideshow: 'Save slideshow',
+        aboutTitle: 'About Us Image',
+        aboutHint: 'Upload the image used in the About Us section. This is separate from the Gallery.',
+        saveAbout: 'Save About image',
+        galleryTitle: 'Gallery by Service',
+        galleryHint: 'Choose a service category, update its service cover image, then add the gallery photos for that same category. The service cover is always shown first on the public gallery.',
+        uploadToService: 'Upload photos to this service',
+        addUrlRow: 'Add URL row',
+        reloadGallery: 'Reload gallery',
+        saveGallery: 'Save gallery',
+        packsTitle: 'Packs',
+        packsHint: 'Create and manage packs for any service. Each item should be on a separate line.',
+        addPack: 'Add pack',
+        reloadPacks: 'Reload packs',
+        savePacks: 'Save packs',
+      },
+      fr: {
+        brandSubtitle: 'Gerez le hero, a propos, la galerie et les packs depuis un tableau de bord connecte au cloud.',
+        staffOnly: 'Equipe uniquement',
+        password: 'Mot de passe',
+        enter: 'Entrer',
+        heroTab: 'Diaporama hero',
+        aboutTab: 'A propos',
+        galleryTab: 'Galerie',
+        packsTab: 'Packs',
+        heroTitle: 'Diaporama principal',
+        heroHint: 'Ajoutez plusieurs images, changez leur ordre, puis sauvegardez. Le diaporama public change toutes les 2 secondes.',
+        addUploadedImages: 'Ajouter les images',
+        saveSlideshow: 'Sauvegarder',
+        aboutTitle: 'Image A propos',
+        aboutHint: 'Ajoutez l image utilisee dans la section A propos. Elle est separee de la galerie.',
+        saveAbout: 'Sauvegarder l image',
+        galleryTitle: 'Galerie par service',
+        galleryHint: 'Choisissez un service, modifiez son image principale, puis ajoutez les photos de cette categorie.',
+        uploadToService: 'Ajouter au service',
+        addUrlRow: 'Ajouter une URL',
+        reloadGallery: 'Recharger',
+        saveGallery: 'Sauvegarder la galerie',
+        packsTitle: 'Packs',
+        packsHint: 'Creez et gerez des packs pour chaque service. Une ligne par element.',
+        addPack: 'Ajouter un pack',
+        reloadPacks: 'Recharger',
+        savePacks: 'Sauvegarder les packs',
+      },
+      ar: {
+        brandSubtitle: 'إدارة صور الواجهة ومن نحن والمعرض والباقات من لوحة مرتبطة بالتخزين السحابي.',
+        staffOnly: 'للفريق فقط',
+        password: 'كلمة المرور',
+        enter: 'دخول',
+        heroTab: 'صور الواجهة',
+        aboutTab: 'من نحن',
+        galleryTab: 'المعرض',
+        packsTab: 'الباقات',
+        heroTitle: 'سلايدر الواجهة',
+        heroHint: 'ارفع عدة صور، رتبها، ثم احفظها. تتغير صور الواجهة كل ثانيتين.',
+        addUploadedImages: 'إضافة الصور',
+        saveSlideshow: 'حفظ السلايدر',
+        aboutTitle: 'صورة من نحن',
+        aboutHint: 'ارفع الصورة المستعملة في قسم من نحن. هذه الصورة منفصلة عن المعرض.',
+        saveAbout: 'حفظ صورة من نحن',
+        galleryTitle: 'المعرض حسب الخدمة',
+        galleryHint: 'اختر الخدمة، حدث صورتها الرئيسية، ثم أضف صور المعرض الخاصة بها.',
+        uploadToService: 'رفع صور لهذه الخدمة',
+        addUrlRow: 'إضافة رابط صورة',
+        reloadGallery: 'تحديث المعرض',
+        saveGallery: 'حفظ المعرض',
+        packsTitle: 'الباقات',
+        packsHint: 'أضف وعدل الباقات لأي خدمة. كل عنصر في سطر منفصل.',
+        addPack: 'إضافة باقة',
+        reloadPacks: 'تحديث الباقات',
+        savePacks: 'حفظ الباقات',
+      },
+    };
 
     const $ = (id) => document.getElementById(id);
     const apiBase = () => '';
@@ -246,6 +321,16 @@
     const localServerBase = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
     const status = (msg) => { $('status').textContent = msg; };
     const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+
+    function applyAdminLanguage() {
+      const copy = ADMIN_COPY[adminLang] || ADMIN_COPY.en;
+      document.documentElement.lang = adminLang;
+      document.documentElement.dir = adminLang === 'ar' ? 'rtl' : 'ltr';
+      $('adminLang').value = adminLang;
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = copy[el.dataset.i18n] || el.textContent;
+      });
+    }
 
     function readAsBase64(file) {
       return new Promise((resolve, reject) => {
@@ -331,13 +416,21 @@
     }
 
     async function persistSiteImages() {
-      localStorage.setItem(SITE_DRAFT, JSON.stringify(siteImages));
       const response = await fetch(apiBase() + '/api/cms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ siteImages }),
       });
-      if (response.ok) return;
+      if (response.ok) {
+        await verifySaved((cms) => {
+          const saved = cms.siteImages || {};
+          return Object.entries(siteImages).every(([key, value]) => {
+            if (Array.isArray(value)) return JSON.stringify(saved[key] || []) === JSON.stringify(value);
+            return !value || saved[key] === value;
+          });
+        }, 'Image settings were uploaded but not confirmed in cloud storage.');
+        return;
+      }
       let cloudError = 'Could not save image settings.';
       try {
         const data = await response.json();
@@ -355,13 +448,18 @@
 
     async function persistGallery() {
       galleryData = galleryData.filter((item) => item.category !== 'About Us' && item.src);
-      localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
       const response = await fetch(apiBase() + '/api/cms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gallery: galleryData }),
       });
-      if (response.ok) return;
+      if (response.ok) {
+        await verifySaved((cms) => {
+          const saved = Array.isArray(cms.gallery) ? cms.gallery : [];
+          return galleryData.every((item) => saved.some((entry) => String(entry.id) === String(item.id) && entry.src === item.src && entry.category === item.category));
+        }, 'Gallery images were uploaded but not confirmed in cloud storage.');
+        return;
+      }
       let cloudError = 'Could not save gallery.';
       try {
         const data = await response.json();
@@ -376,18 +474,6 @@
       if (!localResponse.ok) throw new Error('Could not save gallery. Check cloud storage token or local CMS server.');
     }
 
-    async function persistContent() {
-      const response = await fetch(apiBase() + '/api/cms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: contentData }),
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Could not save translations.');
-      }
-    }
-
     async function persistPacks() {
       const response = await fetch(apiBase() + '/api/cms', {
         method: 'POST',
@@ -398,6 +484,13 @@
         const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'Could not save packs.');
       }
+    }
+
+    async function verifySaved(predicate, errorMessage) {
+      const response = await fetch('/api/cms?ts=' + Date.now(), { cache: 'no-store' });
+      if (!response.ok) throw new Error(errorMessage);
+      const cms = await response.json();
+      if (!predicate(cms)) throw new Error(errorMessage);
     }
 
     function imageThumb(src, label) {
@@ -481,10 +574,6 @@
       `;
     }
 
-    function renderTranslations() {
-      $('translationEditor').value = JSON.stringify(contentData[activeLang] || {}, null, 2);
-    }
-
     function renderPacks() {
       $('packsList').innerHTML = packsData.map((pack, index) => `
         <article class="item">
@@ -521,26 +610,10 @@
         const response = await fetch('/assets/site-images.json', { cache: 'no-cache' });
         siteImages = response.ok ? await response.json() : {};
       }
-      try {
-        const draft = JSON.parse(localStorage.getItem(SITE_DRAFT) || '{}');
-        if (isLocalHost()) siteImages = Object.assign({}, siteImages, draft);
-      } catch {}
       if (!Array.isArray(siteImages.heroSlides)) siteImages.heroSlides = [siteImages.heroBg].filter(Boolean);
       renderHero();
       renderAbout();
       renderSitePreview();
-    }
-
-    async function loadContent() {
-      const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
-      if (cmsResponse.ok) {
-        const cms = await cmsResponse.json();
-        contentData = cms.content || {};
-      } else {
-        const response = await fetch('/assets/cms-content.json', { cache: 'no-cache' });
-        contentData = response.ok ? await response.json() : {};
-      }
-      renderTranslations();
     }
 
     async function loadPacks() {
@@ -556,16 +629,6 @@
     }
 
     async function loadGallery(preferDraft = true) {
-      if (preferDraft && isLocalHost()) {
-        try {
-          const draft = JSON.parse(localStorage.getItem(GALLERY_DRAFT) || '');
-          if (Array.isArray(draft) && draft.length) {
-            galleryData = draft.filter((item) => item.category !== 'About Us');
-            renderGallery();
-            return;
-          }
-        } catch {}
-      }
       const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
       if (cmsResponse.ok) {
         const cms = await cmsResponse.json();
@@ -624,7 +687,6 @@
           if (!file) return;
           const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryFile));
           if (item) item.src = await uploadFile(file);
-          localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
           await persistGallery();
           renderGallery();
           status('Gallery image uploaded and published.');
@@ -656,15 +718,6 @@
         activeCategory = el.dataset.category;
         renderGallery();
       }
-      if (el.dataset.lang) {
-        try {
-          contentData[activeLang] = JSON.parse($('translationEditor').value || '{}');
-        } catch {}
-        document.querySelectorAll('#translationTabs .tab').forEach((tab) => tab.classList.remove('active'));
-        el.classList.add('active');
-        activeLang = el.dataset.lang;
-        renderTranslations();
-      }
       if ('heroDelete' in el.dataset) {
         siteImages.heroSlides.splice(Number(el.dataset.heroDelete), 1);
         syncHeroFallback();
@@ -692,8 +745,7 @@
         status('Hero order saved.');
       }
       if (el.dataset.galleryDelete) {
-        galleryData = galleryData.filter((item) => String(item.id) !== String(el.dataset.galleryDelete));
-        localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+      galleryData = galleryData.filter((item) => String(item.id) !== String(el.dataset.galleryDelete));
         renderGallery();
       }
       if (el.dataset.saveServiceCover) {
@@ -721,7 +773,7 @@
       if (!PASSPHRASES.includes($('pass').value.trim())) return alert('Wrong password');
       $('gate').classList.add('hidden');
       $('app').classList.remove('hidden');
-      await Promise.all([loadSiteImages(), loadGallery(true), loadContent(), loadPacks()]);
+      await Promise.all([loadSiteImages(), loadGallery(true), loadPacks()]);
       status('Ready.');
     };
 
@@ -780,7 +832,6 @@
     $('addGallery').onclick = () => {
       const nextId = galleryData.length ? Math.max(...galleryData.map((item) => Number(item.id) || 0)) + 1 : 1;
       galleryData.push({ id: nextId, src: '', category: activeCategory });
-      localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
       renderGallery();
     };
     $('uploadGallery').onclick = async () => {
@@ -791,7 +842,6 @@
         for (const file of files) {
           galleryData.push({ id: nextId++, src: await uploadFile(file), category: activeCategory });
         }
-        localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
         await persistGallery();
         $('galleryUpload').value = '';
         renderGallery();
@@ -822,16 +872,12 @@
         status(error.message || 'Could not save packs.');
       }
     };
-    $('reloadTranslations').onclick = () => loadContent();
-    $('saveTranslations').onclick = async () => {
-      try {
-        contentData[activeLang] = JSON.parse($('translationEditor').value || '{}');
-        await persistContent();
-        status('Translations saved.');
-      } catch (error) {
-        status(error.message || 'Translation JSON is invalid.');
-      }
+    $('adminLang').onchange = () => {
+      adminLang = $('adminLang').value;
+      localStorage.setItem('so_nice_admin_lang', adminLang);
+      applyAdminLanguage();
     };
+    applyAdminLanguage();
   </script>
 </body>
 </html>
