@@ -476,31 +476,14 @@
 
     async function persistPacks() {
       packsData = packsData.map((pack) => {
+        const fr = pack.translations && pack.translations.fr ? pack.translations.fr : {};
         return {
           ...pack,
-          name: pack.name || '',
-          highlight: pack.highlight || '',
-          items: Array.isArray(pack.items) ? pack.items : [],
-          translations: {
-            ...(pack.translations || {}),
-            fr: {
-              name: pack.name || '',
-              highlight: pack.highlight || '',
-              items: Array.isArray(pack.items) ? pack.items : [],
-            },
-          },
+          name: fr.name || pack.name || '',
+          highlight: fr.highlight || pack.highlight || '',
+          items: Array.isArray(fr.items) && fr.items.length ? fr.items : (pack.items || []),
         };
       });
-      status('Translating packs...');
-      const translated = await fetch(apiBase() + '/api/translate-packs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packs: packsData }),
-      });
-      if (translated.ok) {
-        const data = await translated.json();
-        if (Array.isArray(data.packs)) packsData = data.packs;
-      }
       const response = await fetch(apiBase() + '/api/cms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -616,18 +599,16 @@
           <div class="thumb"><span>Pack ${index + 1}</span></div>
           <div>
             <div class="grid">
-              <div><label>Name (French)</label><input type="text" value="${esc(pack.name)}" data-pack-name="${index}" /></div>
               <div><label>Price</label><input type="text" value="${esc(pack.price)}" data-pack-price="${index}" /></div>
               <div><label>Service</label>
                 <select data-pack-service="${index}">
                   ${CATEGORIES.map((category) => `<option value="${category}" ${pack.service === category ? 'selected' : ''}>${category}</option>`).join('')}
                 </select>
               </div>
-              <div><label>Highlight (French)</label><input type="text" value="${esc(pack.highlight)}" data-pack-highlight="${index}" /></div>
             </div>
-            <label style="margin-top:10px;">Items in French, one per line</label>
-            <textarea data-pack-items="${index}">${esc((pack.items || []).join('\n'))}</textarea>
-            <p class="hint" style="margin-top:8px;">Arabic and English are generated automatically when you save.</p>
+            ${renderPackLanguageFields(pack, index, 'fr', 'French')}
+            ${renderPackLanguageFields(pack, index, 'ar', 'Arabic')}
+            ${renderPackLanguageFields(pack, index, 'en', 'English')}
             <div class="item-actions">
               <button type="button" class="ghost" data-pack-up="${index}">Up</button>
               <button type="button" class="ghost" data-pack-down="${index}">Down</button>
@@ -636,6 +617,36 @@
           </div>
         </article>
       `).join('');
+    }
+
+    function packText(pack, lang) {
+      const localized = pack.translations && pack.translations[lang] ? pack.translations[lang] : {};
+      return {
+        name: lang === 'fr' ? (localized.name || pack.name || '') : (localized.name || ''),
+        highlight: lang === 'fr' ? (localized.highlight || pack.highlight || '') : (localized.highlight || ''),
+        items: lang === 'fr' ? (localized.items || pack.items || []) : (localized.items || []),
+      };
+    }
+
+    function renderPackLanguageFields(pack, index, lang, label) {
+      const text = packText(pack, lang);
+      return `
+        <div class="card" style="margin-top:12px; box-shadow:none;">
+          <h3 class="section-title" style="font-size:1rem;">${label}</h3>
+          <div class="grid">
+            <div><label>Name</label><input type="text" value="${esc(text.name)}" data-pack-lang-name="${index}" data-lang-code="${lang}" /></div>
+            <div><label>Highlight</label><input type="text" value="${esc(text.highlight)}" data-pack-lang-highlight="${index}" data-lang-code="${lang}" /></div>
+          </div>
+          <label style="margin-top:10px;">Items, one per line</label>
+          <textarea data-pack-lang-items="${index}" data-lang-code="${lang}">${esc(text.items.join('\n'))}</textarea>
+        </div>
+      `;
+    }
+
+    function ensurePackTranslation(pack, lang) {
+      if (!pack.translations) pack.translations = {};
+      if (!pack.translations[lang]) pack.translations[lang] = {};
+      return pack.translations[lang];
     }
 
     async function loadSiteImages() {
@@ -697,14 +708,28 @@
         const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryId));
         if (item) item.id = Number(el.value) || item.id;
       }
-      if (el.dataset.packName) packsData[Number(el.dataset.packName)].name = el.value.trim();
       if (el.dataset.packPrice) packsData[Number(el.dataset.packPrice)].price = el.value.trim();
       if (el.dataset.packService) packsData[Number(el.dataset.packService)].service = el.value;
-      if (el.dataset.packHighlight) packsData[Number(el.dataset.packHighlight)].highlight = el.value.trim();
-      if (el.dataset.packItems) {
-        const pack = packsData[Number(el.dataset.packItems)];
+      if (el.dataset.packLangName) {
+        const pack = packsData[Number(el.dataset.packLangName)];
+        const lang = el.dataset.langCode;
+        const translation = ensurePackTranslation(pack, lang);
+        translation.name = el.value.trim();
+        if (lang === 'fr') pack.name = translation.name;
+      }
+      if (el.dataset.packLangHighlight) {
+        const pack = packsData[Number(el.dataset.packLangHighlight)];
+        const lang = el.dataset.langCode;
+        const translation = ensurePackTranslation(pack, lang);
+        translation.highlight = el.value.trim();
+        if (lang === 'fr') pack.highlight = translation.highlight;
+      }
+      if (el.dataset.packLangItems) {
+        const pack = packsData[Number(el.dataset.packLangItems)];
+        const lang = el.dataset.langCode;
         const items = el.value.split('\n').map((item) => item.trim()).filter(Boolean);
-        pack.items = items;
+        ensurePackTranslation(pack, lang).items = items;
+        if (lang === 'fr') pack.items = items;
       }
     });
 
@@ -905,6 +930,11 @@
         highlight: '',
         service: activeCategory,
         items: [],
+        translations: {
+          fr: { name: 'New pack', highlight: '', items: [] },
+          ar: { name: '', highlight: '', items: [] },
+          en: { name: '', highlight: '', items: [] },
+        },
       });
       renderPacks();
     };
