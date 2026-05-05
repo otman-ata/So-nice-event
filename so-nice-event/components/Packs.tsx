@@ -16,88 +16,69 @@ export type Pack = {
   translations?: Partial<Record<Language, PackText>>;
 };
 
+const defaultWeddingTranslations: Record<string, Partial<Record<Language, PackText>>> = {
+  'Pack Economique': {
+    ar: {
+      name: 'الباقة الاقتصادية',
+      highlight: 'أساسيات حفل الزفاف',
+      items: ['لوحة استقبال حسب الاختيار', 'خلفية ورود', 'إضاءة أجواء', 'كارت الصحون', 'بوفيه نهاية الحفل: صينية الخواتم، شموع، طاولة الكيك'],
+    },
+    en: {
+      name: 'Economy Pack',
+      highlight: 'Wedding essentials',
+      items: ['Welcome board of your choice', 'Floral backdrop', 'Ambient lighting', 'Plate cards', 'End-of-night buffet: ring tray, candles, cake table'],
+    },
+  },
+  'Pack Elegance': {
+    ar: {
+      name: 'باقة الأناقة',
+      highlight: 'مثالية للأعراس العائلية، 50 ضيفا',
+      items: ['لوحة استقبال مخصصة', 'خلفية ورود عصرية حسب الاختيار', 'منصة أنيقة 3/4', 'إضاءة احترافية كاملة', 'كارت الصحون', 'طاولة الكيك'],
+    },
+    en: {
+      name: 'Elegance Pack',
+      highlight: 'Ideal for intimate weddings, 50 guests',
+      items: ['Personalized welcome board', 'Modern floral backdrop of your choice', 'Elegant 3/4 stage', 'Complete professional lighting', 'Plate cards', 'Cake table'],
+    },
+  },
+  'Pack Royal': {
+    ar: {
+      name: 'الباقة الملكية',
+      highlight: 'تجربة فاخرة ومتكاملة',
+      items: ['لوحة استقبال مخصصة', 'ديكور مدخل فاخر: زربية وشموع', 'قوس ورود كبير مع خلفية حسب الاختيار', 'منصة 4/6', 'إضاءة فنية', 'بوفيه نهاية الحفل كامل', 'ستاند المدخل', 'دفتر الضيوف', 'حفل الشاي المغربي', 'فوتوبوث', 'طاولة كيك فاخرة'],
+    },
+    en: {
+      name: 'Royal Pack',
+      highlight: 'Complete luxury experience',
+      items: ['Personalized welcome board', 'Luxury entrance decor: rug and candles', 'Giant floral arch with backdrop of your choice', '4/6 stage', 'Artistic lighting', 'Complete end-of-night buffet', 'Entrance stand', 'Guest book', 'Moroccan tea ceremony', 'Photobooth', 'Luxury cake table'],
+    },
+  },
+};
+
 const defaultPacks: Pack[] = [
   {
     name: 'Pack Economique',
     price: '4000 dh',
     highlight: 'Essentiel mariage',
     service: 'Weddings',
-    items: [
-      "Tableau d'accueil au choix",
-      'Arriere-plan floral',
-      "Eclairage d'ambiance",
-      'Carte assiettes',
-      'Buffet fin de soiree: plateau bague, bougie, table cake',
-    ],
-    translations: {
-      ar: {
-        name: 'الباقة الاقتصادية',
-        highlight: 'أساسيات حفل الزفاف',
-        items: ['لوحة استقبال حسب الاختيار', 'خلفية ورود', 'إضاءة أجواء', 'كارت الصحون', 'بوفيه نهاية الحفل: صينية الخواتم، شموع، طاولة الكيك'],
-      },
-      en: {
-        name: 'Economy Pack',
-        highlight: 'Wedding essentials',
-        items: ['Welcome board of your choice', 'Floral backdrop', 'Ambient lighting', 'Plate cards', 'End-of-night buffet: ring tray, candles, cake table'],
-      },
-    },
+    items: ["Tableau d'accueil au choix", 'Arriere-plan floral', "Eclairage d'ambiance", 'Carte assiettes', 'Buffet fin de soiree: plateau bague, bougie, table cake'],
+    translations: defaultWeddingTranslations['Pack Economique'],
   },
   {
     name: 'Pack Elegance',
     price: '7000 dh',
     highlight: 'Ideal pour mariages intimes, 50 invites',
     service: 'Weddings',
-    items: [
-      "Tableau d'accueil personnalise",
-      'Backdrop floral moderne au choix',
-      'Estrade 3/4 elegante',
-      'Eclairage professionnel complet',
-      'Carte assiettes',
-      'Table cake',
-    ],
-    translations: {
-      ar: {
-        name: 'باقة الأناقة',
-        highlight: 'مثالية للأعراس العائلية، 50 ضيفا',
-        items: ['لوحة استقبال مخصصة', 'خلفية ورود عصرية حسب الاختيار', 'منصة أنيقة 3/4', 'إضاءة احترافية كاملة', 'كارت الصحون', 'طاولة الكيك'],
-      },
-      en: {
-        name: 'Elegance Pack',
-        highlight: 'Ideal for intimate weddings, 50 guests',
-        items: ['Personalized welcome board', 'Modern floral backdrop of your choice', 'Elegant 3/4 stage', 'Complete professional lighting', 'Plate cards', 'Cake table'],
-      },
-    },
+    items: ["Tableau d'accueil personnalise", 'Backdrop floral moderne au choix', 'Estrade 3/4 elegante', 'Eclairage professionnel complet', 'Carte assiettes', 'Table cake'],
+    translations: defaultWeddingTranslations['Pack Elegance'],
   },
   {
     name: 'Pack Royal',
     price: '10,000 dh',
     highlight: 'Experience complete et luxueuse',
     service: 'Weddings',
-    items: [
-      "Tableau d'accueil personnalise",
-      "Decoration d'entree luxueuse: tapis et bougies",
-      'Arche florale geante avec backdrop au choix',
-      'Estrade 4/6',
-      'Eclairage artistique avec jeux de lumiere',
-      'Buffet fin de soiree complet',
-      'Stand entree',
-      "Livre d'or",
-      'Ceremonie du the marocain',
-      'Photobooth',
-      'Table cake luxe',
-    ],
-    translations: {
-      ar: {
-        name: 'الباقة الملكية',
-        highlight: 'تجربة فاخرة ومتكاملة',
-        items: ['لوحة استقبال مخصصة', 'ديكور مدخل فاخر: زربية وشموع', 'قوس ورود كبير مع خلفية حسب الاختيار', 'منصة 4/6', 'إضاءة فنية', 'بوفيه نهاية الحفل كامل', 'ستاند المدخل', 'دفتر الضيوف', 'حفل الشاي المغربي', 'فوتوبوث', 'طاولة كيك فاخرة'],
-      },
-      en: {
-        name: 'Royal Pack',
-        highlight: 'Complete luxury experience',
-        items: ['Personalized welcome board', 'Luxury entrance decor: rug and candles', 'Giant floral arch with backdrop of your choice', '4/6 stage', 'Artistic lighting', 'Complete end-of-night buffet', 'Entrance stand', 'Guest book', 'Moroccan tea ceremony', 'Photobooth', 'Luxury cake table'],
-      },
-    },
+    items: ["Tableau d'accueil personnalise", "Decoration d'entree luxueuse: tapis et bougies", 'Arche florale geante avec backdrop au choix', 'Estrade 4/6', 'Eclairage artistique avec jeux de lumiere', 'Buffet fin de soiree complet', 'Stand entree', "Livre d'or", 'Ceremonie du the marocain', 'Photobooth', 'Table cake luxe'],
+    translations: defaultWeddingTranslations['Pack Royal'],
   },
 ];
 
@@ -132,14 +113,25 @@ const pageCopy: Record<Language, { title: string; subtitle: string; cta: string;
   },
 };
 
+function fallbackTranslation(pack: Pack, language: Language) {
+  return defaultWeddingTranslations[pack.name]?.[language];
+}
+
 function localizePack(pack: Pack, language: Language): Pack {
-  const localized = pack.translations?.[language];
+  const localized = pack.translations?.[language] || fallbackTranslation(pack, language);
   return {
     ...pack,
     name: localized?.name || pack.name,
     highlight: localized?.highlight || pack.highlight,
     items: localized?.items?.length ? localized.items : pack.items,
   };
+}
+
+function serviceTitle(service: string, language: Language) {
+  if (serviceLabels[service]?.[language]) return serviceLabels[service][language];
+  if (language === 'ar') return `باقات ${service}`;
+  if (language === 'fr') return `Packs ${service}`;
+  return `${service} Packs`;
 }
 
 export default function Packs({ packs = [], language = 'fr' }: { packs?: Pack[]; language?: Language }) {
@@ -166,7 +158,7 @@ export default function Packs({ packs = [], language = 'fr' }: { packs?: Pack[];
             <section key={service} aria-labelledby={`pack-service-${service.replace(/\s+/g, '-')}`}>
               <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-[#f0bdd5] pb-4">
                 <h2 id={`pack-service-${service.replace(/\s+/g, '-')}`} className="text-3xl font-serif font-bold italic text-[#831843]">
-                  {serviceLabels[service]?.[language] || service}
+                  {serviceTitle(service, language)}
                 </h2>
                 <span className="rounded-full bg-[#f7d979] px-4 py-2 text-sm font-extrabold text-[#831843]">
                   {servicePacks.length} {copy.countLabel}
