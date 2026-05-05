@@ -41,7 +41,8 @@ async function readBlobJson(pathname, fallbackValue) {
     const result = await list({ prefix: pathname, limit: 1, token });
     const blob = result.blobs.find((item) => item.pathname === pathname);
     if (!blob) return fallbackValue;
-    const response = await fetch(blob.url, { cache: 'no-store' });
+    const separator = blob.url.includes('?') ? '&' : '?';
+    const response = await fetch(`${blob.url}${separator}ts=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) return fallbackValue;
     return response.json();
   } catch {

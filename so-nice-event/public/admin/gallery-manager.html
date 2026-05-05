@@ -487,10 +487,20 @@
     }
 
     async function verifySaved(predicate, errorMessage) {
-      const response = await fetch('/api/cms?ts=' + Date.now(), { cache: 'no-store' });
-      if (!response.ok) throw new Error(errorMessage);
-      const cms = await response.json();
-      if (!predicate(cms)) throw new Error(errorMessage);
+      let lastError = null;
+      for (let attempt = 0; attempt < 8; attempt += 1) {
+        try {
+          const response = await fetch('/api/cms?ts=' + Date.now() + '&attempt=' + attempt, { cache: 'no-store' });
+          if (response.ok) {
+            const cms = await response.json();
+            if (predicate(cms)) return;
+          }
+        } catch (error) {
+          lastError = error;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 650));
+      }
+      throw new Error(lastError?.message || errorMessage);
     }
 
     function imageThumb(src, label) {
