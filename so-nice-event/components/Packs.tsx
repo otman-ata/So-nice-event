@@ -55,7 +55,7 @@ const defaultWeddingTranslations: Record<string, Partial<Record<Language, PackTe
   },
 };
 
-const defaultPacks: Pack[] = [
+export const defaultPacks: Pack[] = [
   {
     name: 'Pack Economique',
     price: '4000 dh',

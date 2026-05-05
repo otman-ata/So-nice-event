@@ -7,7 +7,7 @@ import Testimonials from './components/Testimonials';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import Packs from './components/Packs';
+import Packs, { defaultPacks } from './components/Packs';
 import { translations, Language } from './lib/translations';
 import { CmsEditProvider } from './context/CmsEditContext';
 
@@ -17,7 +17,7 @@ function App() {
   const [language, setLanguage] = useState<Language>('ar');
   const [content, setContent] = useState(translations[language]);
   const [cmsTextOverrides, setCmsTextOverrides] = useState<any>({});
-  const [cmsPacks, setCmsPacks] = useState<any[]>([]);
+  const [cmsPacks, setCmsPacks] = useState<any[]>(defaultPacks);
   const [cmsEditMode, setCmsEditMode] = useState(
     () => typeof window !== 'undefined' && sessionStorage.getItem('so_nice_cms_edit') === '1'
   );
@@ -77,7 +77,7 @@ function App() {
         if (res.ok) {
           const data = await res.json();
           if (mounted && data?.content && typeof data.content === 'object') setCmsTextOverrides(data.content);
-          if (mounted && Array.isArray(data?.packs)) setCmsPacks(data.packs);
+          if (mounted && Array.isArray(data?.packs) && data.packs.length) setCmsPacks(data.packs);
           return;
         }
         const contentRes = await fetch('/assets/cms-content.json', { cache: 'no-cache' });
@@ -144,6 +144,7 @@ function App() {
           setLanguage={setLanguage}
           content={content.header}
           onNavClick={handleNavClick}
+          packsPage={page === 'packs'}
         />
         {page === 'packs' ? (
           <main>

@@ -12,13 +12,15 @@ interface HeaderProps {
     navLinks: { href: string; text: string }[];
   };
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, href: string) => void;
+  packsPage?: boolean;
 }
 
 const LanguageSwitcher: React.FC<{
   language: Language;
   setLanguage: (lang: Language) => void;
   isMobile?: boolean;
-}> = ({ language, setLanguage, isMobile = false }) => {
+  goldMode?: boolean;
+}> = ({ language, setLanguage, isMobile = false, goldMode = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +46,7 @@ const LanguageSwitcher: React.FC<{
     <div className="relative" ref={wrapperRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center font-medium text-white/90 transition-colors duration-200 hover:text-amber-200"
+        className={`flex items-center font-medium transition-colors duration-200 hover:text-amber-200 ${goldMode ? 'text-[#f7d979]' : 'text-white/90'}`}
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-controls="language-menu"
@@ -88,7 +90,7 @@ const LanguageSwitcher: React.FC<{
   );
 };
 
-const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavClick }) => {
+const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavClick, packsPage = false }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [, bumpLogo] = useState(0);
@@ -97,7 +99,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   useEffect(() => {
     const handleScroll = () => {
       const heroHeight = document.getElementById('home')?.offsetHeight || window.innerHeight;
-      setScrolled(window.scrollY > heroHeight - 100);
+      setScrolled(packsPage || window.scrollY > heroHeight - 100);
     };
     handleScroll();
     window.addEventListener('scroll', handleScroll);
@@ -106,7 +108,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, []);
+  }, [packsPage]);
 
   useEffect(() => {
     const h = () => bumpLogo((n) => n + 1);
@@ -121,7 +123,8 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
 
   const white = siteImages.logoWhite;
   const yellow = siteImages.logoYellow;
-  const useGoldFilter = scrolled && yellow === white;
+  const solidHeader = packsPage || scrolled;
+  const useGoldFilter = solidHeader && yellow === white;
   const navLinks = content.navLinks.some((link) => link.href === '/packs')
     ? content.navLinks
     : [
@@ -131,7 +134,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
       ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${scrolled ? 'bg-[#be185d]/95 shadow-xl shadow-black/15 border-[#d9a629]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${solidHeader ? 'bg-[#be185d]/95 shadow-xl shadow-black/15 border-[#d9a629]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
         <a href="#home" onClick={(e) => onNavClick(e, '#home')} className="flex items-center" aria-label="So Nice Event Home">
           {cmsEdit ? (
@@ -142,8 +145,8 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
             />
           ) : (
             <img
-              key={white + String(scrolled)}
-              src={useGoldFilter ? white : scrolled ? yellow : white}
+              key={white + String(solidHeader)}
+              src={useGoldFilter ? white : solidHeader ? yellow : white}
               alt="So Nice Event Logo"
               className={`h-16 md:h-20 w-auto object-contain transition-all duration-300 ${useGoldFilter ? 'header-logo--gold' : ''}`}
             />
@@ -157,13 +160,13 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
                 key={link.href}
                 href={link.href}
                 onClick={(e) => onNavClick(e, link.href)}
-                className="rounded-full px-4 py-2 font-medium text-base text-white/90 hover:bg-white/10 hover:text-[#d9a629] transition-colors"
+                className={`rounded-full px-4 py-2 font-medium text-base hover:bg-white/10 hover:text-[#d9a629] transition-colors ${packsPage ? 'text-[#f7d979]' : 'text-white/90'}`}
               >
                 {link.text}
               </a>
             ))}
           </nav>
-          <LanguageSwitcher language={language} setLanguage={setLanguage} />
+          <LanguageSwitcher language={language} setLanguage={setLanguage} goldMode={packsPage} />
         </div>
 
         <div className="md:hidden">
@@ -194,13 +197,13 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleMobileLinkClick(e, link.href)}
-                className="py-2 text-white hover:text-amber-200 font-medium text-lg transition-colors"
+                className={`py-2 hover:text-amber-200 font-medium text-lg transition-colors ${packsPage ? 'text-[#f7d979]' : 'text-white'}`}
               >
                 {link.text}
               </a>
             ))}
             <div className="pt-2">
-              <LanguageSwitcher language={language} setLanguage={setLanguage} isMobile={true} />
+              <LanguageSwitcher language={language} setLanguage={setLanguage} isMobile={true} goldMode={packsPage} />
             </div>
           </div>
         </nav>
