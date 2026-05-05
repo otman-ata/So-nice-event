@@ -17,6 +17,7 @@ function App() {
   const [language, setLanguage] = useState<Language>('ar');
   const [content, setContent] = useState(translations[language]);
   const [cmsTextOverrides, setCmsTextOverrides] = useState<any>({});
+  const [cmsPacks, setCmsPacks] = useState<any[]>([]);
   const [cmsEditMode, setCmsEditMode] = useState(
     () => typeof window !== 'undefined' && sessionStorage.getItem('so_nice_cms_edit') === '1'
   );
@@ -43,6 +44,7 @@ function App() {
     const override = cmsTextOverrides?.[language] || {};
     setContent({
       ...base,
+      header: { ...base.header, ...(override.header || {}) },
       hero: { ...base.hero, ...(override.hero || {}) },
       services: {
         ...base.services,
@@ -55,6 +57,9 @@ function App() {
         filterLabels: { ...base.gallery.filterLabels, ...(override?.gallery?.filterLabels || {}) },
       },
       about: { ...base.about, ...(override.about || {}) },
+      testimonials: { ...base.testimonials, ...(override.testimonials || {}) },
+      contact: { ...base.contact, ...(override.contact || {}) },
+      footer: { ...base.footer, ...(override.footer || {}) },
     });
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
@@ -64,10 +69,27 @@ function App() {
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch('/assets/cms-content.json', { cache: 'no-cache' });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (mounted && data && typeof data === 'object') setCmsTextOverrides(data);
+        const bootContent = (window as any).__CMS?.content;
+        const bootPacks = (window as any).__CMS?.packs;
+        if (mounted && bootContent && typeof bootContent === 'object') setCmsTextOverrides(bootContent);
+        if (mounted && Array.isArray(bootPacks)) setCmsPacks(bootPacks);
+        const res = await fetch('/api/cms', { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          if (mounted && data?.content && typeof data.content === 'object') setCmsTextOverrides(data.content);
+          if (mounted && Array.isArray(data?.packs)) setCmsPacks(data.packs);
+          return;
+        }
+        const contentRes = await fetch('/assets/cms-content.json', { cache: 'no-cache' });
+        if (contentRes.ok) {
+          const data = await contentRes.json();
+          if (mounted && data && typeof data === 'object') setCmsTextOverrides(data);
+        }
+        const packsRes = await fetch('/assets/packs.json', { cache: 'no-cache' });
+        if (packsRes.ok) {
+          const data = await packsRes.json();
+          if (mounted && Array.isArray(data)) setCmsPacks(data);
+        }
       } catch {
         /* keep translation defaults */
       }
@@ -125,7 +147,7 @@ function App() {
         />
         {page === 'packs' ? (
           <main>
-            <Packs />
+            <Packs packs={cmsPacks} />
           </main>
         ) : (
           <main>

@@ -223,6 +223,12 @@
             if (cmsData && Array.isArray(cmsData.gallery)) {
               window.__CMS = Object.assign({}, window.__CMS || {}, { galleryData: cmsData.gallery });
             }
+            if (cmsData && cmsData.content) {
+              window.__CMS = Object.assign({}, window.__CMS || {}, { content: cmsData.content });
+            }
+            if (cmsData && Array.isArray(cmsData.packs)) {
+              window.__CMS = Object.assign({}, window.__CMS || {}, { packs: cmsData.packs });
+            }
           }
         } catch (e) {}
         await import('/index.tsx');

@@ -4,6 +4,8 @@ import { list, put } from '@vercel/blob';
 
 const CMS_SITE_PATH = 'cms/site-images.json';
 const CMS_GALLERY_PATH = 'cms/gallery.json';
+const CMS_CONTENT_PATH = 'cms/content.json';
+const CMS_PACKS_PATH = 'cms/packs.json';
 const blobToken = () => process.env.BLOB1_READ_WRITE_TOKEN || process.env.BLOB_READ_WRITE_TOKEN;
 
 async function readFallbackJson(relativePath, fallbackValue) {
@@ -67,18 +69,26 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const fallbackSiteImages = await readFallbackJson('site-images.json', {});
     const fallbackGallery = await readFallbackJson('gallery.json', []);
+    const fallbackContent = await readFallbackJson('cms-content.json', {});
+    const fallbackPacks = await readFallbackJson('packs.json', []);
     const storedSiteImages = await readBlobJson(CMS_SITE_PATH, {});
     const storedGallery = normalizeGallery(await readBlobJson(CMS_GALLERY_PATH, []));
+    const storedContent = await readBlobJson(CMS_CONTENT_PATH, {});
+    const storedPacks = await readBlobJson(CMS_PACKS_PATH, []);
     const siteImages = mergeSiteImages(fallbackSiteImages, storedSiteImages);
     const gallery = storedGallery.length ? storedGallery : fallbackGallery;
-    return res.status(200).json({ ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery });
+    const content = Object.keys(storedContent || {}).length ? storedContent : fallbackContent;
+    const packs = Array.isArray(storedPacks) && storedPacks.length ? storedPacks : fallbackPacks;
+    return res.status(200).json({ ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery, content, packs });
   }
 
   if (req.method === 'POST') {
     try {
-      const { siteImages, gallery } = req.body || {};
+      const { siteImages, gallery, content, packs } = req.body || {};
       if (siteImages) await writeBlobJson(CMS_SITE_PATH, siteImages);
       if (gallery) await writeBlobJson(CMS_GALLERY_PATH, normalizeGallery(gallery));
+      if (content) await writeBlobJson(CMS_CONTENT_PATH, content);
+      if (packs) await writeBlobJson(CMS_PACKS_PATH, Array.isArray(packs) ? packs : []);
       return res.status(200).json({ ok: true });
     } catch (error) {
       return res.status(500).json({ ok: false, error: error.message || 'Save failed' });

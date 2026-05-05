@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Pack Economique",
+    "price": "4000 dh",
+    "highlight": "Essentiel mariage",
+    "service": "Weddings",
+    "items": [
+      "Tableau d'accueil au choix",
+      "Arriere-plan floral",
+      "Eclairage d'ambiance",
+      "Carte assiettes",
+      "Buffet fin de soiree: plateau bague, bougie, table cake"
+    ]
+  },
+  {
+    "name": "Pack Elegance",
+    "price": "7000 dh",
+    "highlight": "Ideal pour mariages intimes, 50 invites",
+    "service": "Weddings",
+    "items": [
+      "Tableau d'accueil personnalise",
+      "Backdrop floral moderne au choix",
+      "Estrade 3/4 elegante",
+      "Eclairage professionnel complet",
+      "Carte assiettes",
+      "Table cake"
+    ]
+  },
+  {
+    "name": "Pack Royal",
+    "price": "10,000 dh",
+    "highlight": "Experience complete et luxueuse",
+    "service": "Weddings",
+    "items": [
+      "Tableau d'accueil personnalise",
+      "Decoration d'entree luxueuse: tapis et bougies",
+      "Arche florale geante avec backdrop au choix",
+      "Estrade 4/6",
+      "Eclairage artistique avec jeux de lumiere",
+      "Buffet fin de soiree complet",
+      "Stand entree",
+      "Livre d'or",
+      "Ceremonie du the marocain",
+      "Photobooth",
+      "Table cake luxe"
+    ]
+  }
+]

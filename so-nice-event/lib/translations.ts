@@ -8,6 +8,7 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Nos Services' },
         { href: '#gallery', text: 'Galerie' },
+        { href: '/packs', text: 'Packs' },
         { href: '#about', text: 'À Propos' },
         { href: '#contact', text: 'Contact' },
       ],
@@ -200,6 +201,7 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Nos Services' },
         { href: '#gallery', text: 'Galerie' },
+        { href: '/packs', text: 'Packs' },
         { href: '#about', text: 'À Propos' },
         { href: '#contact', text: 'Contact' },
       ],
@@ -210,6 +212,7 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Our Services' },
         { href: '#gallery', text: 'Gallery' },
+        { href: '/packs', text: 'Packs' },
         { href: '#about', text: 'About Us' },
         { href: '#contact', text: 'Contact' },
       ],
@@ -402,6 +405,7 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'Our Services' },
         { href: '#gallery', text: 'Gallery' },
+        { href: '/packs', text: 'Packs' },
         { href: '#about', text: 'About Us' },
         { href: '#contact', text: 'Contact' },
       ],
@@ -412,6 +416,7 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'خدماتنا' },
         { href: '#gallery', text: 'المعرض' },
+        { href: '/packs', text: 'الباقات' },
         { href: '#about', text: 'من نحن' },
         { href: '#contact', text: 'اتصل بنا' },
       ],
@@ -604,6 +609,7 @@ export const translations = {
       navLinks: [
         { href: '#services', text: 'خدماتنا' },
         { href: '#gallery', text: 'المعرض' },
+        { href: '/packs', text: 'الباقات' },
         { href: '#about', text: 'من نحن' },
         { href: '#contact', text: 'اتصل بنا' },
       ],

@@ -122,6 +122,13 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
   const white = siteImages.logoWhite;
   const yellow = siteImages.logoYellow;
   const useGoldFilter = scrolled && yellow === white;
+  const navLinks = content.navLinks.some((link) => link.href === '/packs')
+    ? content.navLinks
+    : [
+        ...content.navLinks.slice(0, 2),
+        { href: '/packs', text: language === 'ar' ? 'الباقات' : 'Packs' },
+        ...content.navLinks.slice(2),
+      ];
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 text-white border-b transition-all duration-500 ${scrolled ? 'bg-[#be185d]/95 shadow-xl shadow-black/15 border-[#d9a629]/25 backdrop-blur' : 'bg-transparent border-transparent'}`}>
@@ -145,7 +152,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
 
         <div className="hidden md:flex items-center space-x-8">
           <nav className="flex space-x-2" aria-label="Main navigation">
-            {content.navLinks.map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
@@ -182,7 +189,7 @@ const Header: React.FC<HeaderProps> = ({ language, setLanguage, content, onNavCl
       {menuOpen && (
         <nav id="mobile-menu" className="md:hidden border-t border-white/10 bg-[#be185d]" aria-label="Mobile navigation">
           <div className="flex flex-col items-center py-4 space-y-4">
-            {content.navLinks.map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}

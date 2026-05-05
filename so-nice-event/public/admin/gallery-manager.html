@@ -80,7 +80,7 @@
     .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
     label { display: block; color: var(--muted); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
-    input[type="password"], input[type="text"], input[type="number"], select {
+    input[type="password"], input[type="text"], input[type="number"], select, textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -88,6 +88,7 @@
       font: inherit;
       background: #fff;
     }
+    textarea { min-height: 120px; resize: vertical; }
     button {
       border: 0;
       border-radius: 10px;
@@ -140,7 +141,8 @@
         <button type="button" class="tab active" data-panel="hero">Hero Slideshow</button>
         <button type="button" class="tab" data-panel="about">About Us</button>
         <button type="button" class="tab" data-panel="gallery">Gallery</button>
-        <button type="button" class="ghost" id="clearDrafts">Clear local drafts</button>
+        <button type="button" class="tab" data-panel="packs">Packs</button>
+        <button type="button" class="tab" data-panel="translations">Translations</button>
       </div>
       <p class="status" id="status"></p>
 
@@ -188,6 +190,32 @@
         <div id="galleryList" class="list"></div>
       </section>
 
+      <section id="panel-packs" class="panel card">
+        <h2 class="section-title">Packs</h2>
+        <p class="hint">Create and manage packs for any service. Each item should be on a separate line.</p>
+        <div class="row">
+          <button type="button" class="gold" id="addPack">Add pack</button>
+          <button type="button" class="ghost" id="reloadPacks">Reload packs</button>
+          <button type="button" class="btn" id="savePacks">Save packs</button>
+        </div>
+        <div id="packsList" class="list"></div>
+      </section>
+
+      <section id="panel-translations" class="panel card">
+        <h2 class="section-title">Translations</h2>
+        <p class="hint">Edit website text by language. Use valid JSON so the public site can load the translations safely.</p>
+        <div class="tabs" id="translationTabs">
+          <button type="button" class="tab active" data-lang="ar">Arabic</button>
+          <button type="button" class="tab" data-lang="fr">French</button>
+          <button type="button" class="tab" data-lang="en">English</button>
+        </div>
+        <textarea id="translationEditor" spellcheck="false"></textarea>
+        <div class="row" style="margin-top:12px;">
+          <button type="button" class="ghost" id="reloadTranslations">Reload translations</button>
+          <button type="button" class="btn" id="saveTranslations">Save translations</button>
+        </div>
+      </section>
+
     </section>
   </main>
 
@@ -207,13 +235,17 @@
     const SITE_DRAFT = 'site_images_override';
     let siteImages = {};
     let galleryData = [];
+    let contentData = {};
+    let packsData = [];
     let activeCategory = 'Weddings';
+    let activeLang = 'ar';
 
     const $ = (id) => document.getElementById(id);
     const apiBase = () => '';
     const isLocalHost = () => ['localhost', '127.0.0.1'].includes(window.location.hostname);
     const localServerBase = () => (localStorage.getItem('cms_local_server') || 'http://localhost:4000').replace(/\/$/, '');
     const status = (msg) => { $('status').textContent = msg; };
+    const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
     function readAsBase64(file) {
       return new Promise((resolve, reject) => {
@@ -321,6 +353,53 @@
       if (!localResponse.ok) throw new Error('Could not save image settings. Check cloud storage token or local CMS server.');
     }
 
+    async function persistGallery() {
+      galleryData = galleryData.filter((item) => item.category !== 'About Us' && item.src);
+      localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+      const response = await fetch(apiBase() + '/api/cms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gallery: galleryData }),
+      });
+      if (response.ok) return;
+      let cloudError = 'Could not save gallery.';
+      try {
+        const data = await response.json();
+        cloudError = data.error || cloudError;
+      } catch {}
+      if (!isLocalHost()) throw new Error(cloudError);
+      const localResponse = await fetch(localServerBase() + '/save-gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(galleryData),
+      });
+      if (!localResponse.ok) throw new Error('Could not save gallery. Check cloud storage token or local CMS server.');
+    }
+
+    async function persistContent() {
+      const response = await fetch(apiBase() + '/api/cms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: contentData }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not save translations.');
+      }
+    }
+
+    async function persistPacks() {
+      const response = await fetch(apiBase() + '/api/cms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packs: packsData }),
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not save packs.');
+      }
+    }
+
     function imageThumb(src, label) {
       return `<div class="thumb"><img src="${src || ''}" class="${src ? 'show' : ''}" onerror="this.classList.remove('show'); this.nextElementSibling.style.display='block';" /><span style="${src ? 'display:none' : ''}">${label || 'No image'}</span></div>`;
     }
@@ -402,6 +481,37 @@
       `;
     }
 
+    function renderTranslations() {
+      $('translationEditor').value = JSON.stringify(contentData[activeLang] || {}, null, 2);
+    }
+
+    function renderPacks() {
+      $('packsList').innerHTML = packsData.map((pack, index) => `
+        <article class="item">
+          <div class="thumb"><span>Pack ${index + 1}</span></div>
+          <div>
+            <div class="grid">
+              <div><label>Name</label><input type="text" value="${esc(pack.name)}" data-pack-name="${index}" /></div>
+              <div><label>Price</label><input type="text" value="${esc(pack.price)}" data-pack-price="${index}" /></div>
+              <div><label>Service</label>
+                <select data-pack-service="${index}">
+                  ${CATEGORIES.map((category) => `<option value="${category}" ${pack.service === category ? 'selected' : ''}>${category}</option>`).join('')}
+                </select>
+              </div>
+              <div><label>Highlight</label><input type="text" value="${esc(pack.highlight)}" data-pack-highlight="${index}" /></div>
+            </div>
+            <label style="margin-top:10px;">Items, one per line</label>
+            <textarea data-pack-items="${index}">${esc((pack.items || []).join('\n'))}</textarea>
+            <div class="item-actions">
+              <button type="button" class="ghost" data-pack-up="${index}">Up</button>
+              <button type="button" class="ghost" data-pack-down="${index}">Down</button>
+              <button type="button" class="danger" data-pack-delete="${index}">Delete</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
     async function loadSiteImages() {
       const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
       if (cmsResponse.ok) {
@@ -419,6 +529,30 @@
       renderHero();
       renderAbout();
       renderSitePreview();
+    }
+
+    async function loadContent() {
+      const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
+      if (cmsResponse.ok) {
+        const cms = await cmsResponse.json();
+        contentData = cms.content || {};
+      } else {
+        const response = await fetch('/assets/cms-content.json', { cache: 'no-cache' });
+        contentData = response.ok ? await response.json() : {};
+      }
+      renderTranslations();
+    }
+
+    async function loadPacks() {
+      const cmsResponse = await fetch('/api/cms', { cache: 'no-cache' });
+      if (cmsResponse.ok) {
+        const cms = await cmsResponse.json();
+        packsData = Array.isArray(cms.packs) ? cms.packs : [];
+      } else {
+        const response = await fetch('/assets/packs.json', { cache: 'no-cache' });
+        packsData = response.ok ? await response.json() : [];
+      }
+      renderPacks();
     }
 
     async function loadGallery(preferDraft = true) {
@@ -463,6 +597,13 @@
         const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryId));
         if (item) item.id = Number(el.value) || item.id;
       }
+      if (el.dataset.packName) packsData[Number(el.dataset.packName)].name = el.value.trim();
+      if (el.dataset.packPrice) packsData[Number(el.dataset.packPrice)].price = el.value.trim();
+      if (el.dataset.packService) packsData[Number(el.dataset.packService)].service = el.value;
+      if (el.dataset.packHighlight) packsData[Number(el.dataset.packHighlight)].highlight = el.value.trim();
+      if (el.dataset.packItems) {
+        packsData[Number(el.dataset.packItems)].items = el.value.split('\n').map((item) => item.trim()).filter(Boolean);
+      }
     });
 
     document.addEventListener('change', async (event) => {
@@ -484,8 +625,9 @@
           const item = galleryData.find((entry) => String(entry.id) === String(el.dataset.galleryFile));
           if (item) item.src = await uploadFile(file);
           localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+          await persistGallery();
           renderGallery();
-          status('Gallery image uploaded. Save gallery to publish it.');
+          status('Gallery image uploaded and published.');
         }
         if ('serviceCoverFile' in el.dataset) {
           const file = el.files && el.files[0];
@@ -513,6 +655,15 @@
         el.classList.add('active');
         activeCategory = el.dataset.category;
         renderGallery();
+      }
+      if (el.dataset.lang) {
+        try {
+          contentData[activeLang] = JSON.parse($('translationEditor').value || '{}');
+        } catch {}
+        document.querySelectorAll('#translationTabs .tab').forEach((tab) => tab.classList.remove('active'));
+        el.classList.add('active');
+        activeLang = el.dataset.lang;
+        renderTranslations();
       }
       if ('heroDelete' in el.dataset) {
         siteImages.heroSlides.splice(Number(el.dataset.heroDelete), 1);
@@ -550,13 +701,27 @@
         renderGallery();
         status('Service cover saved.');
       }
+      if ('packDelete' in el.dataset) {
+        packsData.splice(Number(el.dataset.packDelete), 1);
+        renderPacks();
+      }
+      if ('packUp' in el.dataset) {
+        const i = Number(el.dataset.packUp);
+        if (i > 0) [packsData[i - 1], packsData[i]] = [packsData[i], packsData[i - 1]];
+        renderPacks();
+      }
+      if ('packDown' in el.dataset) {
+        const i = Number(el.dataset.packDown);
+        if (i < packsData.length - 1) [packsData[i + 1], packsData[i]] = [packsData[i], packsData[i + 1]];
+        renderPacks();
+      }
     });
 
     $('enter').onclick = async () => {
       if (!PASSPHRASES.includes($('pass').value.trim())) return alert('Wrong password');
       $('gate').classList.add('hidden');
       $('app').classList.remove('hidden');
-      await Promise.all([loadSiteImages(), loadGallery(true)]);
+      await Promise.all([loadSiteImages(), loadGallery(true), loadContent(), loadPacks()]);
       status('Ready.');
     };
 
@@ -627,9 +792,10 @@
           galleryData.push({ id: nextId++, src: await uploadFile(file), category: activeCategory });
         }
         localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
+        await persistGallery();
         $('galleryUpload').value = '';
         renderGallery();
-        status('Gallery photos uploaded. Save gallery to publish them.');
+        status('Gallery photos uploaded and published.');
       } catch (error) {
         status(error.message || 'Upload failed.');
       }
@@ -637,37 +803,34 @@
     $('reloadGallery').onclick = () => loadGallery(false);
     $('saveGallery').onclick = async () => {
       try {
-        galleryData = galleryData.filter((item) => item.category !== 'About Us');
-        localStorage.setItem(GALLERY_DRAFT, JSON.stringify(galleryData));
-        const response = await fetch(apiBase() + '/api/cms', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gallery: galleryData }),
-        });
-        if (!response.ok) {
-          let cloudError = 'Could not save gallery.';
-          try {
-            const data = await response.json();
-            cloudError = data.error || cloudError;
-          } catch {}
-          if (!isLocalHost()) throw new Error(cloudError);
-          const localResponse = await fetch(localServerBase() + '/save-gallery', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(galleryData),
-          });
-          if (!localResponse.ok) throw new Error('Could not save gallery. Check cloud storage token or local CMS server.');
-        }
+        await persistGallery();
         status('Gallery saved.');
       } catch (error) {
         status(error.message || 'Could not save gallery.');
       }
     };
-    $('clearDrafts').onclick = async () => {
-      localStorage.removeItem(GALLERY_DRAFT);
-      localStorage.removeItem(SITE_DRAFT);
-      await Promise.all([loadSiteImages(), loadGallery(false)]);
-      status('Local drafts cleared. Showing cloud data.');
+    $('addPack').onclick = () => {
+      packsData.push({ name: 'New pack', price: '', highlight: '', service: activeCategory, items: [] });
+      renderPacks();
+    };
+    $('reloadPacks').onclick = () => loadPacks();
+    $('savePacks').onclick = async () => {
+      try {
+        await persistPacks();
+        status('Packs saved.');
+      } catch (error) {
+        status(error.message || 'Could not save packs.');
+      }
+    };
+    $('reloadTranslations').onclick = () => loadContent();
+    $('saveTranslations').onclick = async () => {
+      try {
+        contentData[activeLang] = JSON.parse($('translationEditor').value || '{}');
+        await persistContent();
+        status('Translations saved.');
+      } catch (error) {
+        status(error.message || 'Translation JSON is invalid.');
+      }
     };
   </script>
 </body>
