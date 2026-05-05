@@ -34,6 +34,22 @@ function mergeSiteImages(fallbackSiteImages = {}, storedSiteImages = {}) {
   return merged;
 }
 
+async function getCmsData() {
+  const fallbackSiteImages = await readFallbackJson('site-images.json', {});
+  const fallbackGallery = await readFallbackJson('gallery.json', []);
+  const fallbackContent = await readFallbackJson('cms-content.json', {});
+  const fallbackPacks = await readFallbackJson('packs.json', []);
+  const storedSiteImages = await readBlobJson(CMS_SITE_PATH, {});
+  const storedGallery = normalizeGallery(await readBlobJson(CMS_GALLERY_PATH, []));
+  const storedContent = await readBlobJson(CMS_CONTENT_PATH, {});
+  const storedPacks = await readBlobJson(CMS_PACKS_PATH, []);
+  const siteImages = mergeSiteImages(fallbackSiteImages, storedSiteImages);
+  const gallery = storedGallery.length ? storedGallery : fallbackGallery;
+  const content = Object.keys(storedContent || {}).length ? storedContent : fallbackContent;
+  const packs = Array.isArray(storedPacks) && storedPacks.length ? storedPacks : fallbackPacks;
+  return { ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery, content, packs };
+}
+
 async function readBlobJson(pathname, fallbackValue) {
   const token = blobToken();
   if (!token) return fallbackValue;
@@ -41,8 +57,9 @@ async function readBlobJson(pathname, fallbackValue) {
     const result = await list({ prefix: pathname, limit: 1, token });
     const blob = result.blobs.find((item) => item.pathname === pathname);
     if (!blob) return fallbackValue;
-    const separator = blob.url.includes('?') ? '&' : '?';
-    const response = await fetch(`${blob.url}${separator}ts=${Date.now()}`, { cache: 'no-store' });
+    const sourceUrl = blob.downloadUrl || blob.url;
+    const separator = sourceUrl.includes('?') ? '&' : '?';
+    const response = await fetch(`${sourceUrl}${separator}ts=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) return fallbackValue;
     return response.json();
   } catch {
@@ -56,6 +73,8 @@ async function writeBlobJson(pathname, data) {
   await put(pathname, JSON.stringify(data, null, 2), {
     access: 'public',
     contentType: 'application/json',
+    addRandomSuffix: false,
+    cacheControlMaxAge: 0,
     allowOverwrite: true,
     token,
   });
@@ -69,19 +88,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(204).end();
 
   if (req.method === 'GET') {
-    const fallbackSiteImages = await readFallbackJson('site-images.json', {});
-    const fallbackGallery = await readFallbackJson('gallery.json', []);
-    const fallbackContent = await readFallbackJson('cms-content.json', {});
-    const fallbackPacks = await readFallbackJson('packs.json', []);
-    const storedSiteImages = await readBlobJson(CMS_SITE_PATH, {});
-    const storedGallery = normalizeGallery(await readBlobJson(CMS_GALLERY_PATH, []));
-    const storedContent = await readBlobJson(CMS_CONTENT_PATH, {});
-    const storedPacks = await readBlobJson(CMS_PACKS_PATH, []);
-    const siteImages = mergeSiteImages(fallbackSiteImages, storedSiteImages);
-    const gallery = storedGallery.length ? storedGallery : fallbackGallery;
-    const content = Object.keys(storedContent || {}).length ? storedContent : fallbackContent;
-    const packs = Array.isArray(storedPacks) && storedPacks.length ? storedPacks : fallbackPacks;
-    return res.status(200).json({ ok: true, hasBlobToken: Boolean(blobToken()), siteImages, gallery, content, packs });
+    return res.status(200).json(await getCmsData());
   }
 
   if (req.method === 'POST') {
@@ -91,7 +98,7 @@ export default async function handler(req, res) {
       if (gallery) await writeBlobJson(CMS_GALLERY_PATH, normalizeGallery(gallery));
       if (content) await writeBlobJson(CMS_CONTENT_PATH, content);
       if (packs) await writeBlobJson(CMS_PACKS_PATH, Array.isArray(packs) ? packs : []);
-      return res.status(200).json({ ok: true });
+      return res.status(200).json(await getCmsData());
     } catch (error) {
       return res.status(500).json({ ok: false, error: error.message || 'Save failed' });
     }
